@@ -1,0 +1,5 @@
+(function(){var loadHandler=window['sl_{30B58FEC-FD24-4DF8-BFC1-209E8FBDD882}'];loadHandler&&loadHandler(72, '<div id="spr0_1f4a131"><div id="spr1_1f4a131" class="kern slide"><img id="img3_1f4a131" src="data/img19.png" width="960px" height="540px" alt="" style="left:0px;top:0px;"/><div id="spr3_1f4a131" style="left:894px;"><a id="hl0_1f4a131" href="#" onclick="document.getElementById(\'coreSpr_15998674\').getCore().processTriggerEffect(this);document.getElementById(\'coreSpr_15998674\').getCore().gotoSlide(0, this);return false;"><img id="img0_1f4a131" src="data/img0.png" width="65" height="66" alt="" style="left:0.138px;top:0.077px;"/></a></div><div id="spr4_1f4a131" style="left:726.612px;top:8.765px;"><img id="img1_1f4a131" src="data/img1.png" width="185" height="45" alt="A close-up of a pen\
+\
+AI-generated content may be incorrect." style="left:0.071px;top:-0.07px;"/></div></div><div id="spr2_1f4a131" class="kern slide"><div id="spr5_1f4a131"><img id="img2_1f4a131" src="data/img65.png" width="834" height="540" alt="A map of the united states\
+\
+AI-generated content may be incorrect." style="left:0.179px;"/></div></div></div>', '{"s":[]}');})();

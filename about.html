@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | About MJ Mayaya</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Headers & Footers */
+        header { background-color: #004080; color: #fff; text-align: center; padding: 3rem 1rem; margin-bottom: 2rem; }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+
+        /* About Layout */
+        .container { flex: 1; margin: 0 auto; max-width: 1200px; padding: 0 20px; width: 100%; overflow: hidden; }
+        .about-container { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #3385ff; display: flex; flex-wrap: wrap; padding: 3rem; gap: 3rem; align-items: flex-start; }
+        
+        /* Image Section */
+        .profile-section { flex: 1 1 300px; display: flex; flex-direction: column; align-items: center; text-align: center; opacity: 0; animation: fadeInUp 0.8s ease-out forwards; }
+        
+        /* Hover Animation on Profile Picture */
+        .profile-image { width: 100%; max-width: 280px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 50%; border: 5px solid #e6f0fa; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1.5rem; transition: transform 0.4s ease, box-shadow 0.4s ease; }
+        .profile-image:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        
+        /* Contact Box */
+        .contact-box { background-color: #f0f7ff; padding: 1.5rem; border-radius: 8px; width: 100%; border: 1px solid #b3d4ff; text-align: left; transition: transform 0.3s ease; }
+        .contact-box:hover { transform: translateY(-5px); }
+        .contact-box h3 { color: #004080; margin-bottom: 0.8rem; font-size: 1.2rem; }
+        .contact-box p { font-size: 0.95rem; margin-bottom: 0.5rem; color: #444; }
+        .contact-box a { color: #3385ff; text-decoration: none; font-weight: bold; transition: color 0.3s; }
+        .contact-box a:hover { text-decoration: underline; color: #002b5e; }
+
+        /* Bio Section with Staggered Animation */
+        .bio-content { flex: 2 1 500px; opacity: 0; animation: fadeInUp 0.8s ease-out 0.3s forwards; }
+        .bio-content h2 { color: #004080; margin-bottom: 1rem; font-size: 2.5rem; }
+        .bio-content h3 { color: #00509e; margin-top: 1.5rem; margin-bottom: 0.8rem; font-size: 1.4rem; border-bottom: 2px solid #e6f0fa; padding-bottom: 0.3rem; }
+        .bio-content p { margin-bottom: 1.2rem; font-size: 1.1rem; color: #444; }
+
+        /* --- THE ANIMATION KEYFRAMES --- */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">EDU Hub</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html" class="active">About</a>
+        </div>
+    </nav>
+
+    <header>
+        <h1>Meet the Creator</h1>
+    </header>
+
+    <main class="container">
+        <div class="about-container">
+            
+            <div class="profile-section">
+                <img src="MJ Mayaya.jpg" alt="MJ Mayaya" class="profile-image" onerror="this.src='https://via.placeholder.com/280?text=Insert+Image+Here'">
+                
+                <div class="contact-box">
+                    <h3>Get in Touch</h3>
+                    <p>📧 Email: <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox?compose=CllgCJZZztftKwrXrMNNNGHBFFRkGMpNLMWrTTNwvLgvpHjxJWTGSbDXMKCJGvFjZjqNGxWlwjq">MJMayaya@gmail.com</a></p>
+                    <p>📍 Location: KwaZulu-Natal, SA</p>
+                    <p>📱 WhatsApp: <a href="#">+27 68 448 0856</a></p>
+                </div>
+            </div>
+            
+            <div class="bio-content">
+                <h2>Hi, I'm MJ Mayaya.</h2>
+                
+                <p>Welcome to the Learning Hub! I’m an educator dedicated to transforming how we teach and learn. I have been in the classroom since 2018, having graduated from the Edgewood campus, and my primary focus is bringing Social Sciences, Geography, and Life Sciences to life for high school learners.</p>
+                
+                <h3>Education in Your Pocket</h3>
+                <p>We live in a digital world, and I believe the best way to teach is to meet students exactly where they are—on their phones. I have a deep passion for technology, and I built this platform to blend that passion with education. Think of this site as "notes in your pocket." By making learning mobile, beautifully designed, and highly interactive, students can access their materials, activities, and custom-built learning games anywhere, at any time.</p>
+                
+                <h3>Synchronizing the Classroom</h3>
+                <p>This platform isn't just for learners; it’s designed to make teaching easier for my fellow educators. The site features tailor-made, CAPS-aligned presentations ready for the classroom. To make complex topics easy to understand, these presentations are packed with beautiful, clear images and detailed diagrams. When teachers present from this hub and learners follow along on their own devices, it synchronizes the educational journey. We all walk the exact same path, standardizing the learning experience and making classroom instruction incredibly seamless.</p>
+
+                <p>Feel free to explore the site, utilize the resources, and let's make learning easier and far more engaging, together.</p>
+            </div>
+            
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 EDU Hub. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

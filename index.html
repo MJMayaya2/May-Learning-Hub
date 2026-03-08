@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Home</title>
+    <style>
+        /* --- Basic Reset & Typography --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; }
+
+        /* --- Animations Keyframes --- */
+        @keyframes slideInLeft {
+            0% { opacity: 0; transform: translateX(-100px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInRight {
+            0% { opacity: 0; transform: translateX(50px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInDown {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* --- Navigation & Header --- */
+        nav { 
+            background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; 
+            opacity: 0; animation: slideInDown 0.6s ease-out forwards; 
+        }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Updated Header Styling */
+        header { background-color: #004080; color: #fff; padding: 3rem 1rem; margin-bottom: 2rem; overflow: hidden; }
+        .header-content { display: flex; align-items: center; justify-content: center; gap: 2rem; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; }
+        
+        /* Logo Animation */
+        .header-logo { 
+            width: 120px; height: 120px; object-fit: contain; background: #fff; border-radius: 50%; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+            opacity: 0; animation: slideInLeft 0.8s ease-out 0.2s forwards; 
+        }
+
+        /* Header Text Animation */
+        .header-text { 
+            text-align: left; 
+            opacity: 0; animation: slideInRight 0.8s ease-out 0.4s forwards; 
+        }
+        .header-text h1 { font-size: 2.2rem; margin-bottom: 0.2rem; }
+        .header-text p { font-size: 1.1rem; color: #e6f0fa; }
+
+        /* Mobile Adjustments for Header */
+        @media (max-width: 768px) {
+            .header-content { text-align: center; flex-direction: column; gap: 1rem; }
+            .header-text { text-align: center; }
+        }
+        
+        /* --- Main 3-Column Layout --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+
+        /* --- Subject Column Styling & Animation --- */
+        .subject-card { 
+            background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; border-top: 5px solid #3385ff; 
+            opacity: 0; animation: fadeInUp 0.8s ease-out forwards; 
+        }
+        /* Stagger the cards so they pop up one by one */
+        .subject-card:nth-child(1) { animation-delay: 0.6s; }
+        .subject-card:nth-child(2) { animation-delay: 0.8s; }
+        .subject-card:nth-child(3) { animation-delay: 1.0s; }
+
+        .subject-header { background-color: #e6f0fa; padding: 1.5rem; text-align: center; border-bottom: 1px solid #b3d4ff; }
+        .subject-header h2 { color: #004080; font-size: 1.4rem; }
+
+        /* --- Collapsible Grade Styling --- */
+        details { padding: 1rem; border-bottom: 1px solid #eee; }
+        details[open] { background-color: #fafbfc; }
+        summary { font-weight: bold; font-size: 1.2rem; color: #00509e; cursor: pointer; list-style: none; padding: 0.5rem 0; }
+        summary::-webkit-details-marker { display: none; }
+        summary::before { content: "▶ "; font-size: 0.9em; color: #3385ff; display: inline-block; transition: transform 0.2s; }
+        details[open] summary::before { transform: rotate(90deg); }
+
+        /* --- Term & Links Styling --- */
+        .term-section { margin-top: 1rem; padding-left: 1.5rem; }
+        .term-section h4 { color: #555; margin-bottom: 0.5rem; font-size: 1rem; border-bottom: 1px dashed #ccc; padding-bottom: 0.2rem; }
+        
+        .content-links { list-style-type: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+        .content-links li a { display: block; text-decoration: none; color: #004080; background-color: #f0f7ff; padding: 0.4rem 1rem; border-radius: 4px; transition: all 0.2s ease; font-size: 0.95rem; border-left: 3px solid transparent; }
+        .content-links li a:hover { background-color: #e6f0fa; border-left: 3px solid #3385ff; padding-left: 1.2rem; }
+        
+        .icon-notes::before { content: "📝 "; }
+        .icon-games::before { content: "🎮 "; }
+        .icon-activities::before { content: "🛠️ "; }
+
+        /* Footer Animation */
+        footer { 
+            text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: 3rem; 
+            opacity: 0; animation: fadeIn 1s ease-out 1.5s forwards; 
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="index.html" class="active">Home</a>
+            <a href="about.html">About</a>
+        </div>
+    </nav>
+
+    <header>
+        <div class="header-content">
+            <img src="May Learning Hub Logo.jpg" alt="May Learning Hub Logo" class="header-logo" onerror="this.src='https://via.placeholder.com/120?text=Logo'">
+            
+            <div class="header-text">
+                <h1>Welcome to the Learning Hub</h1>
+                <p>Select your subject and grade below to access notes, educational games, and activities.</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <main class="subjects-grid">
+            
+            <section class="subject-card">
+                <div class="subject-header">
+                    <h2>Social Sciences</h2>
+                </div>
+                
+                <script>
+                    const ssGrades = [8, 9];
+                    ssGrades.forEach(grade => {
+                        document.write(`<details><summary>Grade ${grade}</summary>`);
+                        for(let t=1; t<=4; t++) {
+                            document.write(`
+                            <div class="term-section">
+                                <h4>Term ${t}</h4>
+                                <ul class="content-links">
+                                    <li><a href="Social-Sciences/Term-${t}/Grade-${grade}/Notes/notes.html" class="icon-notes">Notes</a></li>
+                                    <li><a href="Social-Sciences/Term-${t}/Grade-${grade}/Games/games.html" class="icon-games">Games</a></li>
+                                    <li><a href="Social-Sciences/Term-${t}/Grade-${grade}/Activities/activities.html" class="icon-activities">Activities</a></li>
+                                </ul>
+                            </div>`);
+                        }
+                        document.write(`</details>`);
+                    });
+                </script>
+            </section>
+
+            <section class="subject-card">
+                <div class="subject-header">
+                    <h2>Geography</h2>
+                </div>
+                
+                <script>
+                    const geoGrades = [10, 11, 12];
+                    geoGrades.forEach(grade => {
+                        document.write(`<details><summary>Grade ${grade}</summary>`);
+                        for(let t=1; t<=4; t++) {
+                            document.write(`
+                            <div class="term-section">
+                                <h4>Term ${t}</h4>
+                                <ul class="content-links">
+                                    <li><a href="Geography/Term-${t}/Grade-${grade}/Notes/notes.html" class="icon-notes">Notes</a></li>
+                                    <li><a href="Geography/Term-${t}/Grade-${grade}/Games/games.html" class="icon-games">Games</a></li>
+                                    <li><a href="Geography/Term-${t}/Grade-${grade}/Activities/activities.html" class="icon-activities">Activities</a></li>
+                                </ul>
+                            </div>`);
+                        }
+                        document.write(`</details>`);
+                    });
+                </script>
+            </section>
+
+            <section class="subject-card">
+                <div class="subject-header">
+                    <h2>Life Sciences</h2>
+                </div>
+                
+                <script>
+                    const lsGrades = [10, 11, 12];
+                    lsGrades.forEach(grade => {
+                        document.write(`<details><summary>Grade ${grade}</summary>`);
+                        for(let t=1; t<=4; t++) {
+                            document.write(`
+                            <div class="term-section">
+                                <h4>Term ${t}</h4>
+                                <ul class="content-links">
+                                    <li><a href="Life-Sciences/Term-${t}/Grade-${grade}/Notes/notes.html" class="icon-notes">Notes</a></li>
+                                    <li><a href="Life-Sciences/Term-${t}/Grade-${grade}/Games/games.html" class="icon-games">Games</a></li>
+                                    <li><a href="Life-Sciences/Term-${t}/Grade-${grade}/Activities/activities.html" class="icon-activities">Activities</a></li>
+                                </ul>
+                            </div>`);
+                        }
+                        document.write(`</details>`);
+                    });
+                </script>
+            </section>
+
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

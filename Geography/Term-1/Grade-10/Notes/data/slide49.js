@@ -1,0 +1,10 @@
+(function(){var loadHandler=window['sl_{6D22A287-430E-4072-BEFC-7D63141BA908}'];loadHandler&&loadHandler(48, '<div id="spr0_76d228d"><div id="spr1_76d228d" class="kern slide"><img id="img3_76d228d" src="data/img17.png" width="960px" height="540px" alt="" style="left:0px;top:0px;"/><div id="spr3_76d228d" style="left:894px;"><a id="hl0_76d228d" href="#" onclick="document.getElementById(\'coreSpr_7111128\').getCore().processTriggerEffect(this);document.getElementById(\'coreSpr_7111128\').getCore().gotoFirstSlide(this);return false;"><img id="img0_76d228d" src="data/img0.png" width="65" height="66" alt="" style="left:0.138px;top:0.077px;"/></a></div><div id="spr4_76d228d" style="left:726.612px;top:8.765px;"><img id="img1_76d228d" src="data/img1.png" width="185" height="45" alt="A close-up of a pen  AI-generated content may be incorrect." style="left:0.071px;top:-0.07px;"/></div></div><div id="spr2_76d228d" class="kern slide"><div id="spr5_76d228d" style="left:100.115px;top:14.854px;"><div style="width:0px;"><span id="txt0_76d228d" data-width="589.517578" style="left:36.795px;top:-17.344px;">CONCEPTS OF DEW POINT, CONDENSATION LEVEL.</span></div><div style="width:0px;"><span id="txt1_76d228d" data-width="391.302734" style="left:134.26px;top:12.896px;">HUMIDITY &amp; RELATIVE HUMIDITY</span></div></div><div id="spr6_76d228d" style="left:19px;top:58px;"><img id="img2_76d228d" src="data/img84.png" width="884" height="458" alt="1. HUMIDITY\
+Humidity refers to the amount of water vapour in the atmosphere at a particular time or place.\
+There is a limit to the amount of water vapour the air can hold.\
+\
+2. RELATIVE HUMIDITY\
+Relative humidity refers to the amount of water vapour in the air, expressed in relation to the temperature of the air.\
+It is expressed as a percentage.\
+𝑅𝐻= (𝐴𝑐𝑡𝑢𝑎𝑙 𝐻𝑢𝑚𝑖𝑑𝑖𝑡𝑦 𝑋 100 𝑊𝑎𝑡𝑒𝑟 𝑉𝑎𝑝𝑜𝑢𝑟 𝐶𝑎𝑝𝑎𝑐𝑖𝑡𝑦 \
+\
+"/></div></div></div>', '{"s":[]}');})();
