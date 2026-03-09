@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | 4-Player Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Game Header */
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+        
+        /* --- Player Tabs --- */
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        /* --- Animated Carousel Container --- */
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        
+        /* Individual Player Slide */
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+
+        /* Score Board */
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        /* Jeopardy Grid */
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+        /* Category Headers & Buttons */
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        /* --- Interactive Modal --- */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+
+        /* Initial Reveal Button */
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+
+        /* Step 1: Judgement Area (Active Player) */
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-correct:hover { background: #1e7e34; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect:hover { background: #bd2130; }
+
+        /* Step 2: Steal Area (Other Players) */
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; animation: fadeIn 0.4s; }
+        .steal-title { color: #856404; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-steal:hover { background: #e0a800; transform: translateY(-2px); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .category-header { font-size: 0.8rem; padding: 0.5rem; min-height: 60px; }
+            .point-btn { font-size: 1.2rem; padding: 1rem 0; }
+            .modal-question { font-size: 1.2rem; }
+            .tab-btn { padding: 0.6rem; font-size: 0.95rem; }
+            .judgement-buttons { flex-direction: column; }
+        }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Multiplayer Grid Review</h1>
+        <p class="game-subtitle">Get it wrong, and your classmates can STEAL half the points!</p>
+    </header>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            
+            <div class="player-slide">
+                <div class="score-board">Player 1 Score: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+
+            <div class="player-slide">
+                <div class="score-board">Player 2 Score: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+
+            <div class="player-slide">
+                <div class="score-board">Player 3 Score: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+
+            <div class="player-slide">
+                <div class="score-board">Player 4 Score: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category for 10</div>
+            <div class="modal-question" id="modalQuestion">Loading question...</div>
+            
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">The Answer</div>
+                
+                <div class="judgement-area" id="judgementArea">
+                    <p style="color: #666; font-size: 0.95rem;">Did <strong id="activePlayerName">Player X</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Oops, Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Got It Right!</button>
+                    </div>
+                </div>
+
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" id="stealTitle">STEAL OPPORTUNITY! (+X Pts)</div>
+                    <p style="color: #856404; font-size: 0.9rem; margin-bottom: 1rem;">Did another player shout the correct answer first?</p>
+                    <div class="steal-buttons" id="stealButtons">
+                        </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // --- GRADE 11 JEOPARDY DATA (UPDATED POINTS: 10 to 50) ---
+        const categories = [
+            {
+                name: "Atmosphere",
+                questions: [
+                    { points: 10, q: "This invisible force causes winds to deflect to the left in the Southern Hemisphere.", a: "What is the Coriolis Force?" },
+                    { points: 20, q: "These are lines on a synoptic weather map that join places of equal atmospheric pressure.", a: "What are Isobars?" },
+                    { points: 30, q: "This major global wind belt blows from the subtropical high to the equatorial low.", a: "What are the Trade Winds?" },
+                    { points: 40, q: "A seasonal wind system that brings heavy summer rain to places like India.", a: "What is a Monsoon?" },
+                    { points: 50, q: "The planetary wind system responsible for driving mid-latitude cyclones toward South Africa.", a: "What are the Westerlies?" }
+                ]
+            },
+            {
+                name: "Topography",
+                questions: [
+                    { points: 10, q: "The highest, steepest part of a slope, often made of resistant rock.", a: "What is a Cliff (or Free face)?" },
+                    { points: 20, q: "The gentle slope at the base of a hill where eroded material naturally accumulates.", a: "What is a Pediment?" },
+                    { points: 30, q: "A contour pattern where lines are very close together at the top and far apart at the bottom.", a: "What is a Concave Slope?" },
+                    { points: 40, q: "The mass movement of soil saturated with water slowly creeping down a slope.", a: "What is Solifluction?" },
+                    { points: 50, q: "The specific type of rock strata (horizontal, inclined, or massive) that typically forms a cuesta.", a: "What are Inclined (or Dipping) Strata?" }
+                ]
+            },
+            {
+                name: "Nutrition",
+                questions: [
+                    { points: 10, q: "The muscular tube that connects the back of the mouth to the stomach.", a: "What is the Esophagus?" },
+                    { points: 20, q: "The wave-like muscle contractions that force food through the digestive tract.", a: "What is Peristalsis?" },
+                    { points: 30, q: "The enzyme found in human saliva that begins the chemical breakdown of starch.", a: "What is Amylase?" },
+                    { points: 40, q: "The tiny, finger-like projections lining the small intestine that absorb nutrients.", a: "What are Villi?" },
+                    { points: 50, q: "The green fluid produced by the liver and stored in the gall bladder that emulsifies fats.", a: "What is Bile?" }
+                ]
+            },
+            {
+                name: "Respiration",
+                questions: [
+                    { points: 10, q: "The primary gas required from the atmosphere for aerobic respiration to take place.", a: "What is Oxygen?" },
+                    { points: 20, q: "The specific cellular organelle where most stages of cellular respiration occur.", a: "What is the Mitochondrion?" },
+                    { points: 30, q: "The primary 'energy currency' molecule of the cell produced during respiration.", a: "What is ATP?" },
+                    { points: 40, q: "The first stage of cellular respiration that occurs in the cytoplasm, breaking down glucose.", a: "What is Glycolysis?" },
+                    { points: 50, q: "The toxic byproduct of anaerobic respiration that causes cramping in human muscle cells.", a: "What is Lactic Acid?" }
+                ]
+            }
+        ];
+
+        // --- GAME STATE ---
+        let currentPlayerIndex = 0; 
+        let scores = [0, 0, 0, 0];  
+        let activePointValue = 0;
+        let activeTileButton = null;
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalQuestion = document.getElementById('modalQuestion');
+        const modalAnswer = document.getElementById('modalAnswer');
+        
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+        
+        const judgementArea = document.getElementById('judgementArea');
+        const activePlayerName = document.getElementById('activePlayerName');
+        const stealArea = document.getElementById('stealArea');
+        const stealTitle = document.getElementById('stealTitle');
+        const stealButtonsContainer = document.getElementById('stealButtons');
+
+        // 1. Build all 4 Boards Dynamically
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const boardElement = document.getElementById(`board-${p}`);
+                
+                categories.forEach(cat => {
+                    let header = document.createElement('div');
+                    header.className = 'category-header';
+                    header.innerText = cat.name;
+                    boardElement.appendChild(header);
+                });
+
+                for (let row = 0; row < 5; row++) {
+                    categories.forEach(cat => {
+                        let btn = document.createElement('button');
+                        let questionData = cat.questions[row];
+                        
+                        btn.className = 'point-btn';
+                        btn.innerText = questionData.points;
+                        
+                        btn.onclick = () => openQuestion(cat.name, questionData, btn, p);
+                        boardElement.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        // 2. Switch Player
+        function switchPlayer(index) {
+            currentPlayerIndex = index;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${index}`).classList.add('active');
+
+            const slidePercentage = -(index * 25);
+            carouselTrack.style.transform = `translateX(${slidePercentage}%)`;
+        }
+
+        // 3. Open Question
+        function openQuestion(categoryName, qData, btnElement, pIndex) {
+            if (pIndex !== currentPlayerIndex) return;
+
+            activePointValue = qData.points;
+            activeTileButton = btnElement;
+
+            modalCategory.innerText = `Player ${pIndex + 1} - ${categoryName} for ${qData.points}`;
+            modalQuestion.innerText = qData.q;
+            modalAnswer.innerText = qData.a;
+            
+            // Reset UI States
+            btnReveal.style.display = 'block';
+            answerArea.style.display = 'none';
+            judgementArea.style.display = 'flex';
+            stealArea.style.display = 'none';
+            activePlayerName.innerText = `Player ${pIndex + 1}`;
+
+            modal.style.display = 'flex';
+        }
+
+        // 4. Reveal Answer
+        function revealAnswer() {
+            btnReveal.style.display = 'none';
+            answerArea.style.display = 'block';
+        }
+
+        // 5. Judge Active Player
+        function judgeActivePlayer(isCorrect) {
+            if (isCorrect) {
+                // Active player got it right
+                scores[currentPlayerIndex] += activePointValue;
+                updateScoreUI(currentPlayerIndex);
+                closeAndDisable();
+            } else {
+                // Active player got it wrong - Penalize them and open Steal Phase
+                scores[currentPlayerIndex] -= activePointValue;
+                updateScoreUI(currentPlayerIndex);
+                
+                judgementArea.style.display = 'none';
+                setupStealPhase();
+            }
+        }
+
+        // 6. Setup Steal Phase
+        function setupStealPhase() {
+            stealArea.style.display = 'block';
+            
+            // Calculate half points (rounds down if odd, though 10-50 are all even)
+            const stealPoints = Math.floor(activePointValue / 2);
+            stealTitle.innerText = `STEAL OPPORTUNITY! (+${stealPoints} Pts)`;
+
+            stealButtonsContainer.innerHTML = '';
+
+            // Generate buttons for the OTHER 3 players
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let btn = document.createElement('button');
+                    btn.className = 'btn-steal';
+                    btn.innerText = `Player ${i + 1}`;
+                    btn.onclick = () => awardSteal(i, stealPoints);
+                    stealButtonsContainer.appendChild(btn);
+                }
+            }
+
+            // Button if nobody stole it
+            let btnNone = document.createElement('button');
+            btnNone.className = 'btn-incorrect';
+            btnNone.innerText = "Nobody";
+            btnNone.style.flex = "1";
+            btnNone.onclick = () => awardSteal(null, 0);
+            stealButtonsContainer.appendChild(btnNone);
+        }
+
+        // 7. Award the Steal
+        function awardSteal(stealerIndex, points) {
+            if (stealerIndex !== null) {
+                scores[stealerIndex] += points;
+                updateScoreUI(stealerIndex);
+                
+                // Add a cool pulse effect to the stealer's score card to show it updated in the background
+                const scoreBox = document.getElementById(`score-${stealerIndex}`).parentElement;
+                scoreBox.style.transform = "scale(1.1)";
+                scoreBox.style.borderColor = "#28a745";
+                setTimeout(() => {
+                    scoreBox.style.transform = "scale(1)";
+                    scoreBox.style.borderColor = "#3385ff";
+                }, 500);
+            }
+            closeAndDisable();
+        }
+
+        // Helper: Update Score Text
+        function updateScoreUI(index) {
+            document.getElementById(`score-${index}`).innerText = scores[index];
+        }
+
+        // Helper: Close Modal & Disable Tile
+        function closeAndDisable() {
+            activeTileButton.innerText = "";
+            activeTileButton.disabled = true;
+            modal.style.display = 'none';
+        }
+
+        // Initialize
+        buildBoards();
+    </script>
+</body>
+</html>
