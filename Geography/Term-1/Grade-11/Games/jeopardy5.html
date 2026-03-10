@@ -62,8 +62,8 @@
     </nav>
 
     <header class="game-header">
-        <h1 class="game-title">Grade 11 Geography Term 1 Asessment Jeopardy</h1>
-        <p class="game-subtitle">Planetary Movements & Global Winds</p>
+        <h1 class="game-title">Grade 11 Geography Jeopardy</h1>
+        <p class="game-subtitle">Planetary Movements & Global Circulation (80 Unique Questions)</p>
     </header>
 
     <div class="player-tabs">
@@ -76,19 +76,19 @@
     <div class="carousel-container">
         <div class="carousel-track" id="carouselTrack">
             <div class="player-slide">
-                <div class="score-board">Player 1 Score: <span id="score-0">0</span></div>
+                <div class="score-board">P1 Score: <span id="score-0">0</span></div>
                 <div class="jeopardy-board" id="board-0"></div>
             </div>
             <div class="player-slide">
-                <div class="score-board">Player 2 Score: <span id="score-1">0</span></div>
+                <div class="score-board">P2 Score: <span id="score-1">0</span></div>
                 <div class="jeopardy-board" id="board-1"></div>
             </div>
             <div class="player-slide">
-                <div class="score-board">Player 3 Score: <span id="score-2">0</span></div>
+                <div class="score-board">P3 Score: <span id="score-2">0</span></div>
                 <div class="jeopardy-board" id="board-2"></div>
             </div>
             <div class="player-slide">
-                <div class="score-board">Player 4 Score: <span id="score-3">0</span></div>
+                <div class="score-board">P4 Score: <span id="score-3">0</span></div>
                 <div class="jeopardy-board" id="board-3"></div>
             </div>
         </div>
@@ -102,10 +102,10 @@
             <div class="modal-answer-area" id="answerArea">
                 <div class="modal-answer" id="modalAnswer">Answer</div>
                 <div class="judgement-area" id="judgementArea">
-                    <p style="color: #666; font-size: 0.95rem;">Did <strong id="activePlayerName">Player X</strong> get it right?</p>
+                    <p>Did <strong id="activePlayerName">Player X</strong> get it right?</p>
                     <div class="judgement-buttons">
-                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Oops, Wrong</button>
-                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Got It Right!</button>
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
                     </div>
                 </div>
                 <div class="steal-area" id="stealArea">
@@ -116,50 +116,135 @@
         </div>
     </div>
 
-    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+    <footer><p>&copy; 2026 May Learning Hub</p></footer>
 
     <script>
-        const categories = [
-            {
-                name: "Seasons & Orbit",
-                questions: [
-                    { points: 10, q: "What is the geographical term used to describe when day and night are of equal length everywhere on Earth?", a: "Equinox" },
-                    { points: 20, q: "In the context of Earth's revolution, what do we call the date (roughly Dec 21) when the Southern Hemisphere has its longest day?", a: "Summer Solstice" },
-                    { points: 30, q: "What is the term for the movement of the Earth as it travels in its orbit around the Sun?", a: "Revolution" },
-                    { points: 40, q: "How do ocean currents assist in maintaining global temperatures?", a: "By transferring heat energy from the Equator towards the Poles." },
-                    { points: 50, q: "At what specific angle is the Earth's axis tilted relative to its orbit?", a: "23.5 degrees" }
-                ]
-            },
-            {
-                name: "The Solar System",
-                questions: [
-                    { points: 10, q: "On which two specific months do the equinoxes occur each year?", a: "March and September" },
-                    { points: 20, q: "When the Northern Hemisphere is tilted away from the sun, what season is it in South Africa?", a: "Summer" },
-                    { points: 30, q: "True or False: The Earth's tilt changes significantly as it revolves around the sun.", a: "False (it remains constant at 23.5 degrees)" },
-                    { points: 40, q: "What is the name of the latitude line where the sun is directly overhead during the March Equinox?", a: "The Equator" },
-                    { points: 50, q: "What causes the unequal length of day and night during a Solstice?", a: "The tilt of the Earth's axis towards or away from the sun." }
-                ]
-            },
-            {
-                name: "Atmospheric Cells",
-                questions: [
-                    { points: 10, q: "What is the low-pressure belt found specifically at 0 degrees latitude called?", a: "Equatorial Low (or ITCZ)" },
-                    { points: 20, q: "Name the global wind belt that blows from the Subtropical High (30°) toward the sub-polar low (60°).", a: "Westerlies" },
+        // DATA STRUCTURE: 4 Categoris, same names for everyone, but unique questions
+        const gameData = [
+            // PLAYER 1
+            [
+                { name: "Planetary Movements", questions: [
+                    { points: 10, q: "Define the term 'equinox'.", a: "The time twice each year when day and night are of equal length globally." },
+                    { points: 20, q: "What movement describes Earth's orbit around the sun?", a: "Revolution" },
+                    { points: 30, q: "At what angle is the Earth's axis inclined?", a: "23.5 degrees" },
+                    { points: 40, q: "Explain how ocean currents restore energy balance between poles and equator.", a: "They transfer heat from warm equatorial regions to cold polar regions." },
+                    { points: 50, q: "Describe the specific position of the sun during an equinox.", a: "Directly overhead (90 degrees) at the Equator." }
+                ]},
+                { name: "Earth's Revolution", questions: [
+                    { points: 10, q: "In which month does the Spring Equinox occur in the Northern Hemisphere?", a: "March" },
+                    { points: 20, q: "Does the Earth's tilt change during its revolution?", a: "No, it remains constant." },
+                    { points: 30, q: "Name the position where the Southern Hemisphere experiences summer.", a: "Summer Solstice" },
+                    { points: 40, q: "Identify the date when the South Pole is tilted furthest toward the sun.", a: "December 21st (approx)" },
+                    { points: 50, q: "What is the term for the path Earth takes around the sun?", a: "Orbit" }
+                ]},
+                { name: "Air Circulation", questions: [
+                    { points: 10, q: "Identify the pressure belt located at 0 degrees latitude.", a: "Equatorial Low Pressure Belt" },
+                    { points: 20, q: "Which atmospheric cell is located between 0 and 30 degrees latitude?", a: "Hadley Cell" },
                     { points: 30, q: "What does 'ITCZ' stand for?", a: "Inter-Tropical Convergence Zone" },
-                    { points: 40, q: "Which atmospheric circulation cell is located between the Equator and 30 degrees latitude?", a: "Hadley Cell" },
-                    { points: 50, q: "Name three primary forces that influence both wind speed and wind direction.", a: "Pressure Gradient Force, Coriolis Force, and Friction" }
-                ]
-            },
-            {
-                name: "Monsoon Winds",
-                questions: [
-                    { points: 10, q: "What is a 'monsoon'?", a: "A seasonal reversal of wind direction." },
-                    { points: 20, q: "Which country is most famously associated with extreme summer and winter monsoon systems?", a: "India" },
-                    { points: 30, q: "In a Summer Monsoon, does the wind blow from the land to the sea, or from the sea to the land?", a: "Sea to land" },
-                    { points: 40, q: "Why is a Summer Monsoon often referred to as a 'blessing' for agriculture?", a: "It brings heavy rainfall necessary for crop growth." },
-                    { points: 50, q: "Why might a monsoon be considered a 'curse' for a local population?", a: "It can cause devastating floods, landslides, and loss of life." }
-                ]
-            }
+                    { points: 40, q: "Name the global winds that blow between 30°S and 60°S.", a: "Westerly winds" },
+                    { points: 50, q: "Which force causes wind to deflect to the left in the Southern Hemisphere?", a: "Coriolis Force" }
+                ]},
+                { name: "Monsoon Systems", questions: [
+                    { points: 10, q: "Define the concept of a 'monsoon wind'.", a: "A seasonal reversal of wind direction." },
+                    { points: 20, q: "Are summer monsoons usually associated with wet or dry conditions?", a: "Wet (heavy rainfall)" },
+                    { points: 30, q: "Why is the monsoon called a 'blessing' for India?", a: "It provides water for agriculture and hydro-power." },
+                    { points: 40, q: "Does a summer monsoon blow from land to sea or sea to land?", a: "Sea to land" },
+                    { points: 50, q: "Give a reason why a monsoon might be a 'curse'.", a: "It causes destructive flooding and landslides." }
+                ]}
+            ],
+            // PLAYER 2
+            [
+                { name: "Planetary Movements", questions: [
+                    { points: 10, q: "On which two dates do equal day and night occur globally?", a: "March 21st and September 23rd" },
+                    { points: 20, q: "If the axis is not tilted toward the sun, is it a Solstice or Equinox?", a: "Equinox" },
+                    { points: 30, q: "What is the result of the Earth's revolution and tilt?", a: "The changing of seasons." },
+                    { points: 40, q: "Define 'aphelion'.", a: "The point in orbit where Earth is furthest from the sun." },
+                    { points: 50, q: "What is the latitude of the Tropic of Capricorn?", a: "23.5 degrees South" }
+                ]},
+                { name: "Earth's Revolution", questions: [
+                    { points: 10, q: "Identify the season in South Africa during the month of June.", a: "Winter" },
+                    { points: 20, q: "What is the term for 365.25 days of Earth's travel?", a: "A Calendar Year (or one Revolution)" },
+                    { points: 30, q: "When the North Pole tilts toward the sun, what season is it in the N. Hemisphere?", a: "Summer" },
+                    { points: 40, q: "What is the speed of Earth's revolution approximately?", a: "30 km per second" },
+                    { points: 50, q: "Define 'perihelion'.", a: "The point in orbit where Earth is closest to the sun." }
+                ]},
+                { name: "Air Circulation", questions: [
+                    { points: 10, q: "Name the pressure belt found at 30 degrees South.", a: "Subtropical High Pressure Belt" },
+                    { points: 20, q: "Which cell exists between 30°S and 60°S?", a: "Ferrel Cell" },
+                    { points: 30, q: "What type of pressure is found at the Poles (90°)?", a: "Polar High Pressure" },
+                    { points: 40, q: "Which force is responsible for wind speed?", a: "Pressure Gradient Force" },
+                    { points: 50, q: "Describe 'Geostrophic flow'.", a: "Wind blowing parallel to isobars when forces are balanced." }
+                ]},
+                { name: "Monsoon Systems", questions: [
+                    { points: 10, q: "Which country is most famous for its monsoon climate?", a: "India" },
+                    { points: 20, q: "In a winter monsoon, is the land hotter or colder than the sea?", a: "Colder" },
+                    { points: 30, q: "Does the ITCZ move North or South during the Indian summer?", a: "North" },
+                    { points: 40, q: "What kind of clouds are common during a summer monsoon?", a: "Cumulonimbus (heavy rain clouds)" },
+                    { points: 50, q: "Explain why air rises over the Indian landmass in summer.", a: "Intense heating creates a thermal low pressure." }
+                ]}
+            ],
+            // PLAYER 3
+            [
+                { name: "Planetary Movements", questions: [
+                    { points: 10, q: "What latitude line receives direct sun rays during an equinox?", a: "The Equator" },
+                    { points: 20, q: "What is the term for the path followed by planets?", a: "Orbit" },
+                    { points: 30, q: "How many days does one full revolution take?", a: "365 and a quarter days" },
+                    { points: 40, q: "Why do we have a leap year every 4 years?", a: "To account for the extra 0.25 day in Earth's revolution." },
+                    { points: 50, q: "What is the latitude of the Arctic Circle?", a: "66.5 degrees North" }
+                ]},
+                { name: "Earth's Revolution", questions: [
+                    { points: 10, q: "What season starts in the Southern Hemisphere in September?", a: "Spring" },
+                    { points: 20, q: "What is the direction of Earth's revolution?", a: "Clockwise (when viewed from below) or West to East." },
+                    { points: 30, q: "At the June Solstice, which Tropic receives direct sun rays?", a: "Tropic of Cancer" },
+                    { points: 40, q: "How does the sun's altitude change from winter to summer?", a: "It is higher in the sky during summer." },
+                    { points: 50, q: "Define 'Insolation'.", a: "Incoming Solar Radiation." }
+                ]},
+                { name: "Air Circulation", questions: [
+                    { points: 10, q: "What pressure belt is at 60 degrees South?", a: "Sub-polar Low Pressure Belt" },
+                    { points: 20, q: "Name the circulation cell between 60° and 90° latitude.", a: "Polar Cell" },
+                    { points: 30, q: "Which way do Trade Winds blow in the Southern Hemisphere?", a: "South-East Trade Winds" },
+                    { points: 40, q: "What is a 'Hadley Cell' named after?", a: "George Hadley" },
+                    { points: 50, q: "How does friction affect wind direction near the surface?", a: "It slows the wind and reduces the Coriolis effect." }
+                ]},
+                { name: "Monsoon Systems", questions: [
+                    { points: 10, q: "Which ocean provides moisture for the Indian monsoon?", a: "Indian Ocean" },
+                    { points: 20, q: "Why is the winter monsoon dry?", a: "The wind blows from the dry landmass toward the sea." },
+                    { points: 30, q: "What is the seasonal reversal of winds in West Africa called?", a: "The African Monsoon" },
+                    { points: 40, q: "How do monsoons affect the GDP of India?", a: "Strong monsoons boost agriculture and economic growth." },
+                    { points: 50, q: "What role do the Himalayas play in the monsoon?", a: "They act as a barrier, forcing air to rise and rain (Orographic lift)." }
+                ]}
+            ],
+            // PLAYER 4
+            [
+                { name: "Planetary Movements", questions: [
+                    { points: 10, q: "What is the shape of Earth's orbit?", a: "Elliptical (oval)" },
+                    { points: 20, q: "When is the Earth closest to the sun?", a: "Early January (Perihelion)" },
+                    { points: 30, q: "What causes day and night?", a: "Rotation (not revolution)" },
+                    { points: 40, q: "What would happen to seasons if the Earth had no tilt?", a: "There would be no seasons." },
+                    { points: 50, q: "What is the latitude of the Antarctic Circle?", a: "66.5 degrees South" }
+                ]},
+                { name: "Earth's Revolution", questions: [
+                    { points: 10, q: "What season starts in South Africa in December?", a: "Summer" },
+                    { points: 20, q: "Which date marks the Autumn Equinox in the S. Hemisphere?", a: "March 21st" },
+                    { points: 30, q: "At the December Solstice, which Tropic gets direct sun rays?", a: "Tropic of Capricorn" },
+                    { points: 40, q: "Does the Earth revolve faster at perihelion or aphelion?", a: "Perihelion" },
+                    { points: 50, q: "Define 'Solstice' based on day length.", a: "The time of year with either the longest or shortest daylight hours." }
+                ]},
+                { name: "Air Circulation", questions: [
+                    { points: 10, q: "What are lines of equal pressure on a map called?", a: "Isobars" },
+                    { points: 20, q: "Name the wind belt between 0° and 30°N.", a: "North-East Trade Winds" },
+                    { points: 30, q: "Is air rising or sinking at the Subtropical High?", a: "Sinking" },
+                    { points: 40, q: "What weather is associated with low pressure belts?", a: "Cloudy, rainy, or unstable weather." },
+                    { points: 50, q: "Explain the 'Coriolis Effect'.", a: "The deflection of moving objects due to Earth's rotation." }
+                ]},
+                { name: "Monsoon Systems", questions: [
+                    { points: 10, q: "True or False: Monsoons only happen in Asia.", a: "False (they occur in Africa and Australia too)" },
+                    { points: 20, q: "What happens to temperatures in India during the pre-monsoon heat?", a: "They become extremely high." },
+                    { points: 30, q: "Identify a North-Easterly monsoon's origin.", a: "It originates from the land (Central Asia)." },
+                    { points: 40, q: "How do monsoons influence the vegetation of a region?", a: "They support tropical deciduous forests and lush growth." },
+                    { points: 50, q: "Define 'Latent Heat' in monsoon formation.", a: "Energy released during condensation that fuels the storm system." }
+                ]}
+            ]
         ];
 
         let currentPlayerIndex = 0; 
@@ -184,14 +269,15 @@
             for (let p = 0; p < 4; p++) {
                 const boardElement = document.getElementById(`board-${p}`);
                 boardElement.innerHTML = '';
-                categories.forEach(cat => {
+                const pCats = gameData[p];
+                pCats.forEach(cat => {
                     let header = document.createElement('div');
                     header.className = 'category-header';
                     header.innerText = cat.name;
                     boardElement.appendChild(header);
                 });
                 for (let row = 0; row < 5; row++) {
-                    categories.forEach(cat => {
+                    pCats.forEach(cat => {
                         let btn = document.createElement('button');
                         let qData = cat.questions[row];
                         btn.className = 'point-btn';
