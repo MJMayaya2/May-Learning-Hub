@@ -8,13 +8,13 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* Navigation (Blue Theme) */
+        /* Navigation */
         nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
         .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
         .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
         
-        /* Progress Bar Styles */
+        /* Progress Bar */
         .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
         .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
@@ -28,7 +28,7 @@
         .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
         .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
 
-        /* Hangman Drawing Area (SVG) */
+        /* Hangman SVG */
         .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
         .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
         .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
@@ -72,8 +72,8 @@
     </div>
 
     <header class="game-header">
-        <h1 class="game-title">Hangman March Assessment Prep</h1>
-        <p class="game-subtitle">Topic: Global Air Circulation & Earth's Seasons</p>
+        <h1 class="game-title">March Assessment Prep</h1>
+        <p class="game-subtitle">Topic: Global Air Circulation & Seasons </p>
     </header>
 
     <main class="game-wrapper">
@@ -107,30 +107,30 @@
         </div>
     </div>
 
-    <footer><p>&copy; 2026 May Learning Hub. Grade 11 Geography.</p></footer>
+    <footer><p>&copy; 2026 May Learning Hub. Geography Mastery.</p></footer>
 
     <script>
         const fullWordList = [
-            { word: "EQUINOX", hint: "The time or date at which the sun crosses the celestial equator, when day and night are of equal length." },
-            { word: "SOLSTICE", hint: "Position X in the diagram; either of the two times in the year when the sun reaches its highest or lowest point in the sky at noon." },
-            { word: "REVOLUTION", hint: "The movement of the Earth around the sun as shown in Question 2's diagram." },
-            { word: "INCLINATION", hint: "The Earth is tilted at an angle of 23.5 degrees." },
-            { word: "SUMMER", hint: "The season South Africa (Southern Hemisphere) experiences at position Y/A." },
-            { word: "WINTER", hint: "The season the Southern Hemisphere experiences when the sun is direct over the Tropic of Cancer." },
-            { word: "HADLEY", hint: "The air circulation cell labeled as number 1, located between 0 and 30 degrees." },
-            { word: "FERREL", hint: "The air circulation cell labeled as number 2, located between 30 and 60 degrees." },
-            { word: "POLAR", hint: "The air circulation cell labeled as number 3, located near the 90 degree mark." },
-            { word: "WESTERLIES", hint: "Global winds that blow between 30 and 60 degrees South." },
-            { word: "MONSOON", hint: "Seasonal winds that reverse direction, common in India." },
-            { word: "CORIOLIS", hint: "The force responsible for the direction of global winds." },
-            { word: "SUBSIDENCE", hint: "The process of 'cold descending air' creating high pressure at the poles." },
-            { word: "TRADWIND", hint: "Global winds blowing from the subtropical high towards the ITCZ." },
-            { word: "MARCH", hint: "The month associated with the 'Spping' (Spring) equinox in the Northern Hemisphere (Position D)." },
-            { word: "CAPRICORN", hint: "The Tropic where the sun is vertical during the Southern Hemisphere summer." },
-            { word: "CANCER", hint: "The Tropic located at 23.5 degrees North." },
-            { word: "EQUATOR", hint: "The 0 degree latitude where low pressure is typically found." },
-            { word: "CONVERGENCE", hint: "What 'ITCZ' stands for: Inter-Tropical ________ Zone." },
-            { word: "GRADIENT", hint: "The 'Pressure ______ Force' which, along with Coriolis, determines wind speed/direction." }
+            { word: "EQUINOX", hint: "The phenomenon occurring on March 21st and September 23rd when day and night are of equal length everywhere." },
+            { word: "SOLSTICE", hint: "The time of year when the sun is directly over the Tropic of Cancer or the Tropic of Capricorn, creating the longest or shortest day." },
+            { word: "REVOLUTION", hint: "The movement of the Earth around the Sun, taking approximately 365.25 days to complete." },
+            { word: "INCLINATION", hint: "The 23.5-degree tilt of the Earth's axis that causes different seasons." },
+            { word: "SUMMER", hint: "The season South Africa experiences when the Southern Hemisphere is tilted towards the sun." },
+            { word: "WINTER", hint: "The season characterized by shorter days and longer nights when a hemisphere is tilted away from the sun." },
+            { word: "HADLEY", hint: "The atmospheric circulation cell located between the Equator and 30 degrees North/South." },
+            { word: "FERREL", hint: "The mid-latitude circulation cell found between 30 and 60 degrees latitude." },
+            { word: "POLAR", hint: "The circulation cell located between 60 degrees and the North or South Pole." },
+            { word: "WESTERLIES", hint: "Surface winds blowing from the subtropical high-pressure belt toward the sub-polar low-pressure belt." },
+            { word: "MONSOON", hint: "A large-scale, seasonal reversal of wind direction caused by temperature differences between land and ocean." },
+            { word: "CORIOLIS", hint: "The force that deflects winds to the left in the Southern Hemisphere and to the right in the Northern Hemisphere." },
+            { word: "SUBSIDENCE", hint: "The term for cold air descending or sinking, which creates high pressure at the surface." },
+            { word: "TRADWINDS", hint: "Winds that blow from the subtropical high-pressure belts toward the Inter-Tropical Convergence Zone (ITCZ)." },
+            { word: "MARCH", hint: "The month in which the Northern Hemisphere experiences the Spring (Vernal) Equinox." },
+            { word: "CAPRICORN", hint: "The latitude at 23.5 degrees South where the sun is vertical during the December solstice." },
+            { word: "CANCER", hint: "The latitude at 23.5 degrees North where the sun is vertical during the June solstice." },
+            { word: "EQUATOR", hint: "The line of latitude (0°) where the sun's rays are direct during an equinox." },
+            { word: "CONVERGENCE", hint: "In the acronym ITCZ, the 'C' stands for this term, where trade winds from both hemispheres meet." },
+            { word: "GRADIENT", hint: "The force caused by differences in air pressure that triggers the movement of air (wind)." }
         ];
 
         let remainingWords = [...fullWordList];
@@ -209,10 +209,9 @@
                 title.innerText = "Correct!";
                 title.style.color = "#28a745";
                 completedCount++;
-                // Remove word from pool
                 remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
             } else {
-                title.innerText = "Incorrect";
+                title.innerText = "Try Again!";
                 title.style.color = "#dc3545";
             }
             document.getElementById('modalWord').innerText = chosenWordObj.word;
@@ -225,10 +224,10 @@
 
         function showFinalScreen() {
             document.getElementById('gameModal').style.display = "flex";
-            document.getElementById('modalTitle').innerText = "🏆 Mastery Achieved!";
-            document.getElementById('modalMsg').innerText = "You have completed all 20 geography terms!";
-            document.getElementById('modalWord').innerText = "WELL DONE";
-            document.getElementById('modalBtn').innerText = "Restart All";
+            document.getElementById('modalTitle').innerText = "🏆 Geography Expert!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 20 assessment terms!";
+            document.getElementById('modalWord').innerText = "CONGRATULATIONS";
+            document.getElementById('modalBtn').innerText = "Start Over";
             document.getElementById('modalBtn').onclick = () => {
                 remainingWords = [...fullWordList];
                 completedCount = 0;

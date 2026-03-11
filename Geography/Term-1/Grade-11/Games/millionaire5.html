@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Geography Master Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 250px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="https://mmayaya.github.io/mayhub/" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="https://mmayaya.github.io/mayhub/">Home</a>
+            <a href="https://mmayaya.github.io/mayhub/about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Geography Master Quiz</h1>
+        <p class="game-subtitle">30-Question Challenge: Earth & Atmosphere</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final score:</p>
+            <div id="endPrize">0 Pts</div>
+            <button class="lifeline-btn" onclick="location.reload()">Try Again</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What term describes the movement of Earth around the Sun?", options: ["Rotation", "Revolution", "Precession", "Nutation"], a: 1, hint: "This takes roughly 365 days[cite: 42]." },
+            { q: "What does the term 'Equinox' literally mean?", options: ["Equal night", "Shortest day", "Hottest day", "Sun stops"], a: 0, hint: "It's when day and night are the same length[cite: 20, 52]." },
+            { q: "Which angle represents the tilt of Earth's axis?", options: ["15°", "23.5°", "45°", "66.5°"], a: 1, hint: "This tilt causes the seasons[cite: 34]." },
+            { q: "On which date does the Spring Equinox occur in the Northern Hemisphere?", options: ["March 21", "June 21", "September 23", "December 21"], a: 0, hint: "It marks the start of spring in the North[cite: 35, 46]." },
+            { q: "During an equinox, where is the Sun positioned directly overhead?", options: ["Tropic of Cancer", "Tropic of Capricorn", "The Equator", "The South Pole"], a: 2, hint: "This balances solar energy between hemispheres[cite: 50]." },
+            { q: "Which season is South Africa experiencing on June 21st?", options: ["Summer", "Autumn", "Winter", "Spring"], a: 2, hint: "The Southern Hemisphere is tilted away from the Sun then[cite: 23]." },
+            { q: "Which pressure belt is found at 90°S?", options: ["Equatorial Low", "Subtropical High", "Subpolar Low", "Polar High"], a: 3, hint: "Cold, descending air creates this[cite: 64, 68]." },
+            { q: "What is the name of the cell between 0° and 30° latitude?", options: ["Ferrel Cell", "Hadley Cell", "Polar Cell", "Equatorial Cell"], a: 1, hint: "Named after George Hadley[cite: 68, 70]." },
+            { q: "Which global winds blow between 30°S and 60°S?", options: ["Trade Winds", "Westerlies", "Easterlies", "Monsoons"], a: 1, hint: "These blow from the Subtropical High to the Subpolar Low[cite: 74]." },
+            { q: "What does ITCZ stand for?", options: ["Internal Tropical Zone", "Inter-Tropical Convergence Zone", "Inner Temperature Zone", "International Trade Zone"], a: 1, hint: "It is the low-pressure area where trade winds meet[cite: 72]." },
+            { q: "What force is caused by Earth's rotation and deflects winds?", options: ["Centrifugal", "Frictional", "Coriolis", "Gravitational"], a: 2, hint: "It turns winds to the left in the Southern Hemisphere[cite: 75]." },
+            { q: "What is a 'Monsoon'?", options: ["A local sea breeze", "A seasonal reversal of wind", "A permanent storm", "A type of cloud"], a: 1, hint: "Highly common in India[cite: 80]." },
+            { q: "How do ocean currents assist the Earth's energy balance?", options: ["By cooling the sun", "By moving heat from Equator to Poles", "By creating rain", "By slowing rotation"], a: 1, hint: "They act as a conveyor belt for heat[cite: 29]." },
+            { q: "Which of these is a 'blessing' of the monsoon in India?", options: ["Flooding", "Water for agriculture", "Soil erosion", "High humidity"], a: 1, hint: "Crops need this rain to grow[cite: 89]." },
+            { q: "Why is the monsoon considered a 'curse' for some?", options: ["Destructive flooding", "Clear skies", "Too much snow", "Lack of wind"], a: 0, hint: "Heavy rainfall can lead to loss of life[cite: 89, 90]." },
+            { q: "Which pressure belt is located at 60°S?", options: ["Subpolar Low", "Polar High", "Equatorial Low", "Subtropical High"], a: 0, hint: "A zone of rising air at mid-latitudes[cite: 68]." },
+            { q: "What is the characteristic of air at a High Pressure belt?", options: ["Rising and warm", "Descending and cold", "Rising and moist", "Stationary"], a: 1, hint: "Dense air sinks[cite: 64]." },
+            { q: "On which date is the Summer Solstice in the Southern Hemisphere?", options: ["June 21", "September 23", "December 21", "March 21"], a: 2, hint: "It is South Africa's longest day[cite: 44, 52]." },
+            { q: "The movement of air from high to low pressure is called:", options: ["Tide", "Wind", "Current", "Season"], a: 1, hint: "It results from pressure gradients[cite: 75]." },
+            { q: "Which cell is located between 60° and 90° latitude?", options: ["Hadley", "Ferrel", "Polar", "Mid-latitude"], a: 2, hint: "It is the cell nearest the poles[cite: 68]." },
+            { q: "What causes the 'Direct Rays' of the sun to shift throughout the year?", options: ["Earth's rotation", "Earth's tilt and revolution", "Solar flares", "Moon's orbit"], a: 1, hint: "It's the combination of the 23.5° tilt and the yearly orbit[cite: 34, 42]." },
+            { q: "In which direction are winds deflected in the Southern Hemisphere?", options: ["Right", "Left", "Upward", "Downward"], a: 1, hint: "Due to the Coriolis effect[cite: 75]." },
+            { q: "What happens to air at the Equator due to intense heating?", options: ["It sinks", "It rises", "It disappears", "It moves South only"], a: 1, hint: "Warm air is less dense[cite: 70]." },
+            { q: "A 'Winter Monsoon' in India is usually:", options: ["Hot and wet", "Cold and dry", "Warm and humid", "Snowy"], a: 1, hint: "Winds blow from the land toward the ocean[cite: 82]." },
+            { q: "The Tropic of Cancer is located at which latitude?", options: ["23.5° N", "23.5° S", "66.5° N", "0°"], a: 0, hint: "It's the Northern boundary of the tropics." },
+            { q: "The Tropic of Capricorn is located at which latitude?", options: ["23.5° N", "23.5° S", "90° S", "60° S"], a: 1, hint: "It's the Southern boundary of the tropics[cite: 7, 17]." },
+            { q: "What is the result of the Earth's rotation on its axis?", options: ["Seasons", "Day and Night", "The Year", "The Tides"], a: 1, hint: "This takes 24 hours to complete." },
+            { q: "Which winds are known for bringing rain to the East Coast of SA?", options: ["Westerlies", "South East Trades", "Polar Easterlies", "Berg Winds"], a: 1, hint: "They blow from the high pressure over the Indian Ocean." },
+            { q: "Which latitude marks the Subtropical High Pressure belt?", options: ["0°", "30°", "60°", "90°"], a: 1, hint: "This is where air from the Hadley cell descends[cite: 57, 68]." },
+            { q: "How many major circulation cells exist in each hemisphere?", options: ["One", "Two", "Three", "Four"], a: 2, hint: "Hadley, Ferrel, and Polar[cite: 68]." }
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>Q-Point</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = qData.options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [0, 1, 2, 3].filter(i => i !== correctIndex);
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Study Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "30/30 - 100%";
+            } else {
+                document.getElementById('endMessage').innerText = "Keep Studying!";
+                document.getElementById('endPrize').innerText = `${currentLevel}/30 Correct`;
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>
