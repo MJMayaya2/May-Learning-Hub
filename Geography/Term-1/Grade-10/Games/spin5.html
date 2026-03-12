@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Spin the Wheel</title>
+    <style>
+        /* CSS remains identical to original for styling consistency */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="https://mmayaya.github.io/mayhub" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="https://mmayaya.github.io/mayhub/">Home</a>
+            <a href="https://mmayaya.github.io/mayhub/about">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Atmosphere & Weather</h1>
+        <p class="game-subtitle">Select a category, spin the wheel, and test your Grade 10 Geography knowledge!</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">27 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Updated Data based on Geography Grade 10 March Assessment Topics
+        const gameData = {
+            'definitions': [
+                { q: "Define: Atmosphere", a: "The layer of gases surrounding the Earth, held in place by gravity." },
+                { q: "Define: Troposphere", a: "The lowest layer of Earth's atmosphere, where nearly all weather conditions take place." },
+                { q: "Define: Stratosphere", a: "The second layer of the atmosphere, containing the ozone layer which absorbs UV radiation." },
+                { q: "Define: Ozone Layer", a: "A region of Earth's stratosphere that absorbs most of the Sun's ultraviolet radiation." },
+                { q: "Define: Insolation", a: "The amount of incoming solar radiation that reaches the Earth's surface." },
+                { q: "Define: Albedo", a: "The proportion of incident light or radiation that is reflected by a surface." },
+                { q: "Define: Conduction", a: "The transfer of heat energy through direct contact between molecules." },
+                { q: "Define: Convection", a: "The transfer of heat by the vertical, upward movement of warm air or liquid." },
+                { q: "Define: Radiation", a: "The emission or transmission of energy in the form of waves or particles through space." },
+                { q: "Define: Latent Heat", a: "The heat required to convert a solid into a liquid or vapour, or a liquid into a vapour, without change of temperature." },
+                { q: "Define: Isotherms", a: "Lines on a weather map connecting points that have the same temperature." },
+                { q: "Define: Isobars", a: "Lines drawn on a weather map connecting points of equal atmospheric pressure." },
+                { q: "Define: Isohyets", a: "Lines drawn on a weather map connecting points that receive equal amounts of rainfall." },
+                { q: "Define: Greenhouse Effect", a: "The trapping of the sun's warmth in a planet's lower atmosphere by greenhouse gases." },
+                { q: "Define: Global Warming", a: "The long-term heating of Earth's climate system observed due to human activities." },
+                { q: "Define: Climate Change", a: "A long-term change in the average weather patterns that have come to define Earth's local, regional and global climates." },
+                { q: "Define: Desertification", a: "The process by which fertile land becomes desert, typically as a result of drought or deforestation." },
+                { q: "Define: Humidity", a: "The concentration of water vapour present in the air." },
+                { q: "Define: Relative Humidity", a: "The amount of water vapour present in air expressed as a percentage of the amount needed for saturation at the same temperature." },
+                { q: "Define: Dew Point", a: "The temperature to which air must be cooled to become saturated with water vapour." },
+                { q: "Define: Condensation", a: "The process where water vapour becomes liquid, releasing heat into the atmosphere." },
+                { q: "Define: Precipitation", a: "Any liquid or frozen water that forms in the atmosphere and falls back to the Earth." },
+                { q: "Define: Coriolis Force", a: "An inertial force caused by Earth's rotation that deflects moving objects (like winds) to the right in the Northern Hemisphere and left in the Southern Hemisphere." },
+                { q: "Define: Synoptic Weather Map", a: "A map showing weather conditions over a wide area at a given time." },
+                { q: "Define: High Pressure Cell", a: "An area of sinking air leading to stable, clear, and dry weather conditions." },
+                { q: "Define: Low Pressure Cell", a: "An area of rising air that cools and condenses, often leading to cloud formation and precipitation." },
+                { q: "Define: Ocean Current", a: "A continuous, directed movement of sea water generated by a number of forces acting upon the water." }
+            ],
+            'terms': [
+                { q: "Term for: The instrument used to measure atmospheric temperature.", a: "Thermometer" },
+                { q: "Term for: The instrument used to measure atmospheric pressure.", a: "Barometer" },
+                { q: "Term for: Lines drawn on a weather map joining places of equal pressure.", a: "Isobars" },
+                { q: "Term for: Lines drawn on a weather map joining places of equal temperature.", a: "Isotherms" },
+                { q: "Term for: The transfer of heat by vertically moving, rising air.", a: "Convection" },
+                { q: "Term for: The process of water vapour turning into liquid water.", a: "Condensation" },
+                { q: "Term for: The gas that makes up 78% of the Earth's atmosphere.", a: "Nitrogen" },
+                { q: "Term for: The lowest layer of the atmosphere where almost all weather occurs.", a: "Troposphere" },
+                { q: "Term for: The atmospheric layer that contains the protective ozone layer.", a: "Stratosphere" },
+                { q: "Term for: The force caused by the Earth's rotation that deflects global winds.", a: "Coriolis Force" },
+                { q: "Term for: The amount of incoming solar radiation reaching the Earth.", a: "Insolation" },
+                { q: "Term for: The reflectivity of a surface, like snow or dark asphalt.", a: "Albedo" },
+                { q: "Term for: The process of a liquid turning into a gas due to heat.", a: "Evaporation" },
+                { q: "Term for: The high-pressure system dominant over the South African interior in winter.", a: "Kalahari High Pressure" },
+                { q: "Term for: The specific region in South Africa that receives winter rainfall.", a: "South-Western Cape" },
+                { q: "Term for: The warm, moist ocean current flowing down the east coast of South Africa.", a: "Agulhas Current" },
+                { q: "Term for: The cold, dry ocean current flowing up the west coast of South Africa.", a: "Benguela Current" },
+                { q: "Term for: The general term for the measure of the amount of water vapour in the air.", a: "Humidity" },
+                { q: "Term for: The specific temperature at which air becomes fully saturated and condensation begins.", a: "Dew Point" },
+                { q: "Term for: Rainfall that occurs when air is forced to rise over a mountain range.", a: "Orographic Rain" },
+                { q: "Term for: Rainfall that occurs due to intense surface heating causing rapid air uplift.", a: "Convectional Rain" },
+                { q: "Term for: A map showing weather conditions like isobars and station models over a large area.", a: "Synoptic Weather Map" },
+                { q: "Term for: The trapping of long-wave terrestrial radiation by atmospheric gases.", a: "Greenhouse Effect" },
+                { q: "Term for: The gradual, long-term increase in the Earth's average global temperature.", a: "Global Warming" },
+                { q: "Term for: The process where fertile land degrades and turns into dry, arid regions.", a: "Desertification" },
+                { q: "Term for: The short-term, day-to-day conditions of the atmosphere.", a: "Weather" },
+                { q: "Term for: The long-term average of weather patterns over a period of 30 years or more.", a: "Climate" }
+            ],
+            'multipleChoice': [
+                { q: "A process whereby areas become more arid and drier like a desert, is...", options: ["A) Drought", "B) Desertification", "C) Climate Change", "D) Ozone Depletion"], a: "B) Desertification" },
+                { q: "The transfer of heat by vertically moving air is called...", options: ["A) Convection", "B) Conduction", "C) Coriolis force", "D) Latent heat"], a: "A) Convection" },
+                { q: "Which ocean current flows along the east coast of South Africa?", options: ["A) Benguela Current", "B) Agulhas Current", "C) Canary Current", "D) Gulf Stream"], a: "B) Agulhas Current" },
+                { q: "What defines the characteristics of the Benguela ocean current?", options: ["A) Warm and dry", "B) Cold and dry", "C) Warm and moist", "D) Cold and moist"], a: "B) Cold and dry" },
+                { q: "The Agulhas ocean current brings what type of weather conditions to the eastern part of South Africa?", options: ["A) Cold and dry", "B) Warm and dry", "C) Warm and moist", "D) Cold and moist"], a: "C) Warm and moist" },
+                { q: "What is the major global factor that influences the warm climate near the Equator?", options: ["A) High Altitude", "B) Low Latitude", "C) Ocean currents", "D) Distance from the sea"], a: "B) Low Latitude" },
+                { q: "Lines drawn on synoptic weather maps showing places of equal pressure are...", options: ["A) Isotherms", "B) Isohyets", "C) Isobars", "D) Contours"], a: "C) Isobars" },
+                { q: "What unit is used to measure atmospheric pressure on a synoptic weather map?", options: ["A) Millimetres (mm)", "B) Degrees Celsius (°C)", "C) Hectopascals (hPa)", "D) Knots"], a: "C) Hectopascals (hPa)" },
+                { q: "A High Pressure system is generally associated with...", options: ["A) Rising air and heavy rain", "B) Sinking air and clear skies", "C) Strong winds and severe storms", "D) Snow and freezing temperatures"], a: "B) Sinking air and clear skies" },
+                { q: "A Low Pressure system is typically associated with...", options: ["A) Sinking air and clear, dry skies", "B) Rising air, cloud formation and rain", "C) Very cold temperatures year-round", "D) Extremely arid desert conditions"], a: "B) Rising air, cloud formation and rain" },
+                { q: "Which layer of the Earth's atmosphere contains the protective ozone layer?", options: ["A) Troposphere", "B) Stratosphere", "C) Mesosphere", "D) Thermosphere"], a: "B) Stratosphere" },
+                { q: "What is the primary function of the ozone layer?", options: ["A) To trap heat for the greenhouse effect", "B) To produce oxygen for animals", "C) To absorb harmful ultraviolet (UV) radiation", "D) To reflect radio waves back to Earth"], a: "C) To absorb harmful ultraviolet (UV) radiation" },
+                { q: "Which gas is primarily responsible for the natural greenhouse effect?", options: ["A) Nitrogen", "B) Oxygen", "C) Carbon dioxide", "D) Argon"], a: "C) Carbon dioxide" },
+                { q: "What term describes the proportion of solar radiation that is reflected by a surface?", options: ["A) Insolation", "B) Albedo", "C) Absorption", "D) Scattering"], a: "B) Albedo" },
+                { q: "In the troposphere, temperature decreases with altitude. This rate of decrease is known as the...", options: ["A) Lapse rate", "B) Temperature inversion", "C) Dew point", "D) Heat capacity"], a: "A) Lapse rate" },
+                { q: "Wind is the horizontal movement of air from an area of...", options: ["A) Low pressure to high pressure", "B) High pressure to low pressure", "C) High temperature to low temperature", "D) Ocean to land"], a: "B) High pressure to low pressure" },
+                { q: "The Coriolis force deflects moving air to the...", options: ["A) Right in the Northern Hemisphere", "B) Left in the Northern Hemisphere", "C) Right in the Southern Hemisphere", "D) Equator in all cases"], a: "A) Right in the Northern Hemisphere" },
+                { q: "The process of water vapour turning back into liquid water is called...", options: ["A) Evaporation", "B) Transpiration", "C) Condensation", "D) Sublimation"], a: "C) Condensation" },
+                { q: "Heat absorbed or released during a change of state (e.g., evaporation) without a change in temperature is known as...", options: ["A) Sensible heat", "B) Latent heat", "C) Specific heat", "D) Radiant heat"], a: "B) Latent heat" },
+                { q: "Which meteorological instrument is used to measure wind speed?", options: ["A) Anemometer", "B) Barometer", "C) Hygrometer", "D) Wind vane"], a: "A) Anemometer" },
+                { q: "What atmospheric property does a hygrometer measure?", options: ["A) Wind direction", "B) Atmospheric pressure", "C) Humidity", "D) Rainfall totals"], a: "C) Humidity" },
+                { q: "The term 'insolation' specifically refers to...", options: ["A) Insulating a house", "B) Incoming solar radiation", "C) Outgoing terrestrial radiation", "D) Trapping of heat in cities"], a: "B) Incoming solar radiation" },
+                { q: "The polar regions are cold primarily because...", options: ["A) They are high above sea level", "B) Sun rays strike the surface at a low, slanted angle", "C) There are many cold ocean currents", "D) They have high albedo only"], a: "B) Sun rays strike the surface at a low, slanted angle" },
+                { q: "Which cloud type is typically associated with thunderstorms, lightning, and heavy rain?", options: ["A) Cirrus", "B) Stratus", "C) Cumulonimbus", "D) Altocumulus"], a: "C) Cumulonimbus" },
+                { q: "The South Atlantic High Pressure cell is located off the...", options: ["A) East coast of South Africa", "B) West coast of South Africa", "C) South coast of South Africa", "D) North coast of Africa"], a: "B) West coast of South Africa" },
+                { q: "Which heating process transfers heat through direct physical contact between molecules?", options: ["A) Convection", "B) Conduction", "C) Radiation", "D) Advection"], a: "B) Conduction" },
+                { q: "Dew point is accurately defined as...", options: ["A) The temperature at which water boils", "B) The time of day when dew forms", "C) The temperature at which air becomes 100% saturated", "D) The amount of rain that falls in a day"], a: "C) The temperature at which air becomes 100% saturated" }
+            ],
+            'trueFalse': [
+                { q: "The Agulhas current is a cold ocean current.", options: ["True", "False"], a: "False", exp: "It is a warm current that flows down the east coast of South Africa." },
+                { q: "The Benguela current flows along the west coast of South Africa.", options: ["True", "False"], a: "True", exp: "It brings cold water from the Southern Ocean northward along the Atlantic coast." },
+                { q: "Convection is the transfer of heat by vertically moving air.", options: ["True", "False"], a: "True", exp: "Warm, less dense air rises, while cooler, denser air sinks." },
+                { q: "Desertification is the process where natural deserts become fertile agricultural land.", options: ["True", "False"], a: "False", exp: "It is the negative process of fertile land degrading and becoming drier and more desert-like." },
+                { q: "Isobars are lines on a map connecting places of equal temperature.", options: ["True", "False"], a: "False", exp: "Isobars connect places of equal atmospheric pressure. Isotherms map equal temperatures." },
+                { q: "The Equator is generally a warm area because it receives direct, concentrated sunlight.", options: ["True", "False"], a: "True", exp: "Because of its low latitude, the sun's rays have a smaller area to heat up." },
+                { q: "A synoptic weather map shows weather conditions over a large area at a specific time.", options: ["True", "False"], a: "True", exp: "It gives meteorologists a 'synopsis' or summary of the weather to aid forecasting." },
+                { q: "High pressure systems are usually associated with cloudy, rainy weather.", options: ["True", "False"], a: "False", exp: "High pressure features sinking air, which prevents cloud formation and results in clear skies." },
+                { q: "Low pressure systems are associated with rising air and potential rainfall.", options: ["True", "False"], a: "True", exp: "Rising air cools and condenses to form clouds and eventual precipitation." },
+                { q: "The troposphere is the layer of the atmosphere where virtually all weather takes place.", options: ["True", "False"], a: "True", exp: "It contains 99% of the atmosphere's water vapour and aerosols." },
+                { q: "Ozone depletion in the stratosphere is largely caused by the release of CFCs.", options: ["True", "False"], a: "True", exp: "Chlorofluorocarbons break down ozone molecules, letting in more harmful UV radiation." },
+                { q: "Albedo refers to how much heat the Earth's surface absorbs.", options: ["True", "False"], a: "False", exp: "Albedo is a measure of how much light or radiation is reflected by a surface, not absorbed." },
+                { q: "Fresh snow has a lower albedo than dark soil.", options: ["True", "False"], a: "False", exp: "Snow reflects most of the light hitting it, meaning it has a very high albedo." },
+                { q: "Condensation releases latent heat into the surrounding atmosphere.", options: ["True", "False"], a: "True", exp: "When water vapour turns back to liquid, the heat energy it held is released, warming the air." },
+                { q: "Evaporation is a cooling process because it absorbs latent heat from its surroundings.", options: ["True", "False"], a: "True", exp: "Liquid water requires heat energy to break bonds and turn into vapour." },
+                { q: "The Coriolis force is strongest at the Equator.", options: ["True", "False"], a: "False", exp: "The Coriolis effect is zero at the Equator and reaches its maximum at the poles." },
+                { q: "Winds blow clockwise around a high-pressure system in the Southern Hemisphere.", options: ["True", "False"], a: "False", exp: "In the Southern Hemisphere, winds blow anti-clockwise around high-pressure systems." },
+                { q: "Winds blow clockwise around a low-pressure system in the Southern Hemisphere.", options: ["True", "False"], a: "True", exp: "The Coriolis force deflects the inward-moving air to the left, creating a clockwise spiral." },
+                { q: "Isotherms are lines drawn on a weather map joining places of equal rainfall.", options: ["True", "False"], a: "False", exp: "Isotherms join places of equal temperature. Isohyets map equal rainfall." },
+                { q: "The South Indian High is a high-pressure cell located off the east coast of South Africa.", options: ["True", "False"], a: "True", exp: "It feeds warm, moist air over the eastern half of the country during summer." },
+                { q: "Latitude is the most important factor determining the baseline temperature of a place.", options: ["True", "False"], a: "True", exp: "Distance from the Equator primarily controls how direct the solar radiation is." },
+                { q: "Ocean currents have no real effect on the climate of adjacent coastal regions.", options: ["True", "False"], a: "False", exp: "They significantly affect both temperature and rainfall, as seen with SA's east and west coasts." },
+                { q: "The Earth's atmosphere is heated primarily from below by terrestrial radiation.", options: ["True", "False"], a: "True", exp: "Short-wave solar radiation heats the ground, and the ground emits long-wave radiation to heat the air." },
+                { q: "Relative humidity is expressed as a percentage.", options: ["True", "False"], a: "True", exp: "It compares the actual amount of water vapour in the air to the maximum amount the air could hold." },
+                { q: "Air pressure decreases as altitude increases.", options: ["True", "False"], a: "True", exp: "As you go higher up, there are fewer air molecules pressing down from above." },
+                { q: "Greenhouse gases naturally include carbon dioxide, methane, and water vapour.", options: ["True", "False"], a: "True", exp: "These gases trap outgoing long-wave radiation, keeping the Earth habitable." },
+                { q: "Global warming refers to the natural, cyclical cooling of the Earth over time.", options: ["True", "False"], a: "False", exp: "It refers to the rapid, unnatural increase in average global temperatures due to human activities." }
+            ]
+        };
+
+        // Game Logic remains the same
+        const totalQuestions = 27; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: 27}, (_, i) => i),
+            'terms': Array.from({length: 27}, (_, i) => i),
+            'multipleChoice': Array.from({length: 27}, (_, i) => i),
+            'trueFalse': Array.from({length: 27}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

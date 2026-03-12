@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Geography Memory Match</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1.1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="https://mmayaya.github.io/mayhub" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="https://mmayaya.github.io/mayhub/">Home</a>
+            <a href="https://mmayaya.github.io/mayhub/about">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 10 Geography Assessment Prep</h1>
+        <p class="game-subtitle">Match the geography concepts and definitions from your March Controlled Test!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Climatology & Water Cycle</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Structure of the Atmosphere</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Ocean Currents & Climate</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Synoptic Weather Maps</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "A process whereby areas become more arid and drier like a desert." }, { id: 1, text: "Desertification" },
+                { id: 2, text: "The transfer of heat by vertically moving air." }, { id: 2, text: "Convection" },
+                { id: 3, text: "Gases in the atmosphere that absorb long-wave radiation and contribute to global warming." }, { id: 3, text: "Greenhouse gases" },
+                { id: 4, text: "Chemicals used in aerosol sprays and refrigerants that deplete the ozone layer." }, { id: 4, text: "Chlorofluorocarbons (CFCs)" },
+                { id: 5, text: "A map showing a summary of the weather conditions of a place." }, { id: 5, text: "Synoptic Weather Map" },
+                { id: 6, text: "The largest reservoir of water on Earth." }, { id: 6, text: "The Ocean" },
+                { id: 7, text: "The process whereby water changes from a liquid to a gas (water vapor)." }, { id: 7, text: "Evaporation" },
+                { id: 8, text: "The process whereby water vapor changes back to liquid water." }, { id: 8, text: "Condensation" },
+                { id: 9, text: "The process whereby moisture is released from plants into the atmosphere." }, { id: 9, text: "Transpiration" },
+                { id: 10, text: "Water that flows on the Earth's surface after it has rained." }, { id: 10, text: "Surface Run-off" }
+            ],
+            'topic2': [
+                { id: 1, text: "Define the term atmosphere." }, { id: 1, text: "The envelope of gases surrounding the Earth." },
+                { id: 2, text: "What is the lowest layer of the atmosphere where most weather occurs?" }, { id: 2, text: "Troposphere" },
+                { id: 3, text: "Which atmospheric layer contains the ozone layer?" }, { id: 3, text: "Stratosphere" },
+                { id: 4, text: "In which two atmospheric layers does temperature increase with altitude?" }, { id: 4, text: "Stratosphere and Thermosphere" },
+                { id: 5, text: "Why does temperature increase in the Stratosphere?" }, { id: 5, text: "The ozone layer absorbs ultraviolet (UV) radiation from the sun." },
+                { id: 6, text: "Why is the Troposphere such an important layer for life on Earth?" }, { id: 6, text: "It contains the oxygen we breathe and is where all weather processes happen." },
+                { id: 7, text: "Why do long-distance aircraft prefer to fly in the lower Stratosphere?" }, { id: 7, text: "To avoid weather disturbances and turbulence." },
+                { id: 8, text: "What human activities mostly deplete the ozone layer?" }, { id: 8, text: "Releasing CFCs from aerosols and industrial cooling systems." },
+                { id: 9, text: "What is the third layer of the atmosphere where temperatures drop significantly?" }, { id: 9, text: "Mesosphere" },
+                { id: 10, text: "What is the outermost layer of the atmosphere shown in standard profiles?" }, { id: 10, text: "Thermosphere" }
+            ],
+            'topic3': [
+                { id: 1, text: "What is the cold ocean current that flows along the west coast of South Africa?" }, { id: 1, text: "Benguela Current" },
+                { id: 2, text: "What is the warm ocean current that flows along the east coast of South Africa?" }, { id: 2, text: "Agulhas / Mozambique Current" },
+                { id: 3, text: "Describe the general temperature and moisture content of the Benguela current." }, { id: 3, text: "Cold and dry." },
+                { id: 4, text: "Describe the general temperature and moisture content of the Agulhas current." }, { id: 4, text: "Warm and moist." },
+                { id: 5, text: "How does the Agulhas current influence the weather on South Africa's east coast?" }, { id: 5, text: "It brings warm, moist air, resulting in higher rainfall and warmer temperatures." },
+                { id: 6, text: "What global factor influences climate based on how far a place is from the equator?" }, { id: 6, text: "Latitude" },
+                { id: 7, text: "Which region of the Earth is generally the warmest due to solar radiation angles?" }, { id: 7, text: "The Equatorial region" },
+                { id: 8, text: "Why is the equatorial region warmer than the poles?" }, { id: 8, text: "The sun's rays strike at a direct 90-degree angle, concentrating heat." },
+                { id: 9, text: "Which regions of the Earth are the coldest and frequently covered with ice?" }, { id: 9, text: "The Polar regions" },
+                { id: 10, text: "Why do the sun's rays heat the polar regions less effectively?" }, { id: 10, text: "The rays strike at an oblique angle and spread out over a larger area." }
+            ],
+            'topic4': [
+                { id: 1, text: "What do we call lines drawn on synoptic weather maps showing places of equal atmospheric pressure?" }, { id: 1, text: "Isobars" },
+                { id: 2, text: "What type of pressure system is typically associated with clear skies and stable air?" }, { id: 2, text: "High-pressure system (Anticyclone)" },
+                { id: 3, text: "What type of pressure system is typically associated with cloudy skies and precipitation?" }, { id: 3, text: "Low-pressure system (Cyclone)" },
+                { id: 4, text: "How does air circulate around a high-pressure system in the Southern Hemisphere?" }, { id: 4, text: "Anticlockwise and outwards" },
+                { id: 5, text: "What seasonal condition in South Africa is indicated by a strong high-pressure system dominating the interior?" }, { id: 5, text: "Winter" },
+                { id: 6, text: "On a weather station model, what does the number placed in the top left corner usually indicate?" }, { id: 6, text: "Air Temperature" },
+                { id: 7, text: "How is wind speed typically indicated on a weather station model?" }, { id: 7, text: "By the number and length of feathers on the wind direction shaft." },
+                { id: 8, text: "How does air naturally move between different pressure systems?" }, { id: 8, text: "From an area of high pressure to an area of low pressure." },
+                { id: 9, text: "What weather condition is indicated by a completely shaded circle on a station model?" }, { id: 9, text: "Complete cloud cover (overcast skies)" },
+                { id: 10, text: "What is the standard unit of measurement for atmospheric pressure on a synoptic map?" }, { id: 10, text: "Hectopascals (hPa)" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Geography Prep Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>
