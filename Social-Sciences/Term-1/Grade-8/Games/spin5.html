@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Spin the Wheel</title>
+    <style>
+        /* CSS remains identical to original for styling consistency */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="https://mmayaya.github.io/mayhub" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="https://mmayaya.github.io/mayhub/">Home</a>
+            <a href="https://mmayaya.github.io/mayhub/about">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">History Quiz: The Industrial Revolution & Mining</h1>
+        <p class="game-subtitle">Select a category, spin the wheel, and test your knowledge of 19th-century history!</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">27 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Updated Data based on Grade 8 March Assessment & CAPS History Curriculum
+        const gameData = {
+            'definitions': [
+                { q: "Define: Industrial Revolution", a: "A period of rapid change in the way goods were produced, from hand-made to machine-made." },
+                { q: "Define: Indentured Labour", a: "A system where workers are bound by a contract to work for a specific period, often in exchange for passage to a new country." },
+                { q: "Define: Migrant Labour", a: "A system where workers travel long distances to work for a period before returning home." },
+                { q: "Define: Monopoly", a: "A situation where a single company or person has complete control over a trade or industry." },
+                { q: "Define: Compound System", a: "A restricted housing area for miners used to control their movement and prevent diamond theft." },
+                { q: "Define: Urbanisation", a: "The process of people moving from rural farm areas to live in cities and towns." },
+                { q: "Define: Cottage Industry", a: "A small-scale industry where goods are produced by hand in people's homes." },
+                { q: "Define: Steam Engine", a: "A machine that uses steam power to perform mechanical work, vital for factories and trains." },
+                { q: "Define: Mass Production", a: "The production of large quantities of standardized products, typically on assembly lines." },
+                { q: "Define: Trade Union", a: "An organization of workers formed to protect their rights and improve working conditions." },
+                { q: "Define: Capital", a: "Wealth in the form of money or assets owned by a person or organization for investment." },
+                { q: "Define: Colony", a: "A country or area under the full or partial political control of another country." },
+                { q: "Define: Mineral Revolution", a: "The rapid industrialisation of South Africa following the discovery of diamonds and gold." },
+                { q: "Define: Claim", a: "A specific piece of land marked out by a miner for digging for minerals." },
+                { q: "Define: Passenger Indians", a: "Indian immigrants who paid for their own passage to South Africa to work as traders or craftsmen." },
+                { q: "Define: Closed Compound", a: "A compound where workers were not allowed to leave for the duration of their contract." },
+                { q: "Define: Deep Level Mining", a: "Mining for minerals that are located far below the Earth's surface, requiring expensive machinery." },
+                { q: "Define: Raw Materials", a: "Basic materials from which a product is made (e.g., cotton, coal, iron)." },
+                { q: "Define: Smelting", a: "The process of heating ore to extract a base metal." },
+                { q: "Define: Infrastructure", a: "The basic physical structures needed for society (roads, railways, bridges)." },
+                { q: "Define: Sanitation", a: "Conditions relating to public health, especially the provision of clean water and sewage disposal." },
+                { q: "Define: Tenement", a: "A room or set of rooms forming a separate residence within a house or block of apartments, often crowded." },
+                { q: "Define: Mechanisation", a: "The process of changing from working by hand or with animals to doing that work with machinery." },
+                { q: "Define: Proletariat", a: "The class of wage-earners, especially those who earn their living by manual labor." },
+                { q: "Define: Bourgeoisie", a: "The middle class, typically including factory owners and businessmen." },
+                { q: "Define: Luddites", a: "A group of English textile workers who destroyed machinery they believed was threatening their jobs." },
+                { q: "Define: Abolition", a: "The action or an act of abolishing a system, practice, or institution (e.g., slavery)." }
+            ],
+            'terms': [
+                { q: "Term for: The country where the Industrial Revolution began.", a: "Britain" },
+                { q: "Term for: The town where diamonds were discovered in South Africa in 1867.", a: "Kimberley" },
+                { q: "Term for: The British company that gained a monopoly on diamond mining.", a: "De Beers" },
+                { q: "Term for: The place where Indian labourers were imported to work on sugar plantations.", a: "Natal" },
+                { q: "Term for: The power source that replaced wood and water during the revolution.", a: "Coal" },
+                { q: "Term for: The new method of transport that used the steam engine on rails.", a: "Railway (or Steam Train)" },
+                { q: "Term for: The group of people who moved to cities to work in factories.", a: "Working Class" },
+                { q: "Term for: The system used to house black miners in Kimberley.", a: "Compound System" },
+                { q: "Term for: The individual who became the head of De Beers Consolidated Mines.", a: "Cecil John Rhodes" },
+                { q: "Term for: The machine used to pump water out of deep mines.", a: "Steam Pump" },
+                { q: "Term for: The invention by James Hargreaves that sped up cotton spinning.", a: "Spinning Jenny" },
+                { q: "Term for: The process of taking over 'common land' to create large private farms.", a: "Enclosure" },
+                { q: "Term for: A period of 10 years.", a: "Decade" },
+                { q: "Term for: People who invest money in businesses to make a profit.", a: "Capitalists" },
+                { q: "Term for: The primary metal used to build machines and bridges.", a: "Iron" },
+                { q: "Term for: The first type of factory during the Industrial Revolution.", a: "Textile Mill" },
+                { q: "Term for: The river in Natal near many sugar plantations.", a: "Tugela" },
+                { q: "Term for: The act of workers refusing to work until demands are met.", a: "Strike" },
+                { q: "Term for: The laws that restricted where black South Africans could live and work.", a: "Pass Laws" },
+                { q: "Term for: A person who owns a 'claim' in a mine.", a: "Claim-holder" },
+                { q: "Term for: The ship that brought the first Indian labourers to South Africa.", a: "SS Truro" },
+                { q: "Term for: The term for the 'Old' way of making things by hand.", a: "Cottage Industry" },
+                { q: "Term for: The disease often spread in crowded industrial cities.", a: "Cholera" },
+                { q: "Term for: The fuel used in early steam engines.", a: "Coal" },
+                { q: "Term for: The type of soil found in the diamond fields.", a: "Blue Ground" },
+                { q: "Term for: The nickname for Kimberley's massive open-pit mine.", a: "The Big Hole" },
+                { q: "Term for: The name of the first diamond found in South Africa.", a: "Eureka" }
+            ],
+            'multipleChoice': [
+                { q: "Which industry was the first to industrialise?", options: ["A) Mining", "B) Textiles", "C) Farming", "D) Shipping"], a: "B) Textiles" },
+                { q: "Why did the British import Indian labourers to Natal?", options: ["A) They were cheaper", "B) Local Zulus refused to work for low wages", "C) Indians were experts in sugar", "D) Britain wanted to colonise India"], a: "B) Local Zulus refused to work for low wages" },
+                { q: "What was a major challenge for black claim holders in Kimberley?", options: ["A) Lack of diamonds", "B) Discrimination and lack of capital", "C) Too much rain", "D) Competition from India"], a: "B) Discrimination and lack of capital" },
+                { q: "What transformed South Africa from an agricultural society to an industrial one?", options: ["A) The Steam Engine", "B) The Mineral Revolution", "C) The French Revolution", "D) Better farming tools"], a: "B) The Mineral Revolution" },
+                { q: "How long did indentured contracts usually last?", options: ["A) 1 year", "B) 5 years", "C) 20 years", "D) For life"], a: "B) 5 years" },
+                { q: "Which machine revolutionized transportation in the 1800s?", options: ["A) The Bicycle", "B) The Steam Locomotive", "C) The Car", "D) The Airplane"], a: "B) The Steam Locomotive" },
+                { q: "In industrial cities, why were living conditions often poor?", options: ["A) Too much space", "B) Overcrowding and lack of sanitation", "C) Too many parks", "D) High wages"], a: "B) Overcrowding and lack of sanitation" },
+                { q: "Which metal was used to create stronger machine parts?", options: ["A) Gold", "B) Steel", "C) Copper", "D) Lead"], a: "B) Steel" },
+                { q: "What did the Mines and Works Act of 1911 do?", options: ["A) Gave workers more leave", "B) Reserved skilled jobs for whites", "C) Banned mining", "D) Abolished the compound system"], a: "B) Reserved skilled jobs for whites" },
+                { q: "What was 'Insolation' in the context of the assessment?", options: ["A) Mining heat", "B) Solar radiation", "C) Cooling for mines", "D) Factory light"], a: "B) Solar radiation" },
+                { q: "What was the main reason for child labour in factories?", options: ["A) Children were small and cheap", "B) Schools were full", "C) Parents didn't like children", "D) Children were smarter"], a: "A) Children were small and cheap" },
+                { q: "Which city became the center of the world's diamond trade?", options: ["A) London", "B) Kimberley", "C) Durban", "D) Paris"], a: "B) Kimberley" },
+                { q: "What was a 'Passenger Indian'?", options: ["A) A worker on a ship", "B) An immigrant who paid their own way", "C) A slave", "D) A sugar farmer"], a: "B) An immigrant who paid their own way" },
+                { q: "Why did factory owners prefer machines over people?", options: ["A) Machines are prettier", "B) Machines work faster and don't tire", "C) Machines are cheaper to buy", "D) People were too many"], a: "B) Machines work faster and don't tire" },
+                { q: "What was the 'Diamond Pipe'?", options: ["A) A tool for smoking", "B) A volcanic path where diamonds are found", "C) A water hose", "D) A railway tunnel"], a: "B) A volcanic path where diamonds are found" },
+                { q: "What powered the first factories?", options: ["A) Electricity", "B) Water wheels", "C) Windmills", "D) Gas"], a: "B) Water wheels" },
+                { q: "What does 'CAPS' stand for in education?", options: ["A) Curriculum and Assessment Policy Statement", "B) Central Academic Power System", "C) Cool Activities Per Student", "D) Career and Professional Skills"], a: "A) Curriculum and Assessment Policy Statement" },
+                { q: "Which country controlled Natal in the 1860s?", options: ["A) Germany", "B) Britain", "C) France", "D) The Netherlands"], a: "B) Britain" },
+                { q: "What was the purpose of 'Strip Searching' in mines?", options: ["A) Hygiene", "B) To prevent diamond theft", "C) To find tools", "D) To count workers"], a: "B) To prevent diamond theft" },
+                { q: "Who invented the improved Steam Engine?", options: ["A) Isaac Newton", "B) James Watt", "C) Albert Einstein", "D) Thomas Edison"], a: "B) James Watt" },
+                { q: "What was the 'Scramble for Africa'?", options: ["A) A race", "B) European competition for African territory", "C) A food shortage", "D) A mining technique"], a: "B) European competition for African territory" },
+                { q: "What is a 'Social Impact'?", options: ["A) Change in money", "B) Change in people's lives and society", "C) Change in weather", "D) Change in rocks"], a: "B) Change in people's lives and society" },
+                { q: "What was the main food ration for indentured workers?", options: ["A) Pizza", "B) Rice and dhal", "C) Beef and potatoes", "D) Fish and chips"], a: "B) Rice and dhal" },
+                { q: "Where was the first diamond found in South Africa?", options: ["A) Near the Orange River", "B) In Johannesburg", "C) In Cape Town", "D) In Durban"], a: "A) Near the Orange River" },
+                { q: "What is a 'Primary Source'?", options: ["A) A textbook", "B) A first-hand account from the time", "C) A movie about history", "D) A teacher's notes"], a: "B) A first-hand account from the time" },
+                { q: "What led to the rise of Trade Unions?", options: ["A) Good conditions", "B) Poor working conditions and low pay", "C) Factory owners wanted them", "D) Government laws"], a: "B) Poor working conditions and low pay" },
+                { q: "Which class owned the factories?", options: ["A) Peasantry", "B) Middle Class (Bourgeoisie)", "C) Working Class", "D) Slaves"], a: "B) Middle Class (Bourgeoisie)" }
+            ],
+            'trueFalse': [
+                { q: "The Industrial Revolution began in America.", options: ["True", "False"], a: "False", exp: "It began in Britain in the late 1700s." },
+                { q: "Indentured workers were allowed to leave their workplace whenever they wanted.", options: ["True", "False"], a: "False", exp: "They were legally bound by a contract and could be arrested for leaving." },
+                { q: "Cecil John Rhodes founded the De Beers Company.", options: ["True", "False"], a: "True", exp: "He consolidated various claims to form the monopoly." },
+                { q: "Steam engines were used to pump water out of mines.", options: ["True", "False"], a: "True", exp: "This allowed miners to go much deeper underground." },
+                { q: "The discovery of diamonds led to more equal rights in South Africa.", options: ["True", "False"], a: "False", exp: "It actually led to more restrictive laws and job reservation." },
+                { q: "Children often worked 12-14 hours a day in factories.", options: ["True", "False"], a: "True", exp: "Child labour was common before laws were passed to stop it." },
+                { q: "Sugar was the main crop in Natal that required Indian labour.", options: ["True", "False"], a: "True", exp: "The sugar industry was the backbone of Natal's economy." },
+                { q: "The 'Big Hole' is a natural crater.", options: ["True", "False"], a: "False", exp: "It was dug by hand by thousands of miners." },
+                { q: "Urbanisation means moving from the city to the farm.", options: ["True", "False"], a: "False", exp: "It is the move from the farm (rural) to the city (urban)." },
+                { q: "Smog was a major problem in industrial cities due to coal burning.", options: ["True", "False"], a: "True", exp: "Factories released massive amounts of smoke into the air." },
+                { q: "The Spinning Jenny could spin multiple threads at once.", options: ["True", "False"], a: "True", exp: "It greatly increased the speed of textile production." },
+                { q: "Passenger Indians were forced to work on plantations.", options: ["True", "False"], a: "False", exp: "They came voluntarily and usually worked as traders." },
+                { q: "Living in a compound was very luxurious for miners.", options: ["True", "False"], a: "False", exp: "Compounds were crowded, strictly controlled, and had poor sanitation." },
+                { q: "The Industrial Revolution led to the development of the middle class.", options: ["True", "False"], a: "True", exp: "Business owners and professionals grew in number and wealth." },
+                { q: "Railways made it harder to transport goods.", options: ["True", "False"], a: "False", exp: "Railways made transport much faster and cheaper." },
+                { q: "The Zulu people were eager to work for low wages on British plantations.", options: ["True", "False"], a: "False", exp: "They preferred to stay on their land and be self-sufficient." },
+                { q: "A 'Monopoly' means everyone has a fair share.", options: ["True", "False"], a: "False", exp: "A monopoly means one company controls everything." },
+                { q: "Mass production made goods more expensive.", options: ["True", "False"], a: "False", exp: "Producing items in large quantities made them cheaper for consumers." },
+                { q: "Workers in factories always had health insurance.", options: ["True", "False"], a: "False", exp: "Early industrial workers had almost no rights or benefits." },
+                { q: "Coal is a renewable energy source.", options: ["True", "False"], a: "False", exp: "Coal is a fossil fuel and is non-renewable." },
+                { q: "The Mineral Revolution started with the discovery of gold.", options: ["True", "False"], a: "False", exp: "It started with diamonds in 1867, gold came later in 1886." },
+                { q: "South Africa became a major player in the world economy after 1867.", options: ["True", "False"], a: "True", exp: "The discovery of minerals attracted global investment." },
+                { q: "Canals were used for transport before railways were common.", options: ["True", "False"], a: "True", exp: "Canals were a major part of early industrial transport." },
+                { q: "Deep level mining is very cheap to do.", options: ["True", "False"], a: "False", exp: "It requires massive investment in machinery and power." },
+                { q: "The Industrial Revolution improved the standard of living for everyone immediately.", options: ["True", "False"], a: "False", exp: "For workers, conditions were often worse at first due to long hours and poor housing." },
+                { q: "The telegraph allowed for faster communication.", options: ["True", "False"], a: "True", exp: "It was one of the many inventions of the industrial era." },
+                { q: "Iron was replaced by plastic in 1850.", options: ["True", "False"], a: "False", exp: "Iron and steel remained the most important materials for a long time." }
+            ]
+        };
+
+        // Game Logic remains the same
+        const totalQuestions = 27; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: 27}, (_, i) => i),
+            'terms': Array.from({length: 27}, (_, i) => i),
+            'multipleChoice': Array.from({length: 27}, (_, i) => i),
+            'trueFalse': Array.from({length: 27}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | History Master Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 250px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="https://mmayaya.github.io/mayhub/" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="https://mmayaya.github.io/mayhub/">Home</a>
+            <a href="https://mmayaya.github.io/mayhub/about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">History Master Quiz</h1>
+        <p class="game-subtitle">30-Question Challenge: Industrial Revolution & South Africa</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final score:</p>
+            <div id="endPrize">0 Pts</div>
+            <button class="lifeline-btn" onclick="location.reload()">Try Again</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "Where did the Industrial Revolution begin?", options: ["France", "Germany", "Britain", "America"], a: 2, hint: "It started in a European island nation." },
+            { q: "Where were slaves mostly captured and traded from?", options: ["West Africa", "North Africa", "East Africa", "America"], a: 0, hint: "Focus on the western coast of the continent." },
+            { q: "What do we call a major change in the way farming was done?", options: ["Agricultural Revolution", "Primary Revolution", "Industrialisation", "Economic Revolution"], a: 0, hint: "It relates to farming." },
+            { q: "What started the industrial revolution in Southern Africa?", options: ["Sugar Cane", "Gold", "Diamond Mining", "Farming"], a: 2, hint: "Discovered in Kimberley in 1867." },
+            { q: "What is the movement towards securing and fencing off land owned by one person called?", options: ["Enclosure System", "Revolution", "Manufacturing", "Luddities"], a: 0, hint: "Closing off land." },
+            { q: "What is land that is shared and can be used by everyone known as?", options: ["Common land", "Private property", "Commercial farm", "State land"], a: 0, hint: "It belongs to the community." },
+            { q: "What does 'invention' mean?", options: ["The creation of something new", "Making things with machines", "Sharing land", "A type of farming"], a: 0, hint: "Creating something that didn't exist before." },
+            { q: "What does it mean to 'manufacture' something?", options: ["To grow crops", "To make things using machines", "To mine for diamonds", "To trade slaves"], a: 1, hint: "Usually done in factories." },
+            { q: "What are workers called who are on contract to work for a certain length of time at a certain wage?", options: ["Slaves", "Indentured labour", "Free citizens", "Luddites"], a: 1, hint: "Used often in sugar plantations." },
+            { q: "What is the process of separating grains of wheat from the husk and stalks called?", options: ["Planting", "Manufacturing", "Threshing", "Enclosing"], a: 2, hint: "A key agricultural process." },
+            { q: "What best describes the Industrial Revolution?", options: ["A war between countries", "A change from handmade goods to machine-made goods", "A political uprising", "A period of great art"], a: 1, hint: "Think factories and machines." },
+            { q: "What was a key change in agriculture during the Industrial Revolution?", options: ["Less land was used", "Introduction of the enclosure system", "Farming stopped entirely", "Only wheat was grown"], a: 1, hint: "Fences were put up around shared land." },
+            { q: "What was the typical role of children in factories during the Industrial Revolution?", options: ["They were supervisors", "They attended school instead", "They worked long hours in dangerous conditions", "They only worked on weekends"], a: 2, hint: "Child labor was common and harsh." },
+            { q: "Why was steam power important during the Industrial Revolution?", options: ["It was only used for boats", "It replaced wind and water as a reliable power source for machines", "It made factories colder", "It was a source of drinking water"], a: 1, hint: "Powered the engines." },
+            { q: "Which of the following was an unjust experience for workers in early factories?", options: ["Too many holidays", "Extremely high wages", "Unsafe working conditions and long hours", "Free meals"], a: 2, hint: "Factories were dangerous places." },
+            { q: "What is urbanisation?", options: ["The movement of people from rural areas to cities", "The process of making machines", "Farming on a large scale", "The freeing of slaves"], a: 0, hint: "People moving to towns." },
+            { q: "Why did towns grow rapidly during the Industrial Revolution?", options: ["People preferred city air", "People moved to find work in newly built factories", "Farming became more popular", "The government forced people to move"], a: 1, hint: "Jobs were in the cities." },
+            { q: "What was the role of workhouses during the Industrial Revolution?", options: ["To provide luxury housing", "To educate children", "To provide harsh accommodation and work for the extremely poor", "To entertain the rich"], a: 2, hint: "They were terrible places for the destitute." },
+            { q: "How were children typically punished if they misbehaved in factories?", options: ["They were sent home", "They were given extra food", "They were beaten or punished severely as an example", "They were promoted"], a: 2, hint: "Discipline was very harsh." },
+            { q: "Why did the British import Indian labourers to work on the sugar plantations in Natal?", options: ["They were already in South Africa", "The Zulu people refused to work for low wages", "They were experienced with machines", "They wanted a holiday"], a: 1, hint: "Local people didn't want the work." },
+            { q: "What was a common condition under which indentured workers lived in Natal?", options: ["Luxury mansions", "Overcrowded barracks", "Private apartments", "Hotels"], a: 1, hint: "Living conditions were poor." },
+            { q: "What challenge did Indian labourers face regarding food rations?", options: ["They were given too much food", "They refused to eat", "The rations were often inadequate or of poor quality", "They had to buy their own food at high prices"], a: 2, hint: "The food provided was not good enough." },
+            { q: "What role did 'Passenger Indians' play in the economic development of Natal?", options: ["They worked as slaves", "They came as traders and opened businesses", "They managed the sugar plantations", "They were politicians"], a: 1, hint: "They paid their own way to arrive and trade." },
+            { q: "Why did the Zulu people refuse to work in sugar plantations?", options: ["They were self-sufficient farmers", "They didn't know how to farm", "They moved to the cities", "They were employed in diamond mines instead"], a: 0, hint: "They could survive on their own land." },
+            { q: "In what year were diamonds discovered in Kimberley?", options: ["1867", "1900", "1800", "1994"], a: 0, hint: "Late 19th century." },
+            { q: "How did the discovery of diamonds in Kimberley transform South Africa's economy?", options: ["It destroyed the economy", "It shifted the economy from agricultural to industrial", "It made everyone wealthy", "It stopped trade with Britain"], a: 1, hint: "Started the mining industry." },
+            { q: "What challenge was faced by black claim holders during the diamond rush?", options: ["They couldn't find any diamonds", "They were forced to give up their claims by discriminatory laws", "They were not allowed to buy tools", "They didn't want to mine"], a: 1, hint: "Laws were made against them." },
+            { q: "Who played a major role in establishing a monopoly over diamond mining in South Africa?", options: ["Nelson Mandela", "Cecil John Rhodes", "Queen Victoria", "Shaka Zulu"], a: 1, hint: "Founder of De Beers." },
+            { q: "How did transportation improve during the Industrial Revolution?", options: ["Invention of the airplane", "Development of steam-powered trains and railways", "Use of electric cars", "Horse-drawn carriages became faster"], a: 1, hint: "Steam engines on tracks." },
+            { q: "How did power and energy improve during the Industrial Revolution?", options: ["Solar power was invented", "Windmills became the main source of power", "Steam engines provided a reliable source of power", "Electricity was used in all homes"], a: 2, hint: "Boiling water created this power." }
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>Q-Point</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = qData.options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [0, 1, 2, 3].filter(i => i !== correctIndex);
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Study Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "History Legend!";
+                document.getElementById('endPrize').innerText = "30/30 - 100%";
+            } else {
+                document.getElementById('endMessage').innerText = "Keep Studying!";
+                document.getElementById('endPrize').innerText = `${currentLevel}/30 Correct`;
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>
