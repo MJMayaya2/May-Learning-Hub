@@ -3,107 +3,696 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn more about MJ Mayaya, the creator of May Learning Hub, an educator building CAPS-aligned notes, games, and activities for learners and teachers.">
+    <meta name="theme-color" content="#002b5e">
+    <meta property="og:title" content="Learning Hub | About MJ Mayaya">
+    <meta property="og:description" content="Meet the creator of May Learning Hub and learn about the vision behind the platform.">
+    <meta property="og:type" content="website">
     <title>Learning Hub | About MJ Mayaya</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
-        
-        /* Navigation */
-        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
-        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
-        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
-        
-        /* Headers & Footers */
-        header { background-color: #004080; color: #fff; text-align: center; padding: 3rem 1rem; margin-bottom: 2rem; }
-        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-        /* About Layout */
-        .container { flex: 1; margin: 0 auto; max-width: 1200px; padding: 0 20px; width: 100%; overflow: hidden; }
-        .about-container { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #3385ff; display: flex; flex-wrap: wrap; padding: 3rem; gap: 3rem; align-items: flex-start; }
-        
-        /* Image Section */
-        .profile-section { flex: 1 1 300px; display: flex; flex-direction: column; align-items: center; text-align: center; opacity: 0; animation: fadeInUp 0.8s ease-out forwards; }
-        
-        /* Hover Animation on Profile Picture */
-        .profile-image { width: 100%; max-width: 280px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 50%; border: 5px solid #e6f0fa; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1.5rem; transition: transform 0.4s ease, box-shadow 0.4s ease; }
-        .profile-image:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        
-        /* Contact Box */
-        .contact-box { background-color: #f0f7ff; padding: 1.5rem; border-radius: 8px; width: 100%; border: 1px solid #b3d4ff; text-align: left; transition: transform 0.3s ease; }
-        .contact-box:hover { transform: translateY(-5px); }
-        .contact-box h3 { color: #004080; margin-bottom: 0.8rem; font-size: 1.2rem; }
-        .contact-box p { font-size: 0.95rem; margin-bottom: 0.5rem; color: #444; }
-        .contact-box a { color: #3385ff; text-decoration: none; font-weight: bold; transition: color 0.3s; }
-        .contact-box a:hover { text-decoration: underline; color: #002b5e; }
+        img { max-width: 100%; display: block; }
 
-        /* Bio Section with Staggered Animation */
-        .bio-content { flex: 2 1 500px; opacity: 0; animation: fadeInUp 0.8s ease-out 0.3s forwards; }
-        .bio-content h2 { color: #004080; margin-bottom: 1rem; font-size: 2.5rem; }
-        .bio-content h3 { color: #00509e; margin-top: 1.5rem; margin-bottom: 0.8rem; font-size: 1.4rem; border-bottom: 2px solid #e6f0fa; padding-bottom: 0.3rem; }
-        .bio-content p { margin-bottom: 1.2rem; font-size: 1.1rem; color: #444; }
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid #66a3ff;
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
 
-        /* --- THE ANIMATION KEYFRAMES --- */
+        @keyframes slideInDown {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            0% { opacity: 0; transform: translateX(-50px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            0% { opacity: 0; transform: translateX(50px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
         @keyframes fadeInUp {
-            0% {
-                opacity: 0;
-                transform: translateY(30px);
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Navigation */
+        nav {
+            background-color: #002b5e;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+            opacity: 0;
+            animation: slideInDown 0.6s ease-out forwards;
+        }
+
+        .logo {
+            color: #fff;
+            font-size: 1.45rem;
+            font-weight: bold;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #cce0ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s, background-color 0.3s;
+            padding: 0.45rem 0.7rem;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.08);
+            text-decoration: none;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #004080, #0059b3);
+            color: #fff;
+            text-align: center;
+            padding: 3rem 1rem 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        }
+
+        .header-inner h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-inner p {
+            font-size: 1.08rem;
+            color: #dbe9ff;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        /* Layout */
+        .container {
+            flex: 1;
+            margin: 0 auto;
+            max-width: 1200px;
+            padding: 0 20px 2rem;
+            width: 100%;
+        }
+
+        .intro-strip {
+            background: #fff;
+            border-left: 5px solid #3385ff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            padding: 1.4rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.35s forwards;
+        }
+
+        .intro-strip p {
+            color: #4b5b6b;
+        }
+
+        .about-container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border-top: 5px solid #3385ff;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 2.2rem;
+            gap: 2.2rem;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            flex: 1 1 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            opacity: 0;
+            animation: slideInLeft 0.8s ease-out 0.45s forwards;
+        }
+
+        .profile-card {
+            background: #f8fbff;
+            border: 1px solid #d9e9ff;
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+        }
+
+        .profile-image {
+            width: 100%;
+            max-width: 280px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid #e6f0fa;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin: 0 auto 1rem;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .image-fallback {
+            width: 100%;
+            max-width: 280px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto 1rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 50%;
+            border: 5px solid #e6f0fa;
+            background: #eef5ff;
+            color: #004080;
+            font-weight: bold;
+            padding: 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .profile-card h2 {
+            color: #004080;
+            font-size: 1.35rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .profile-card p {
+            color: #5d6c7c;
+            font-size: 0.97rem;
+        }
+
+        .contact-box,
+        .skills-box,
+        .mission-box {
+            background-color: #f7fbff;
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: 1px solid #d7e8ff;
+        }
+
+        .contact-box h3,
+        .skills-box h3,
+        .mission-box h3 {
+            color: #004080;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-box p,
+        .skills-box p,
+        .mission-box p {
+            font-size: 0.96rem;
+            margin-bottom: 0.55rem;
+            color: #444;
+        }
+
+        .contact-box a {
+            color: #3385ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .contact-box a:hover {
+            text-decoration: underline;
+            color: #002b5e;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            background: #eaf3ff;
+            color: #1f4f99;
+            padding: 0.35rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        /* Bio Section */
+        .bio-content {
+            flex: 2 1 520px;
+            opacity: 0;
+            animation: slideInRight 0.8s ease-out 0.55s forwards;
+        }
+
+        .bio-content h2 {
+            color: #004080;
+            margin-bottom: 1rem;
+            font-size: 2.2rem;
+        }
+
+        .bio-content h3 {
+            color: #00509e;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #e6f0fa;
+            padding-bottom: 0.3rem;
+        }
+
+        .bio-content p {
+            margin-bottom: 1rem;
+            font-size: 1.06rem;
+            color: #444;
+        }
+
+        .highlight-panel {
+            background: linear-gradient(135deg, #f4f9ff, #edf5ff);
+            border: 1px solid #d8e8fb;
+            border-left: 5px solid #3385ff;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin: 1.2rem 0;
+        }
+
+        .highlight-panel strong {
+            color: #003f82;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1.4rem;
+        }
+
+        .value-card {
+            background: #f8fbff;
+            border: 1px solid #d9e9ff;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .value-card h4 {
+            color: #004080;
+            margin-bottom: 0.4rem;
+            font-size: 1rem;
+        }
+
+        .value-card p {
+            font-size: 0.95rem;
+            color: #5d6c7c;
+            margin-bottom: 0;
+        }
+
+        .cta-panel {
+            background: linear-gradient(135deg, #003a75, #004f9f);
+            color: #fff;
+            border-radius: 14px;
+            padding: 1.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.8s forwards;
+        }
+
+        .cta-panel h2 {
+            margin-bottom: 0.3rem;
+            font-size: 1.5rem;
+        }
+
+        .cta-panel p {
+            color: #dbe9ff;
+            max-width: 720px;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0.8rem 1.1rem;
+            transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: #fff;
+            color: #004080;
+        }
+
+        .btn-primary:hover {
+            background-color: #eaf3ff;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #002b5e;
+            color: #fff;
+            margin-top: auto;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1s forwards;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px 1.3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .footer-content h3,
+        .footer-content h4 {
+            margin-bottom: 0.6rem;
+        }
+
+        .footer-content p,
+        .footer-content a {
+            color: #d4e3f7;
+            font-size: 0.94rem;
+            text-decoration: none;
+        }
+
+        .footer-content a:hover {
+            color: #fff;
+        }
+
+        .footer-links a {
+            display: block;
+            margin-bottom: 0.45rem;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding: 1rem 20px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            color: #d4e3f7;
+            font-size: 0.92rem;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+                flex-wrap: wrap;
             }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
+
+            .nav-toggle {
+                display: block;
+                margin-left: auto;
+            }
+
+            .nav-links {
+                width: 100%;
+                display: none;
+                flex-direction: column;
+                align-items: flex-start;
+                padding-top: 0.5rem;
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .header-inner h1 {
+                font-size: 2rem;
+            }
+
+            .about-container {
+                padding: 1.3rem;
+                gap: 1.4rem;
+            }
+
+            .bio-content h2 {
+                font-size: 1.8rem;
+            }
+
+            .cta-panel {
+                text-align: center;
+                justify-content: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
             }
         }
     </style>
 </head>
 <body>
 
-    <nav>
+    <nav aria-label="Main navigation">
         <a href="index.html" class="logo">May Learning Hub</a>
-        <div class="nav-links">
+
+        <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle navigation menu">
+            ☰
+        </button>
+
+        <div class="nav-links" id="navLinks">
             <a href="index.html">Home</a>
             <a href="about.html" class="active">About</a>
+            <a href="suppdown.html">App &amp; Support</a>
         </div>
     </nav>
 
     <header>
-        <h1>Meet the Creator</h1>
+        <div class="header-inner">
+            <h1>Meet the Creator</h1>
+            <p>
+                Learn more about the educator, vision, and purpose behind May Learning Hub.
+            </p>
+        </div>
     </header>
 
     <main class="container">
-        <div class="about-container">
-            
+        <section class="intro-strip" aria-label="Introduction">
+            <p>
+                This platform was created to make classroom learning more connected, engaging, and easier to access for both teachers and learners.
+            </p>
+        </section>
+
+        <section class="about-container">
             <div class="profile-section">
-                <img src="MJ Mayaya.jpg" alt="MJ Mayaya" class="profile-image" onerror="this.src='https://via.placeholder.com/280?text=Insert+Image+Here'">
-                
+
+                <div class="profile-card">
+                    <img src="MJ Mayaya.jpg" alt="MJ Mayaya" class="profile-image" id="profileImage">
+                    <div class="image-fallback" id="imageFallback" aria-hidden="true">MJ<br>Mayaya</div>
+                    <h2>MJ Mayaya</h2>
+                    <p>Educator • Content Creator • Learning Innovator</p>
+                </div>
+
                 <div class="contact-box">
                     <h3>Get in Touch</h3>
                     <p>📧 Email: <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox?compose=CllgCJZZztftKwrXrMNNNGHBFFRkGMpNLMWrTTNwvLgvpHjxJWTGSbDXMKCJGvFjZjqNGxWlwjq">MJMayaya@gmail.com</a></p>
                     <p>📍 Location: KwaZulu-Natal, SA</p>
                     <p>📱 WhatsApp: <a href="https://api.whatsapp.com/send/?phone=%2B27684480856&text&type=phone_number&app_absent=0">+27 68 448 0856</a></p>
                 </div>
+
+                <div class="skills-box">
+                    <h3>Focus Areas</h3>
+                    <div class="skills-list">
+                        <span class="skill-tag">Social Sciences</span>
+                        <span class="skill-tag">Geography</span>
+                        <span class="skill-tag">Life Sciences</span>
+                        <span class="skill-tag">Educational Games</span>
+                        <span class="skill-tag">Interactive Notes</span>
+                        <span class="skill-tag">Teacher Support</span>
+                    </div>
+                </div>
+
+                <div class="mission-box">
+                    <h3>Mission</h3>
+                    <p>
+                        To make learning material more accessible, visual, and engaging through a blend of education and technology.
+                    </p>
+                </div>
             </div>
-            
+
             <div class="bio-content">
                 <h2>Hi, I'm MJ Mayaya.</h2>
-                
-                <p>Welcome to the Learning Hub! I’m an educator dedicated to transforming how we teach and learn. I have been in the classroom since 2018, having graduated from the Edgewood campus, and my primary focus is bringing Social Sciences, Geography, and Life Sciences to life for high school learners.</p>
-                
-                <h3>Education in Your Pocket</h3>
-                <p>We live in a digital world, and I believe the best way to teach is to meet students exactly where they are—on their phones. I have a deep passion for technology, and I built this platform to blend that passion with education. Think of this site as "notes in your pocket." By making learning mobile, beautifully designed, and highly interactive, students can access their materials, activities, and custom-built learning games anywhere, at any time.</p>
-                
-                <h3>Synchronizing the Classroom</h3>
-                <p>This platform isn't just for learners; it’s designed to make teaching easier for my fellow educators. The site features tailor-made, CAPS-aligned presentations ready for the classroom. To make complex topics easy to understand, these presentations are packed with beautiful, clear images and detailed diagrams. When teachers present from this hub and learners follow along on their own devices, it synchronizes the educational journey. We all walk the exact same path, standardizing the learning experience and making classroom instruction incredibly seamless.</p>
 
-                <p>Feel free to explore the site, utilize the resources, and let's make learning easier and far more engaging, together.</p>
+                <p>
+                    Welcome to May Learning Hub. I’m an educator dedicated to transforming how we teach and learn. I have been in the classroom since 2018, having graduated from the Edgewood campus, and my primary focus is bringing Social Sciences, Geography, and Life Sciences to life for high school learners.
+                </p>
+
+                <div class="highlight-panel">
+                    <p>
+                        <strong>May Learning Hub</strong> was built from a simple idea: learning should not end when the bell rings. Learners should be able to revisit content, activities, and revision tools wherever they are.
+                    </p>
+                </div>
+
+                <h3>Education in Your Pocket</h3>
+                <p>
+                    We live in a digital world, and I believe the best way to teach is to meet students where they already are—on their phones, tablets, and computers. I have a deep passion for technology, and I built this platform to blend that passion with education.
+                </p>
+                <p>
+                    Think of this site as “notes in your pocket.” By making learning mobile, beautifully designed, and interactive, students can access their materials, activities, and custom-built learning games anywhere and at any time.
+                </p>
+
+                <h3>Synchronizing the Classroom</h3>
+                <p>
+                    This platform is not only for learners; it is also designed to make teaching easier for fellow educators. The site features tailor-made, CAPS-aligned resources that can support classroom teaching in a practical and structured way.
+                </p>
+                <p>
+                    To make complex topics easier to understand, the resources are supported by clear visuals, diagrams, guided content, and interactive learning tools. When teachers present from this hub and learners follow along on their own devices, it creates a more synchronized educational journey.
+                </p>
+
+                <h3>Why This Matters</h3>
+                <p>
+                    Good teaching is not only about explaining content. It is also about presentation, clarity, accessibility, and engagement. My goal is to build resources that help teachers teach better and help learners understand more confidently.
+                </p>
+                <p>
+                    I want this platform to reduce the distance between the classroom and the learner’s everyday world by making quality educational material easier to reach, easier to use, and easier to enjoy.
+                </p>
+
+                <div class="values-grid">
+                    <div class="value-card">
+                        <h4>Accessible Learning</h4>
+                        <p>Resources designed to be easy to access and revisit beyond the classroom.</p>
+                    </div>
+                    <div class="value-card">
+                        <h4>Visual Teaching</h4>
+                        <p>Diagrams, structure, and presentation style that make ideas clearer.</p>
+                    </div>
+                    <div class="value-card">
+                        <h4>Interactive Support</h4>
+                        <p>Games and activities that turn revision into active engagement.</p>
+                    </div>
+                    <div class="value-card">
+                        <h4>Teacher-Friendly Design</h4>
+                        <p>Built with real teaching needs in mind, not just as a digital showcase.</p>
+                    </div>
+                </div>
+
+                <h3>Moving Forward</h3>
+                <p>
+                    Feel free to explore the site, make use of the resources, and become part of a learning experience that aims to be both practical and exciting. The vision is to keep growing this platform into a stronger support system for classrooms, learners, and teachers.
+                </p>
             </div>
-            
-        </div>
+        </section>
+
+        <section class="cta-panel" aria-label="Call to action">
+            <div>
+                <h2>Ready to explore the hub?</h2>
+                <p>
+                    Visit the homepage to browse subjects and grades, or head to the support section for downloads and additional help.
+                </p>
+            </div>
+            <a href="index.html" class="btn btn-primary">Go to Home</a>
+        </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+        <div class="footer-content">
+            <div>
+                <h3>May Learning Hub</h3>
+                <p>
+                    A growing learning platform built to support structured, engaging, and accessible education.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="suppdown.html">Support &amp; Downloads</a>
+            </div>
+
+            <div>
+                <h4>Creator Note</h4>
+                <p>
+                    Built by an educator with a passion for blending technology and classroom learning.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+        </div>
     </footer>
+
+    <script>
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', () => {
+            const isOpen = navLinks.classList.toggle('show');
+            navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        const profileImage = document.getElementById('profileImage');
+        const imageFallback = document.getElementById('imageFallback');
+
+        profileImage.addEventListener('error', function () {
+            this.style.display = 'none';
+            imageFallback.style.display = 'flex';
+        });
+    </script>
 
 </body>
 </html>

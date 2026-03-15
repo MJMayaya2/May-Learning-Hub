@@ -3,224 +3,965 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="May Learning Hub provides CAPS-aligned notes, educational games, activities, and revision support for Social Sciences, Geography, and Life Sciences learners and teachers.">
+    <meta name="theme-color" content="#002b5e">
+    <meta property="og:title" content="May Learning Hub | Home">
+    <meta property="og:description" content="CAPS-aligned notes, games, and activities for learners and teachers.">
+    <meta property="og:type" content="website">
     <title>Learning Hub | Home</title>
     <style>
-        /* --- Basic Reset & Typography --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; }
+        html { scroll-behavior: smooth; }
 
-        /* --- Animations Keyframes --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        img { max-width: 100%; display: block; }
+
+        a:focus-visible,
+        button:focus-visible,
+        summary:focus-visible,
+        input:focus-visible {
+            outline: 3px solid #66a3ff;
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
+
         @keyframes slideInLeft {
             0% { opacity: 0; transform: translateX(-100px); }
             100% { opacity: 1; transform: translateX(0); }
         }
+
         @keyframes slideInRight {
             0% { opacity: 0; transform: translateX(50px); }
             100% { opacity: 1; transform: translateX(0); }
         }
+
         @keyframes slideInDown {
             0% { opacity: 0; transform: translateY(-30px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+
         @keyframes fadeInUp {
             0% { opacity: 0; transform: translateY(40px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+
         @keyframes fadeIn {
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
 
-        /* --- Navigation & Header --- */
-        nav { 
-            background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; 
-            opacity: 0; animation: slideInDown 0.6s ease-out forwards; 
-        }
-        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
-        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
-        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
-        
-        /* Updated Header Styling */
-        header { background-color: #004080; color: #fff; padding: 3rem 1rem; margin-bottom: 2rem; overflow: hidden; }
-        .header-content { display: flex; align-items: center; justify-content: center; gap: 2rem; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; }
-        
-        /* Logo Animation */
-        .header-logo { 
-            width: 120px; height: 120px; object-fit: contain; background: #fff; border-radius: 50%; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
-            opacity: 0; animation: slideInLeft 0.8s ease-out 0.2s forwards; 
+        nav {
+            background-color: #002b5e;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+            opacity: 0;
+            animation: slideInDown 0.6s ease-out forwards;
         }
 
-        /* Header Text Animation */
-        .header-text { 
-            text-align: left; 
-            opacity: 0; animation: slideInRight 0.8s ease-out 0.4s forwards; 
+        .logo {
+            color: #fff;
+            font-size: 1.45rem;
+            font-weight: bold;
+            text-decoration: none;
+            white-space: nowrap;
         }
-        .header-text h1 { font-size: 2.2rem; margin-bottom: 0.2rem; }
-        
-        /* --- NEW MOTTO STYLING --- */
-        .motto { font-size: 1.3rem; font-style: italic; color: #99c2ff; margin-bottom: 0.8rem; font-weight: 500; }
-        
-        .header-text p.instructions { font-size: 1.05rem; color: #e6f0fa; }
 
-        /* Mobile Adjustments for Header */
-        @media (max-width: 768px) {
-            .header-content { text-align: center; flex-direction: column; gap: 1rem; }
-            .header-text { text-align: center; }
-            .nav-links { display: flex; flex-wrap: wrap; justify-content: flex-end; }
-            .nav-links a { margin-left: 1rem; font-size: 0.9rem; }
+        .nav-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
         }
-        
-        /* --- Main 3-Column Layout --- */
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
 
-        /* --- Subject Column Styling & Animation --- */
-        .subject-card { 
-            background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; border-top: 5px solid #3385ff; 
-            opacity: 0; animation: fadeInUp 0.8s ease-out forwards; 
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
-        /* Stagger the cards so they pop up one by one */
+
+        .nav-links a {
+            color: #cce0ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s, background-color 0.3s;
+            padding: 0.45rem 0.7rem;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.08);
+            text-decoration: none;
+        }
+
+        header {
+            background: linear-gradient(135deg, #004080, #0059b3);
+            color: #fff;
+            padding: 3rem 1rem 2.5rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .header-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            background: #fff;
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            animation: slideInLeft 0.8s ease-out 0.2s forwards;
+        }
+
+        .logo-fallback {
+            width: 120px;
+            height: 120px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: #fff;
+            color: #004080;
+            border-radius: 50%;
+            padding: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            animation: slideInLeft 0.8s ease-out 0.2s forwards;
+        }
+
+        .header-text {
+            text-align: left;
+            max-width: 700px;
+            opacity: 0;
+            animation: slideInRight 0.8s ease-out 0.4s forwards;
+        }
+
+        .header-text h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .motto {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: #c7deff;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+
+        .header-text p.instructions {
+            font-size: 1.05rem;
+            color: #e6f0fa;
+            margin-bottom: 1rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0.8rem 1.1rem;
+            transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: #fff;
+            color: #004080;
+        }
+
+        .btn-primary:hover {
+            background-color: #eaf3ff;
+        }
+
+        .btn-secondary {
+            background-color: rgba(255,255,255,0.12);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #003a75;
+            margin-bottom: 0.6rem;
+        }
+
+        .section-subtitle {
+            color: #555;
+            margin-bottom: 1.4rem;
+        }
+
+        .intro-panel {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid #3385ff;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.3s forwards;
+        }
+
+        .intro-panel p + p {
+            margin-top: 0.7rem;
+        }
+
+        .trust-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .trust-card {
+            background: #f7fbff;
+            border: 1px solid #d9e9ff;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .trust-card h3 {
+            color: #004080;
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .trust-card p {
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .search-panel {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.45s forwards;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input {
+            flex: 1 1 320px;
+            min-width: 240px;
+            padding: 0.85rem 1rem;
+            border: 1px solid #b8d1f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #fbfdff;
+        }
+
+        .search-help {
+            margin-top: 0.7rem;
+            font-size: 0.92rem;
+            color: #666;
+        }
+
+        .search-results {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-results ul {
+            list-style: none;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .search-results li a {
+            display: block;
+            background: #f4f9ff;
+            color: #004080;
+            text-decoration: none;
+            border: 1px solid #d8e8fb;
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+        }
+
+        .search-results li a:hover {
+            background: #e9f3ff;
+        }
+
+        .result-meta {
+            display: block;
+            font-size: 0.88rem;
+            color: #5d6c7c;
+            margin-top: 0.2rem;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .subject-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 5px solid #3385ff;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
         .subject-card:nth-child(1) { animation-delay: 0.6s; }
         .subject-card:nth-child(2) { animation-delay: 0.8s; }
-        .subject-card:nth-child(3) { animation-delay: 1.0s; }
+        .subject-card:nth-child(3) { animation-delay: 1s; }
 
-        .subject-header { background-color: #e6f0fa; padding: 1.5rem; text-align: center; border-bottom: 1px solid #b3d4ff; }
-        .subject-header h2 { color: #004080; font-size: 1.4rem; }
+        .subject-header {
+            background-color: #e6f0fa;
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid #b3d4ff;
+        }
 
-        /* --- Collapsible Grade Styling --- */
-        details { padding: 1rem; border-bottom: 1px solid #eee; }
-        details[open] { background-color: #fafbfc; }
-        summary { font-weight: bold; font-size: 1.2rem; color: #00509e; cursor: pointer; list-style: none; padding: 0.5rem 0; }
+        .subject-header h2 {
+            color: #004080;
+            font-size: 1.4rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .subject-header p {
+            font-size: 0.92rem;
+            color: #5d6c7c;
+        }
+
+        details {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        details[open] {
+            background-color: #fafbfc;
+        }
+
+        summary {
+            font-weight: bold;
+            font-size: 1.15rem;
+            color: #00509e;
+            cursor: pointer;
+            list-style: none;
+            padding: 0.5rem 0;
+        }
+
         summary::-webkit-details-marker { display: none; }
-        summary::before { content: "▶ "; font-size: 0.9em; color: #3385ff; display: inline-block; transition: transform 0.2s; }
-        details[open] summary::before { transform: rotate(90deg); }
 
-        /* --- Term & Links Styling --- */
-        .term-section { margin-top: 1rem; padding-left: 1.5rem; }
-        .term-section h4 { color: #555; margin-bottom: 0.5rem; font-size: 1rem; border-bottom: 1px dashed #ccc; padding-bottom: 0.2rem; }
-        
-        .content-links { list-style-type: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
-        .content-links li a { display: block; text-decoration: none; color: #004080; background-color: #f0f7ff; padding: 0.4rem 1rem; border-radius: 4px; transition: all 0.2s ease; font-size: 0.95rem; border-left: 3px solid transparent; }
-        .content-links li a:hover { background-color: #e6f0fa; border-left: 3px solid #3385ff; padding-left: 1.2rem; }
-        
+        summary::before {
+            content: "▶ ";
+            font-size: 0.9em;
+            color: #3385ff;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .term-section {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .term-section h4 {
+            color: #555;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 0.2rem;
+        }
+
+        .content-links {
+            list-style-type: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .content-links li a {
+            display: block;
+            text-decoration: none;
+            color: #004080;
+            background-color: #f0f7ff;
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            border-left: 3px solid transparent;
+        }
+
+        .content-links li a:hover {
+            background-color: #e6f0fa;
+            border-left: 3px solid #3385ff;
+            padding-left: 1.2rem;
+        }
+
         .icon-notes::before { content: "📝 "; }
         .icon-games::before { content: "🎮 "; }
         .icon-activities::before { content: "🛠️ "; }
 
-        /* Footer Animation */
-        footer { 
-            text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: 3rem; 
-            opacity: 0; animation: fadeIn 1s ease-out 1.5s forwards; 
+        .feature-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .feature-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border-left: 5px solid #3385ff;
+        }
+
+        .feature-box h3 {
+            color: #004080;
+            margin-bottom: 0.4rem;
+            font-size: 1rem;
+        }
+
+        .feature-box p {
+            color: #5d6c7c;
+            font-size: 0.95rem;
+        }
+
+        .cta-panel {
+            background: linear-gradient(135deg, #003a75, #004f9f);
+            color: #fff;
+            border-radius: 14px;
+            padding: 1.8rem;
+            margin: 2rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-panel h2 {
+            margin-bottom: 0.3rem;
+            font-size: 1.5rem;
+        }
+
+        .cta-panel p {
+            color: #dbe9ff;
+            max-width: 700px;
+        }
+
+        footer {
+            background-color: #002b5e;
+            color: #fff;
+            margin-top: 3rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1.4s forwards;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px 1.3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .footer-brand h3,
+        .footer-links h4,
+        .footer-note h4 {
+            margin-bottom: 0.6rem;
+        }
+
+        .footer-brand p,
+        .footer-note p {
+            color: #d4e3f7;
+            font-size: 0.94rem;
+        }
+
+        .footer-links a {
+            display: block;
+            color: #d4e3f7;
+            text-decoration: none;
+            margin-bottom: 0.45rem;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding: 1rem 20px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            color: #d4e3f7;
+            font-size: 0.92rem;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .nav-toggle {
+                display: block;
+                margin-left: auto;
+            }
+
+            .nav-links {
+                width: 100%;
+                display: none;
+                flex-direction: column;
+                align-items: flex-start;
+                padding-top: 0.5rem;
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .header-content {
+                text-align: center;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-text {
+                text-align: center;
+            }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .cta-panel {
+                text-align: center;
+                justify-content: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
         }
     </style>
 </head>
 <body>
 
-    <nav>
+    <nav aria-label="Main navigation">
         <a href="index.html" class="logo">May Learning Hub</a>
-        <div class="nav-links">
+
+        <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle navigation menu">
+            ☰
+        </button>
+
+        <div class="nav-links" id="navLinks">
             <a href="index.html" class="active">Home</a>
             <a href="about.html">About</a>
-            <a href="suppdown.html">Support & Downloads</a>
+            <a href="suppdown.html">App &amp; Support</a>
         </div>
     </nav>
 
     <header>
         <div class="header-content">
-            <img src="May Learning Hub Logo.jpg" alt="May Learning Hub Logo" class="header-logo" onerror="this.src='https://via.placeholder.com/120?text=Logo'">
-            
+            <img src="May Learning Hub Logo.jpg" alt="May Learning Hub Logo" class="header-logo" id="siteLogo">
+            <div class="logo-fallback" id="logoFallback" aria-hidden="true">May<br>Learning<br>Hub</div>
+
             <div class="header-text">
                 <h1>Welcome to May Learning Hub</h1>
                 <p class="motto">Teachers and learners, finally on the same page.</p>
-                <p class="instructions">Select your subject and grade below to access notes, educational games, and activities.</p>
+                <p class="instructions">
+                    Explore CAPS-aligned notes, educational games, and classroom activities for Social Sciences, Geography, and Life Sciences.
+                </p>
+                <div class="hero-actions">
+                    <a href="#subjects" class="btn btn-primary">Start Learning</a>
+                    <a href="about.html" class="btn btn-secondary">Meet the Creator</a>
+                </div>
             </div>
         </div>
     </header>
 
     <div class="container">
-        <main class="subjects-grid">
-            
-            <section class="subject-card">
-                <div class="subject-header">
-                    <h2>Social Sciences</h2>
-                </div>
-                
-                <script>
-                    const ssGrades = [8, 9];
-                    ssGrades.forEach(grade => {
-                        document.write(`<details><summary>Grade ${grade}</summary>`);
-                        for(let t=1; t<=4; t++) {
-                            document.write(`
-                            <div class="term-section">
-                                <h4>Term ${t}</h4>
-                                <ul class="content-links">
-                                    <li><a href="Social-Sciences/Term-${t}/Grade-${grade}/Notes/notes.html" class="icon-notes">Notes</a></li>
-                                    <li><a href="Social-Sciences/Term-${t}/Grade-${grade}/Games/games.html" class="icon-games">Games</a></li>
-                                    <li><a href="Social-Sciences/Term-${t}/Grade-${grade}/Activities/activities.html" class="icon-activities">Activities</a></li>
-                                </ul>
-                            </div>`);
-                        }
-                        document.write(`</details>`);
-                    });
-                </script>
-            </section>
 
-            <section class="subject-card">
-                <div class="subject-header">
-                    <h2>Geography</h2>
-                </div>
-                
-                <script>
-                    const geoGrades = [10, 11, 12];
-                    geoGrades.forEach(grade => {
-                        document.write(`<details><summary>Grade ${grade}</summary>`);
-                        for(let t=1; t<=4; t++) {
-                            document.write(`
-                            <div class="term-section">
-                                <h4>Term ${t}</h4>
-                                <ul class="content-links">
-                                    <li><a href="Geography/Term-${t}/Grade-${grade}/Notes/notes.html" class="icon-notes">Notes</a></li>
-                                    <li><a href="Geography/Term-${t}/Grade-${grade}/Games/games.html" class="icon-games">Games</a></li>
-                                    <li><a href="Geography/Term-${t}/Grade-${grade}/Activities/activities.html" class="icon-activities">Activities</a></li>
-                                </ul>
-                            </div>`);
-                        }
-                        document.write(`</details>`);
-                    });
-                </script>
-            </section>
+        <section class="intro-panel" aria-labelledby="intro-title">
+            <h2 class="section-title" id="intro-title">Built for Real Classroom Learning</h2>
+            <p>
+                May Learning Hub is designed to support both teachers and learners with structured subject content, engaging revision tools, and accessible classroom resources.
+            </p>
+            <p>
+                The goal is simple: make learning clearer, more interactive, and easier to revisit across grades and terms without changing your existing content links.
+            </p>
 
-            <section class="subject-card">
-                <div class="subject-header">
-                    <h2>Life Sciences</h2>
+            <div class="trust-points">
+                <div class="trust-card">
+                    <h3>CAPS-Friendly Structure</h3>
+                    <p>Organised by subject, grade, and term for easier classroom use and revision.</p>
                 </div>
-                
-                <script>
-                    const lsGrades = [10, 11, 12];
-                    lsGrades.forEach(grade => {
-                        document.write(`<details><summary>Grade ${grade}</summary>`);
-                        for(let t=1; t<=4; t++) {
-                            document.write(`
-                            <div class="term-section">
-                                <h4>Term ${t}</h4>
-                                <ul class="content-links">
-                                    <li><a href="Life-Sciences/Term-${t}/Grade-${grade}/Notes/notes.html" class="icon-notes">Notes</a></li>
-                                    <li><a href="Life-Sciences/Term-${t}/Grade-${grade}/Games/games.html" class="icon-games">Games</a></li>
-                                    <li><a href="Life-Sciences/Term-${t}/Grade-${grade}/Activities/activities.html" class="icon-activities">Activities</a></li>
-                                </ul>
-                            </div>`);
-                        }
-                        document.write(`</details>`);
-                    });
-                </script>
-            </section>
+                <div class="trust-card">
+                    <h3>Teacher-Created</h3>
+                    <p>Designed with practical school needs in mind, not just for looks.</p>
+                </div>
+                <div class="trust-card">
+                    <h3>Notes + Games + Activities</h3>
+                    <p>One place for core learning content and interactive support material.</p>
+                </div>
+                <div class="trust-card">
+                    <h3>Growing Learning Platform</h3>
+                    <p>Ready to expand with more topics, app support, and subject resources over time.</p>
+                </div>
+            </div>
+        </section>
 
-        </main>
+        <section class="search-panel" aria-labelledby="search-title">
+            <h2 class="section-title" id="search-title">Quick Search</h2>
+            <p class="section-subtitle">Search by subject, grade, term, or content type.</p>
+
+            <div class="search-bar">
+                <label for="siteSearch" class="sr-only">Search site content</label>
+                <input
+                    type="text"
+                    id="siteSearch"
+                    placeholder="Try: Geography Grade 12 Term 1 Notes"
+                    autocomplete="off"
+                >
+            </div>
+            <p class="search-help">Examples: “Social Sciences Grade 8 Games”, “Life Sciences Term 3 Activities”, “Geography Notes”.</p>
+
+            <div class="search-results" id="searchResults" aria-live="polite">
+                <ul id="searchResultsList"></ul>
+            </div>
+        </section>
+
+        <section class="feature-strip" aria-label="Site highlights">
+            <div class="feature-box">
+                <h3>📝 Notes Hub</h3>
+                <p>Clear learning material organised by term and grade.</p>
+            </div>
+            <div class="feature-box">
+                <h3>🎮 Interactive Games</h3>
+                <p>Learning made more memorable through play and revision challenges.</p>
+            </div>
+            <div class="feature-box">
+                <h3>🛠️ Classroom Activities</h3>
+                <p>Useful tasks for practice, teaching support, and guided learning.</p>
+            </div>
+            <div class="feature-box">
+                <h3>📚 Built to Grow</h3>
+                <p>Prepared for future expansion with more topics, app support, and subject resources.</p>
+            </div>
+        </section>
+
+        <section id="subjects" aria-labelledby="subjects-title">
+            <h2 class="section-title" id="subjects-title">Browse by Subject, Grade, and Term</h2>
+            <p class="section-subtitle">
+                Select your subject below to access notes, games, and activities...
+            </p>
+
+            <main class="subjects-grid" id="subjectsGrid">
+
+                <section class="subject-card">
+                    <div class="subject-header">
+                        <h2>Social Sciences</h2>
+                        <p>Grades 8–9</p>
+                    </div>
+                    <div class="subject-body" id="social-sciences-content"></div>
+                </section>
+
+                <section class="subject-card">
+                    <div class="subject-header">
+                        <h2>Geography</h2>
+                        <p>Grades 10–12</p>
+                    </div>
+                    <div class="subject-body" id="geography-content"></div>
+                </section>
+
+                <section class="subject-card">
+                    <div class="subject-header">
+                        <h2>Life Sciences</h2>
+                        <p>Grades 10–12</p>
+                    </div>
+                    <div class="subject-body" id="life-sciences-content"></div>
+                </section>
+
+            </main>
+        </section>
+
+        <section class="cta-panel" aria-labelledby="cta-title">
+            <div>
+                <h2 id="cta-title">Need help or want to explore the learning app?</h2>
+                <p>
+                    Visit the support section for guidance, help with using the site, and information about the learning app.
+                </p>
+            </div>
+            <a href="suppdown.html" class="btn btn-primary">Go to App &amp; Support</a>
+        </section>
     </div>
 
     <footer>
-        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>May Learning Hub</h3>
+                <p>
+                    A growing learning platform for teachers and learners, designed to make notes, games, and activities easier to access and use.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="suppdown.html">App &amp; Support</a>
+            </div>
+
+            <div class="footer-note">
+                <h4>Site Note</h4>
+                <p>
+                    Content is organised by subject, grade, and term to support structured classroom learning, revision, and app-based access.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+        </div>
     </footer>
+
+    <script>
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', () => {
+            const isOpen = navLinks.classList.toggle('show');
+            navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        const siteLogo = document.getElementById('siteLogo');
+        const logoFallback = document.getElementById('logoFallback');
+
+        siteLogo.addEventListener('error', function () {
+            this.style.display = 'none';
+            logoFallback.style.display = 'flex';
+        });
+
+        const subjectsData = [
+            {
+                id: 'social-sciences-content',
+                subjectName: 'Social Sciences',
+                basePath: 'Social-Sciences',
+                grades: [8, 9]
+            },
+            {
+                id: 'geography-content',
+                subjectName: 'Geography',
+                basePath: 'Geography',
+                grades: [10, 11, 12]
+            },
+            {
+                id: 'life-sciences-content',
+                subjectName: 'Life Sciences',
+                basePath: 'Life-Sciences',
+                grades: [10, 11, 12]
+            }
+        ];
+
+        const searchableLinks = [];
+
+        function createTermLinks(subjectName, basePath, grade, term) {
+            const items = [
+                {
+                    label: 'Notes',
+                    className: 'icon-notes',
+                    type: 'Notes',
+                    href: `${basePath}/Term-${term}/Grade-${grade}/Notes/notes.html`
+                },
+                {
+                    label: 'Games',
+                    className: 'icon-games',
+                    type: 'Games',
+                    href: `${basePath}/Term-${term}/Grade-${grade}/Games/games.html`
+                },
+                {
+                    label: 'Activities',
+                    className: 'icon-activities',
+                    type: 'Activities',
+                    href: `${basePath}/Term-${term}/Grade-${grade}/Activities/activities.html`
+                }
+            ];
+
+            items.forEach(item => {
+                searchableLinks.push({
+                    subject: subjectName,
+                    grade: grade,
+                    term: term,
+                    type: item.type,
+                    label: `${subjectName} Grade ${grade} Term ${term} ${item.type}`,
+                    href: item.href
+                });
+            });
+
+            return items.map(item => `
+                <li>
+                    <a href="${item.href}" class="${item.className}">
+                        ${item.label}
+                    </a>
+                </li>
+            `).join('');
+        }
+
+        function buildSubjectContent(subject) {
+            const container = document.getElementById(subject.id);
+            let html = '';
+
+            subject.grades.forEach(grade => {
+                html += `<details><summary>Grade ${grade}</summary>`;
+
+                for (let term = 1; term <= 4; term++) {
+                    html += `
+                        <div class="term-section">
+                            <h4>Term ${term}</h4>
+                            <ul class="content-links">
+                                ${createTermLinks(subject.subjectName, subject.basePath, grade, term)}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                html += `</details>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        subjectsData.forEach(buildSubjectContent);
+
+        const siteSearch = document.getElementById('siteSearch');
+        const searchResults = document.getElementById('searchResults');
+        const searchResultsList = document.getElementById('searchResultsList');
+
+        function renderSearchResults(results, query) {
+            if (!query.trim()) {
+                searchResults.classList.remove('active');
+                searchResultsList.innerHTML = '';
+                return;
+            }
+
+            if (results.length === 0) {
+                searchResults.classList.add('active');
+                searchResultsList.innerHTML = `
+                    <li>
+                        <a href="javascript:void(0)">
+                            No matches found
+                            <span class="result-meta">Try searching by subject, grade, term, or type such as Notes, Games, or Activities.</span>
+                        </a>
+                    </li>
+                `;
+                return;
+            }
+
+            searchResults.classList.add('active');
+            searchResultsList.innerHTML = results.slice(0, 12).map(result => `
+                <li>
+                    <a href="${result.href}">
+                        ${result.label}
+                        <span class="result-meta">${result.subject} • Grade ${result.grade} • Term ${result.term} • ${result.type}</span>
+                    </a>
+                </li>
+            `).join('');
+        }
+
+        siteSearch.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+
+            const filtered = searchableLinks.filter(item => {
+                const haystack = `${item.subject} grade ${item.grade} term ${item.term} ${item.type} ${item.label}`.toLowerCase();
+                return haystack.includes(query);
+            });
+
+            renderSearchResults(filtered, query);
+        });
+    </script>
 
 </body>
 </html>
