@@ -56,6 +56,18 @@
             100% { opacity: 1; }
         }
 
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 0 rgba(255, 208, 0, 0.0), 0 6px 16px rgba(0,0,0,0.08);
+            }
+            50% {
+                box-shadow: 0 0 18px rgba(255, 208, 0, 0.35), 0 8px 20px rgba(0,0,0,0.12);
+            }
+            100% {
+                box-shadow: 0 0 0 rgba(255, 208, 0, 0.0), 0 6px 16px rgba(0,0,0,0.08);
+            }
+        }
+
         nav {
             background-color: #002b5e;
             padding: 1rem 2rem;
@@ -281,6 +293,95 @@
             color: #555;
         }
 
+        .whats-new-panel {
+            background: linear-gradient(135deg, #fff7ad, #ffd84d, #ffef88);
+            border: 2px solid #ffcc00;
+            border-radius: 14px;
+            padding: 0.95rem 1.1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            opacity: 0;
+            animation:
+                fadeInUp 0.8s ease-out 0.38s forwards,
+                pulseGlow 2.6s ease-in-out 1.6s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .whats-new-panel::before {
+            content: "✨";
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            font-size: 1.2rem;
+            opacity: 0.85;
+        }
+
+        .whats-new-header {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .whats-new-title {
+            font-size: 1.25rem;
+            color: #7a4b00;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .whats-new-subtitle {
+            color: #6a5200;
+            font-size: 0.92rem;
+            font-weight: 500;
+        }
+
+        .whats-new-list {
+            list-style: none;
+            display: grid;
+            gap: 0.55rem;
+        }
+
+        .whats-new-list li a {
+            display: block;
+            text-decoration: none;
+            background: rgba(255,255,255,0.52);
+            border: 1px solid rgba(184, 132, 0, 0.18);
+            border-left: 5px solid #ffb700;
+            color: #5f4300;
+            border-radius: 8px;
+            padding: 0.62rem 0.8rem;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            line-height: 1.35;
+        }
+
+        .whats-new-list li a:hover {
+            background: rgba(255,255,255,0.76);
+            transform: translateX(4px);
+        }
+
+        .new-tag {
+            display: inline-block;
+            background: #ff9800;
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 0.14rem 0.45rem;
+            border-radius: 999px;
+            margin-right: 0.45rem;
+            letter-spacing: 0.3px;
+            vertical-align: middle;
+        }
+
+        .whats-new-meta {
+            display: block;
+            margin-top: 0.1rem;
+            font-size: 0.82rem;
+            color: #7a5d00;
+        }
+
         .search-panel {
             background: #fff;
             border-radius: 12px;
@@ -292,19 +393,23 @@
         }
 
         .search-bar {
-            display: flex;
-            gap: 0.8rem;
-            flex-wrap: wrap;
+            display: block;
+            width: 100%;
         }
 
         .search-bar input {
-            flex: 1 1 320px;
-            min-width: 240px;
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            height: 52px;
             padding: 0.85rem 1rem;
             border: 1px solid #b8d1f0;
             border-radius: 8px;
             font-size: 1rem;
             background: #fbfdff;
+            appearance: none;
+            -webkit-appearance: none;
         }
 
         .search-help {
@@ -336,6 +441,7 @@
             border: 1px solid #d8e8fb;
             border-radius: 8px;
             padding: 0.85rem 1rem;
+            word-break: break-word;
         }
 
         .search-results li a:hover {
@@ -609,13 +715,62 @@
                 justify-content: center;
             }
 
+            .search-panel {
+                padding: 1rem;
+            }
+
             .search-bar {
-                flex-direction: column;
+                width: 100%;
+            }
+
+            .search-bar input {
+                width: 100%;
+                min-width: 0;
+                max-width: 100%;
+                height: 46px;
+                font-size: 0.95rem;
+                padding: 0.75rem 0.9rem;
+            }
+
+            .search-help {
+                font-size: 0.88rem;
             }
 
             .cta-panel {
                 text-align: center;
                 justify-content: center;
+            }
+
+            .whats-new-panel::before {
+                font-size: 1rem;
+                top: 9px;
+                right: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 14px;
+            }
+
+            .search-panel {
+                padding: 0.9rem;
+            }
+
+            .search-bar input {
+                height: 44px;
+                font-size: 0.92rem;
+                border-radius: 7px;
+                padding: 0.7rem 0.85rem;
+            }
+
+            .search-help {
+                font-size: 0.84rem;
+                line-height: 1.4;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
             }
         }
 
@@ -692,6 +847,37 @@
                     <p>Ready to expand with more topics, app support, and subject resources over time.</p>
                 </div>
             </div>
+        </section>
+
+        <section class="whats-new-panel" aria-labelledby="whats-new-title">
+            <div class="whats-new-header">
+                <h2 class="whats-new-title" id="whats-new-title">What’s New</h2>
+                <p class="whats-new-subtitle">Fresh updates and recently added content.</p>
+            </div>
+
+            <ul class="whats-new-list">
+                <li>
+                    <a href="Life-Sciences/Term-1/Grade-11/Notes/notes.html">
+                        <span class="new-tag">NEW</span>
+                        Life Sciences Grade 11 Term 1 Presentation
+                        <span class="whats-new-meta">Latest notes update for Life Sciences learners.</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Social-Sciences/Term-1/Grade-9/Notes/notes.html">
+                        <span class="new-tag">NEW</span>
+                        Social Sciences Grade 9 Term 1 Presentation
+                        <span class="whats-new-meta">New interactive revision content for Social Sciences.</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="Life-Sciences/Term-1/Grade-10/Notes/notes.html">
+                        <span class="new-tag">NEW</span>
+                        Life Sciences Grade 10 Term 1 Presentation
+                        <span class="whats-new-meta">Fresh classroom activities and practice tasks.</span>
+                    </a>
+                </li>
+            </ul>
         </section>
 
         <section class="search-panel" aria-labelledby="search-title">
