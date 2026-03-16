@@ -25,7 +25,9 @@
         a:focus-visible,
         button:focus-visible,
         summary:focus-visible,
-        input:focus-visible {
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
             outline: 3px solid #66a3ff;
             outline-offset: 3px;
             border-radius: 6px;
@@ -56,15 +58,15 @@
             100% { opacity: 1; }
         }
 
-        @keyframes pulseGlow {
+        @keyframes pulseGlowRed {
             0% {
-                box-shadow: 0 0 0 rgba(255, 208, 0, 0.0), 0 6px 16px rgba(0,0,0,0.08);
+                box-shadow: 0 0 0 rgba(255, 59, 59, 0), 0 5px 14px rgba(0,0,0,0.08);
             }
             50% {
-                box-shadow: 0 0 18px rgba(255, 208, 0, 0.35), 0 8px 20px rgba(0,0,0,0.12);
+                box-shadow: 0 0 18px rgba(255, 59, 59, 0.35), 0 8px 18px rgba(0,0,0,0.12);
             }
             100% {
-                box-shadow: 0 0 0 rgba(255, 208, 0, 0.0), 0 6px 16px rgba(0,0,0,0.08);
+                box-shadow: 0 0 0 rgba(255, 59, 59, 0), 0 5px 14px rgba(0,0,0,0.08);
             }
         }
 
@@ -211,6 +213,8 @@
             border-radius: 8px;
             padding: 0.8rem 1.1rem;
             transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+            border: none;
+            cursor: pointer;
         }
 
         .btn:hover {
@@ -236,6 +240,24 @@
             background-color: rgba(255,255,255,0.2);
         }
 
+        .btn-dark {
+            background-color: #004080;
+            color: #fff;
+        }
+
+        .btn-dark:hover {
+            background-color: #003468;
+        }
+
+        .btn-whatsapp {
+            background-color: #25d366;
+            color: #fff;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #1fb65a;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -245,148 +267,165 @@
         .section-title {
             font-size: 1.8rem;
             color: #003a75;
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.35rem;
         }
 
         .section-subtitle {
             color: #555;
-            margin-bottom: 1.4rem;
+            margin-bottom: 1.1rem;
         }
 
         .intro-panel {
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border-left: 5px solid #3385ff;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.2rem;
+            border-left: 4px solid #3385ff;
             opacity: 0;
             animation: fadeInUp 0.8s ease-out 0.3s forwards;
         }
 
+        .intro-panel p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
         .intro-panel p + p {
-            margin-top: 0.7rem;
+            margin-top: 0.45rem;
         }
 
         .trust-points {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 0.75rem;
+            margin-top: 0.8rem;
         }
 
         .trust-card {
             background: #f7fbff;
             border: 1px solid #d9e9ff;
-            border-radius: 10px;
-            padding: 1rem;
+            border-radius: 9px;
+            padding: 0.8rem 0.9rem;
         }
 
         .trust-card h3 {
             color: #004080;
-            font-size: 1rem;
-            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+            line-height: 1.3;
         }
 
         .trust-card p {
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             color: #555;
+            line-height: 1.4;
+        }
+
+        .whats-new-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1.5rem;
         }
 
         .whats-new-panel {
-            background: linear-gradient(135deg, #fff7ad, #ffd84d, #ffef88);
-            border: 2px solid #ffcc00;
-            border-radius: 14px;
-            padding: 0.95rem 1.1rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            background: linear-gradient(135deg, #ff4d4d, #ff2a2a, #ff6b6b);
+            border: 2px solid #ff1a1a;
+            border-radius: 12px;
+            padding: 0.75rem 0.85rem;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.08);
             opacity: 0;
             animation:
                 fadeInUp 0.8s ease-out 0.38s forwards,
-                pulseGlow 2.6s ease-in-out 1.6s infinite;
+                pulseGlowRed 2.6s ease-in-out 1.6s infinite;
             position: relative;
             overflow: hidden;
+            min-width: 0;
         }
 
         .whats-new-panel::before {
             content: "✨";
             position: absolute;
-            top: 10px;
-            right: 14px;
-            font-size: 1.2rem;
-            opacity: 0.85;
+            top: 8px;
+            right: 12px;
+            font-size: 1rem;
+            opacity: 0.9;
         }
 
         .whats-new-header {
             display: flex;
             align-items: center;
-            gap: 0.7rem;
-            margin-bottom: 0.65rem;
+            gap: 0.45rem;
+            margin-bottom: 0.45rem;
             flex-wrap: wrap;
+            padding-right: 1rem;
         }
 
         .whats-new-title {
-            font-size: 1.25rem;
-            color: #7a4b00;
+            font-size: 1.05rem;
+            color: #fff;
             margin: 0;
             line-height: 1.2;
         }
 
         .whats-new-subtitle {
-            color: #6a5200;
-            font-size: 0.92rem;
+            color: #ffe5e5;
+            font-size: 0.82rem;
             font-weight: 500;
         }
 
         .whats-new-list {
             list-style: none;
             display: grid;
-            gap: 0.55rem;
+            gap: 0.42rem;
         }
 
         .whats-new-list li a {
             display: block;
             text-decoration: none;
-            background: rgba(255,255,255,0.52);
-            border: 1px solid rgba(184, 132, 0, 0.18);
-            border-left: 5px solid #ffb700;
-            color: #5f4300;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-left: 4px solid #ffffff;
+            color: #fff;
             border-radius: 8px;
-            padding: 0.62rem 0.8rem;
+            padding: 0.5rem 0.65rem;
             transition: transform 0.2s ease, background-color 0.2s ease;
-            line-height: 1.35;
+            line-height: 1.25;
+            font-size: 0.93rem;
         }
 
         .whats-new-list li a:hover {
-            background: rgba(255,255,255,0.76);
+            background: rgba(255,255,255,0.28);
             transform: translateX(4px);
         }
 
         .new-tag {
             display: inline-block;
-            background: #ff9800;
-            color: #fff;
-            font-size: 0.68rem;
+            background: #fff;
+            color: #e60000;
+            font-size: 0.65rem;
             font-weight: 800;
-            padding: 0.14rem 0.45rem;
+            padding: 0.12rem 0.42rem;
             border-radius: 999px;
-            margin-right: 0.45rem;
+            margin-right: 0.35rem;
             letter-spacing: 0.3px;
             vertical-align: middle;
         }
 
         .whats-new-meta {
             display: block;
-            margin-top: 0.1rem;
-            font-size: 0.82rem;
-            color: #7a5d00;
+            margin-top: 0.08rem;
+            font-size: 0.76rem;
+            color: #ffe3e3;
         }
 
-        .search-panel {
+        .search-panel,
+        .feedback-panel {
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            padding: 1.5rem;
+            padding: 1.3rem;
             margin-bottom: 2rem;
             opacity: 0;
             animation: fadeInUp 0.8s ease-out 0.45s forwards;
@@ -412,7 +451,8 @@
             -webkit-appearance: none;
         }
 
-        .search-help {
+        .search-help,
+        .feedback-help {
             margin-top: 0.7rem;
             font-size: 0.92rem;
             color: #666;
@@ -618,6 +658,126 @@
             max-width: 700px;
         }
 
+        .feedback-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .feedback-form-wrap {
+            background: #f9fcff;
+            border: 1px solid #dcecff;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .feedback-form {
+            display: grid;
+            gap: 0.95rem;
+        }
+
+        .feedback-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.9rem;
+        }
+
+        .feedback-field label {
+            display: block;
+            font-weight: 600;
+            color: #003a75;
+            margin-bottom: 0.35rem;
+            font-size: 0.95rem;
+        }
+
+        .feedback-field input,
+        .feedback-field select,
+        .feedback-field textarea {
+            width: 100%;
+            border: 1px solid #b8d1f0;
+            border-radius: 8px;
+            padding: 0.8rem 0.9rem;
+            font-size: 0.96rem;
+            background: #fff;
+            color: #333;
+        }
+
+        .feedback-field textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .feedback-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .form-status {
+            margin-top: 0.7rem;
+            padding: 0.8rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.94rem;
+            display: none;
+        }
+
+        .form-status.success {
+            display: block;
+            background: #e9f9ee;
+            color: #116b36;
+            border: 1px solid #bde8c9;
+        }
+
+        .form-status.error {
+            display: block;
+            background: #fff1f1;
+            color: #a32222;
+            border: 1px solid #f2c3c3;
+        }
+
+        .feedback-side {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .feedback-card {
+            background: #f7fbff;
+            border: 1px solid #d9e9ff;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .feedback-card h3 {
+            color: #004080;
+            margin-bottom: 0.4rem;
+            font-size: 1rem;
+        }
+
+        .feedback-card p {
+            color: #5d6c7c;
+            font-size: 0.94rem;
+        }
+
+        .feedback-card .mini-list {
+            list-style: none;
+            display: grid;
+            gap: 0.45rem;
+            margin-top: 0.6rem;
+        }
+
+        .feedback-card .mini-list li {
+            color: #4d6073;
+            font-size: 0.93rem;
+        }
+
+        .feedback-card .mini-list li::before {
+            content: "• ";
+            color: #3385ff;
+            font-weight: bold;
+        }
+
         footer {
             background-color: #002b5e;
             color: #fff;
@@ -678,6 +838,12 @@
             border: 0;
         }
 
+        @media (max-width: 900px) {
+            .feedback-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
             nav {
                 padding: 1rem;
@@ -715,7 +881,12 @@
                 justify-content: center;
             }
 
-            .search-panel {
+            .whats-new-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-panel,
+            .feedback-panel {
                 padding: 1rem;
             }
 
@@ -732,19 +903,18 @@
                 padding: 0.75rem 0.9rem;
             }
 
-            .search-help {
+            .search-help,
+            .feedback-help {
                 font-size: 0.88rem;
+            }
+
+            .feedback-row {
+                grid-template-columns: 1fr;
             }
 
             .cta-panel {
                 text-align: center;
                 justify-content: center;
-            }
-
-            .whats-new-panel::before {
-                font-size: 1rem;
-                top: 9px;
-                right: 12px;
             }
         }
 
@@ -753,7 +923,12 @@
                 padding: 0 14px;
             }
 
-            .search-panel {
+            .intro-panel {
+                padding: 0.9rem 1rem;
+            }
+
+            .search-panel,
+            .feedback-panel {
                 padding: 0.9rem;
             }
 
@@ -764,13 +939,22 @@
                 padding: 0.7rem 0.85rem;
             }
 
-            .search-help {
+            .search-help,
+            .feedback-help {
                 font-size: 0.84rem;
                 line-height: 1.4;
             }
 
             .section-title {
-                font-size: 1.5rem;
+                font-size: 1.45rem;
+            }
+
+            .whats-new-title {
+                font-size: 0.98rem;
+            }
+
+            .whats-new-subtitle {
+                font-size: 0.78rem;
             }
         }
 
@@ -795,6 +979,7 @@
         <div class="nav-links" id="navLinks">
             <a href="index.html" class="active">Home</a>
             <a href="about.html">About</a>
+            <a href="#feedback">Feedback</a>
             <a href="suppdown.html">App &amp; Support</a>
         </div>
     </nav>
@@ -812,7 +997,7 @@
                 </p>
                 <div class="hero-actions">
                     <a href="#subjects" class="btn btn-primary">Start Learning</a>
-                    <a href="about.html" class="btn btn-secondary">Meet the Creator</a>
+                    <a href="#feedback" class="btn btn-secondary">Send Feedback</a>
                 </div>
             </div>
         </div>
@@ -824,9 +1009,6 @@
             <h2 class="section-title" id="intro-title">Built for Real Classroom Learning</h2>
             <p>
                 May Learning Hub is designed to support both teachers and learners with structured subject content, engaging revision tools, and accessible classroom resources.
-            </p>
-            <p>
-                The goal is simple: make learning clearer, more interactive, and easier to revisit across grades and terms without changing your existing content links.
             </p>
 
             <div class="trust-points">
@@ -849,35 +1031,68 @@
             </div>
         </section>
 
-        <section class="whats-new-panel" aria-labelledby="whats-new-title">
-            <div class="whats-new-header">
-                <h2 class="whats-new-title" id="whats-new-title">What’s New</h2>
-                <p class="whats-new-subtitle">Fresh updates and recently added content.</p>
-            </div>
+        <section class="whats-new-grid" aria-label="Latest updates">
+            <section class="whats-new-panel" aria-labelledby="whats-new-notes-title">
+                <div class="whats-new-header">
+                    <h2 class="whats-new-title" id="whats-new-notes-title">What’s New — Notes / Presentations</h2>
+                    <p class="whats-new-subtitle">Fresh presentations and newly added lesson content.</p>
+                </div>
 
-            <ul class="whats-new-list">
-                <li>
-                    <a href="Life-Sciences/Term-1/Grade-11/Notes/notes.html">
-                        <span class="new-tag">NEW</span>
-                        Life Sciences Grade 11 Term 1 Presentation
-                        <span class="whats-new-meta">Latest Presentation for Life Sciences.</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="Social-Sciences/Term-1/Grade-9/Notes/notes.html">
-                        <span class="new-tag">NEW</span>
-                        Social Sciences Grade 9 Term 1 Presentation
-                        <span class="whats-new-meta">Latest Presentation for Social Sciences.</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="Life-Sciences/Term-1/Grade-10/Notes/notes.html">
-                        <span class="new-tag">NEW</span>
-                        Life Sciences Grade 10 Term 1 Presentation
-                        <span class="whats-new-meta">Latest presentation for Life Sciences.</span>
-                    </a>
-                </li>
-            </ul>
+                <ul class="whats-new-list">
+                    <li>
+                        <a href="Life-Sciences/Term-1/Grade-11/Notes/notes.html">
+                            <span class="new-tag">NEW</span>
+                            Life Sciences Grade 11 Term 1 Presentation
+                            <span class="whats-new-meta">Latest presentation added for Life Sciences.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Social-Sciences/Term-1/Grade-9/Notes/notes.html">
+                            <span class="new-tag">NEW</span>
+                            Social Sciences Grade 9 Term 1 Presentation
+                            <span class="whats-new-meta">Freshly added Social Sciences presentation.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Life-Sciences/Term-1/Grade-10/Notes/notes.html">
+                            <span class="new-tag">NEW</span>
+                            Life Sciences Grade 10 Term 1 Presentation
+                            <span class="whats-new-meta">Latest presentation for Grade 10 Life Sciences.</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="whats-new-panel" aria-labelledby="whats-new-games-title">
+                <div class="whats-new-header">
+                    <h2 class="whats-new-title" id="whats-new-games-title">What’s New — Games</h2>
+                    <p class="whats-new-subtitle">Fresh interactive games and revision activities.</p>
+                </div>
+
+                <ul class="whats-new-list">
+                    <li>
+                        <a href="Geography/Term-1/Grade-10/Games/games.html">
+                            <span class="new-tag">NEW</span>
+                            Geography Grade 10 Term 1 Game
+                            <span class="whats-new-meta">New interactive revision game for Geography learners.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Social-Sciences/Term-1/Grade-8/Games/games.html">
+                            <span class="new-tag">NEW</span>
+                            Social Sciences Grade 8 Term 1 Game
+                            <span class="whats-new-meta">Fresh Social Sciences game for active recall and practice.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Geography/Term-1/Grade-11/Games/games.html">
+                            <span class="new-tag">NEW</span>
+                            Geography Grade 11 Term 1 Game
+                            <span class="whats-new-meta">Newly added Geography interactive games.</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
         </section>
 
         <section class="search-panel" aria-labelledby="search-title">
@@ -963,6 +1178,119 @@
             </div>
             <a href="suppdown.html" class="btn btn-primary">Go to App &amp; Support</a>
         </section>
+
+        <section class="feedback-panel" id="feedback" aria-labelledby="feedback-title">
+            <h2 class="section-title" id="feedback-title">Feedback, Support, or Resource Requests</h2>
+            <p class="section-subtitle">
+                Learners, teachers, and parents can use this section to send feedback, report issues, or request learning resources.
+            </p>
+
+            <div class="feedback-layout">
+                <div class="feedback-form-wrap">
+                    <form
+                        class="feedback-form"
+                        id="feedbackForm"
+                        action="https://formspree.io/f/mwvrrwrd"
+                        method="POST"
+                    >
+                        <div class="feedback-row">
+                            <div class="feedback-field">
+                                <label for="fullName">Full Name</label>
+                                <input type="text" id="fullName" name="Full Name" placeholder="Enter your name" required>
+                            </div>
+
+                            <div class="feedback-field">
+                                <label for="emailAddress">Email Address</label>
+                                <input type="email" id="emailAddress" name="Email" placeholder="Enter your email" required>
+                            </div>
+                        </div>
+
+                        <div class="feedback-row">
+                            <div class="feedback-field">
+                                <label for="userRole">I am a...</label>
+                                <select id="userRole" name="Role" required>
+                                    <option value="">Select one</option>
+                                    <option value="Learner">Learner</option>
+                                    <option value="Teacher">Teacher</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="feedback-field">
+                                <label for="requestType">Request Type</label>
+                                <select id="requestType" name="Request Type" required>
+                                    <option value="">Select one</option>
+                                    <option value="General Feedback">General Feedback</option>
+                                    <option value="Report Broken Link">Report Broken Link</option>
+                                    <option value="Request Notes">Request Notes</option>
+                                    <option value="Request Game">Request Game</option>
+                                    <option value="Request Activity">Request Activity</option>
+                                    <option value="Support Help">Support Help</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="feedback-field">
+                            <label for="messageSubject">Subject</label>
+                            <input type="text" id="messageSubject" name="Subject" placeholder="Short title for your message" required>
+                        </div>
+
+                        <div class="feedback-field">
+                            <label for="messageBody">Message</label>
+                            <textarea id="messageBody" name="Message" placeholder="Write your message here..." required></textarea>
+                        </div>
+
+                        <input type="hidden" name="_subject" value="New May Learning Hub Feedback Form Submission">
+
+                        <div class="feedback-actions">
+                            <button type="submit" class="btn btn-dark">Send Message</button>
+                            <a
+                                href="https://api.whatsapp.com/send/?phone=%2B27684480856&text&type=phone_number&app_absent=0"
+                                class="btn btn-whatsapp"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Quick Help on WhatsApp
+                            </a>
+                        </div>
+
+                        <div id="formStatus" class="form-status" aria-live="polite"></div>
+                    </form>
+
+                    <p class="feedback-help">
+                        Triple C: Comment, Critique or Complement
+                    </p>
+                </div>
+
+                <div class="feedback-side">
+                    <div class="feedback-card">
+                        <h3>What can users send here?</h3>
+                        <p>This form can be used for more than just general comments.</p>
+                        <ul class="mini-list">
+                            <li>Request a missing topic or grade</li>
+                            <li>Report broken pages or links</li>
+                            <li>Ask for notes, games, or activities</li>
+                            <li>Send support questions about the app or site</li>
+                        </ul>
+                    </div>
+
+                    <div class="feedback-card">
+                        <h3>Easy Ways to Get Support</h3>
+                        <p>
+                            Use the feedback form or WhatsApp button to ask for help, report a problem, or request learning material for your subject and grade.
+                        </p>
+                    </div>
+
+                    <div class="feedback-card">
+                        <h3>Helpful Note</h3>
+                        <p>
+                            Be as specific as possible when sending a request. Include the <strong>subject</strong>, <strong>grade</strong>, <strong>term</strong>, and whether you need <strong>notes</strong>, a <strong>game</strong>, or an <strong>activity</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <footer>
@@ -978,6 +1306,7 @@
                 <h4>Quick Links</h4>
                 <a href="index.html">Home</a>
                 <a href="about.html">About</a>
+                <a href="#feedback">Feedback</a>
                 <a href="suppdown.html">App &amp; Support</a>
             </div>
 
@@ -1146,6 +1475,40 @@
             });
 
             renderSearchResults(filtered, query);
+        });
+
+        const feedbackForm = document.getElementById('feedbackForm');
+        const formStatus = document.getElementById('formStatus');
+
+        feedbackForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            formStatus.className = 'form-status';
+            formStatus.textContent = '';
+
+            const formData = new FormData(feedbackForm);
+
+            try {
+                const response = await fetch(feedbackForm.action, {
+                    method: feedbackForm.method,
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    feedbackForm.reset();
+                    formStatus.className = 'form-status success';
+                    formStatus.textContent = 'Thank you. Your message has been sent successfully.';
+                } else {
+                    formStatus.className = 'form-status error';
+                    formStatus.textContent = 'Sorry, something went wrong while sending your message. Please try again.';
+                }
+            } catch (error) {
+                formStatus.className = 'form-status error';
+                formStatus.textContent = 'Connection problem. Please try again later or use the WhatsApp button.';
+            }
         });
     </script>
 
