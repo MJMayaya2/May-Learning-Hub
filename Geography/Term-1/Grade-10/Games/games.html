@@ -3,271 +3,410 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>May Learning Hub | Games Menu</title>
+    <meta name="description" content="May Learning Hub Grade 10 Geography Games - Interactive revision for Atmosphere, Heating, Moisture, and Weather Maps.">
+    <meta name="theme-color" content="#002b5e">
+    <meta property="og:title" content="Grade 10 Games | May Learning Hub">
+    <meta property="og:description" content="Interactive Geography games for Grade 10 learners on May Learning Hub.">
+    <meta property="og:type" content="website">
+    <title>Grade 10 Games | May Learning Hub</title>
     <style>
+        /* Base Styles from May Learning Hub */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        /* Keyframe Animations */
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        img { max-width: 100%; display: block; }
+
+        a:focus-visible, button:focus-visible {
+            outline: 3px solid #66a3ff;
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
+
+        /* Animations */
+        @keyframes slideInDown {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideInRight {
+            0% { opacity: 0; transform: translateX(50px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
 
-        @keyframes iconBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #f0f4f8; 
-            color: #333; 
-            line-height: 1.6; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh; 
-            overflow-x: hidden;
-        }
-        
         /* Navigation */
-        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; }
-        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; letter-spacing: 1px; }
-        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
-        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
-        
-        /* Page Header */
-        .page-header { 
-            text-align: center; 
-            padding: 4rem 1rem 3rem; 
-            background: linear-gradient(135deg, #002b5e, #004080); 
-            color: #fff; 
-            margin-bottom: 3rem; 
-            position: relative;
+        nav {
+            background-color: #002b5e;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+            opacity: 0;
+            animation: slideInDown 0.6s ease-out forwards;
         }
-        .page-title { font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); animation: fadeInUp 0.8s ease-out; }
-        
-        .grade-badge {
-            display: inline-block;
-            background: #ffcc00;
-            color: #002b5e;
-            padding: 5px 20px;
-            border-radius: 50px;
-            font-weight: 800;
+
+        .logo {
+            color: #fff;
+            font-size: 1.45rem;
+            font-weight: bold;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #cce0ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s, background-color 0.3s;
+            padding: 0.45rem 0.7rem;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.08);
+            text-decoration: none;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #004080, #0059b3);
+            color: #fff;
+            padding: 3rem 1rem 2.5rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-text {
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: slideInRight 0.8s ease-out 0.2s forwards;
+        }
+
+        .header-text h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .motto {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: #c7deff;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Container & Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #003a75;
+            margin-bottom: 0.35rem;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            color: #555;
+            margin-bottom: 2rem;
+            text-align: center;
             font-size: 1.1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: fadeInUp 1s ease-out;
         }
 
-        .page-subtitle { font-size: 1.2rem; color: #cce0ff; max-width: 600px; margin: 0 auto; animation: fadeInUp 1.2s ease-out; }
-
-        /* --- Games Grid Layout --- */
-        .games-container { max-width: 1200px; margin: 0 auto 4rem; padding: 0 20px; width: 100%; }
-        
+        /* Games Grid System */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
 
-        /* --- Individual Game Column Card --- */
-        .game-column {
+        .game-card {
             background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            border-top: 8px solid #3385ff;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0; /* Starts hidden for animation */
-            animation: fadeInUp 0.6s forwards;
-        }
-        
-        /* Staggered load animation for cards */
-        .game-column:nth-child(1) { animation-delay: 0.2s; }
-        .game-column:nth-child(2) { animation-delay: 0.3s; }
-        .game-column:nth-child(3) { animation-delay: 0.4s; }
-        .game-column:nth-child(4) { animation-delay: 0.5s; }
-        .game-column:nth-child(5) { animation-delay: 0.6s; }
-        .game-column:nth-child(6) { animation-delay: 0.7s; }
-
-        .game-column:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-
-        .game-header-area {
-            background: #f0f7ff;
-            padding: 2rem 1.5rem;
+            border-radius: 12px;
+            padding: 1.8rem 1.5rem;
             text-align: center;
-            border-bottom: 2px solid #e6f0fa;
-        }
-
-        .game-icon { 
-            font-size: 3.5rem; 
-            margin-bottom: 0.5rem; 
-            display: block; 
-            transition: transform 0.3s ease;
-        }
-        
-        .game-column:hover .game-icon {
-            animation: iconBounce 1s infinite ease-in-out;
-        }
-
-        .game-title { color: #004080; font-size: 1.6rem; font-weight: bold; margin-bottom: 0.5rem; }
-        .game-desc { color: #666; font-size: 0.95rem; }
-
-        /* --- Topic Button List --- */
-        .topic-list {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            flex-grow: 1; 
-        }
-
-        .topic-btn {
-            display: block;
-            background: #fff;
-            color: #004080;
             text-decoration: none;
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
-            border: 2px solid #b3d4ff;
-            font-weight: bold;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            color: #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border-top: 5px solid #3385ff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
         }
 
-        .topic-btn:hover {
-            background: #004080;
+        /* Staggered Animations for the 7 cards */
+        .game-card:nth-child(1) { animation-delay: 0.1s; border-top-color: #ff4d4d; }
+        .game-card:nth-child(2) { animation-delay: 0.2s; border-top-color: #ffa64d; }
+        .game-card:nth-child(3) { animation-delay: 0.3s; border-top-color: #ffcc00; }
+        .game-card:nth-child(4) { animation-delay: 0.4s; border-top-color: #33cc33; }
+        .game-card:nth-child(5) { animation-delay: 0.5s; border-top-color: #3385ff; }
+        .game-card:nth-child(6) { animation-delay: 0.6s; border-top-color: #9933ff; }
+        .game-card:nth-child(7) { animation-delay: 0.7s; border-top-color: #ff3399; } /* New Color for Game 7 */
+
+        /* Only apply hover effects if it's an anchor tag */
+        a.game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            background: #f4f9ff;
+        }
+
+        .game-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: #e6f0fa;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .game-card h3 {
+            color: #004080;
+            font-size: 1.25rem;
+            margin-bottom: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .play-btn {
+            display: inline-block;
+            background-color: #004080;
             color: #fff;
-            border-color: #002b5e;
-            transform: translateX(5px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: auto;
+            transition: background-color 0.2s, transform 0.2s;
+            text-decoration: none;
         }
 
-        footer { text-align: center; padding: 2rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+        a.game-card:hover .play-btn {
+            background-color: #3385ff;
+        }
+
+        /* Hover effects specifically for the sub-buttons in Game 7 */
+        .game-card .play-btn:hover {
+            background-color: #3385ff !important;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #002b5e;
+            color: #fff;
+            margin-top: 3rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1s forwards;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px 1.3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .footer-brand h3, .footer-links h4, .footer-note h4 { margin-bottom: 0.6rem; }
+        .footer-brand p, .footer-note p { color: #d4e3f7; font-size: 0.94rem; }
+        
+        .footer-links a {
+            display: block;
+            color: #d4e3f7;
+            text-decoration: none;
+            margin-bottom: 0.45rem;
+        }
+        .footer-links a:hover { color: #fff; }
+
+        .footer-bottom {
+            text-align: center;
+            padding: 1rem 20px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            color: #d4e3f7;
+            font-size: 0.92rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav { padding: 1rem; flex-wrap: wrap; }
+            .nav-toggle { display: block; margin-left: auto; }
+            .nav-links {
+                width: 100%;
+                display: none;
+                flex-direction: column;
+                align-items: flex-start;
+                padding-top: 0.5rem;
+            }
+            .nav-links.show { display: flex; }
+            .header-text h1 { font-size: 2rem; }
+        }
     </style>
 </head>
 <body>
 
-    <nav>
+    <nav aria-label="Main navigation">
         <a href="https://mmayaya.github.io/mayhub/" class="logo">May Learning Hub</a>
-        <div class="nav-links">
+        <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle navigation menu">
+            ☰
+        </button>
+        <div class="nav-links" id="navLinks">
             <a href="https://mmayaya.github.io/mayhub/">Home</a>
+            <a href="https://mmayaya.github.io/mayhub/about">About</a>
             <a href="games.html" class="active">Games</a>
-            <a href="https://mmayaya.github.io/mayhub/about.html">About</a>
+            <a href="https://mmayaya.github.io/mayhub/suppdown">App &amp; Support</a>
         </div>
     </nav>
 
-    <header class="page-header">
-        <div class="grade-badge">Grade 10 Term 1 Games</div>
-        <h1 class="page-title">Interactive Revision Zone</h1>
-        <p class="page-subtitle">Select a game style and a topic to start testing your knowledge.</p>
+    <header>
+        <div class="header-content">
+            <div class="header-text">
+                <h1>Grade 10 Geography Games</h1>
+                <p class="motto">Interactive Revision & Active Recall</p>
+                <p>Master the atmosphere and weather patterns through interactive gameplay.</p>
+            </div>
+        </div>
     </header>
 
-    <main class="games-container">
-        <div class="games-grid">
+    <div class="container">
+        <h2 class="section-title">Select a Topic</h2>
+        <p class="section-subtitle">Click on a game below to launch the interactive module.</p>
 
-            <div class="game-column">
-                <div class="game-header-area">
-                    <span class="game-icon">🎡</span>
-                    <h2 class="game-title">Spin the Wheel</h2>
-                    <p class="game-desc">Let fate decide your next revision question!</p>
-                </div>
-                <div class="topic-list">
-                    <a href="spin1.html" class="topic-btn">Spin 1</a>
-                    <a href="spin2.html" class="topic-btn">Spin 2</a>
-                    <a href="spin3.html" class="topic-btn">Spin 3</a>
-                    <a href="spin4.html" class="topic-btn">Spin 4</a>
-                    <a href="spin5.html" class="topic-btn">5. Assessment Spin</a>
+        <main class="games-grid">
+            
+            <a href="1. Composition and Structure/AtmosphericStructure.html" class="game-card">
+                <div class="game-icon">🌍</div>
+                <h3>1. Composition and Structure of the Atmosphere</h3>
+                <span class="play-btn">Play Game ➔</span>
+            </a>
+
+            <a href="2. Atmospheric Heating 1/AtmosphericHeating1.html" class="game-card">
+                <div class="game-icon">☀️</div>
+                <h3>2. Atmospheric Heating 1</h3>
+                <span class="play-btn">Play Game ➔</span>
+            </a>
+
+            <a href="3. Atmospheric Heating 2/AtmosphericHeating2.html" class="game-card">
+                <div class="game-icon">🌡️</div>
+                <h3>3. Atmospheric Heating 2</h3>
+                <span class="play-btn">Play Game ➔</span>
+            </a>
+
+            <a href="4. Atmospheric Moisture 1/AtmosphericMoisture1.html" class="game-card">
+                <div class="game-icon">💧</div>
+                <h3>4. Atmospheric Moisture 1</h3>
+                <span class="play-btn">Play Game ➔</span>
+            </a>
+
+            <a href="5. Atmospheric Moisture 2/AtmosphericMoisture2.html" class="game-card">
+                <div class="game-icon">🌧️</div>
+                <h3>5. Atmospheric Moisture 2</h3>
+                <span class="play-btn">Play Game ➔</span>
+            </a>
+
+            <a href="6. Synoptic Weather Maps/SynopticWeatherMaps.html" class="game-card">
+                <div class="game-icon">🗺️</div>
+                <h3>6. Synoptic Weather Maps</h3>
+                <span class="play-btn">Play Game ➔</span>
+            </a>
+
+            <div class="game-card">
+                <div class="game-icon">🎯</div>
+                <h3>7. PowerPoint Games</h3>
+                <div style="display: flex; gap: 0.5rem; width: 100%; margin-top: auto;">
+                    <a href="7. PowerPoint Games/SpinTheWheel.html" class="play-btn" style="flex: 1 1 0; display: flex; justify-content: center; align-items: center; text-align: center; padding: 0.5rem 0.2rem;">Spin the Wheel ➔</a>
+                    <a href="7. PowerPoint Games/Jeopardy.html" class="play-btn" style="flex: 1 1 0; display: flex; justify-content: center; align-items: center; text-align: center; padding: 0.5rem 0.2rem; background-color: #004d99;">Jeopardy ➔</a>
                 </div>
             </div>
 
-            <div class="game-column">
-                <div class="game-header-area">
-                    <span class="game-icon">🧠</span>
-                    <h2 class="game-title">Jeopardy</h2>
-                    <p class="game-desc">Risk it all on the 4-player grid.</p>
-                </div>
-                <div class="topic-list">
-                    <a href="jeopardy1.html" class="topic-btn">Jeopardy 1</a>
-                    <a href="jeopardy2.html" class="topic-btn">Jeopardy 2</a>
-                    <a href="jeopardy3.html" class="topic-btn">Jeopardy 3</a>
-                    <a href="jeopardy4.html" class="topic-btn">Jeopardy 4</a>
-                    <a href="jeopardy5.html" class="topic-btn">5. Assessment Jeopardy</a>
-                </div>
-            </div>
-
-            <div class="game-column">
-                <div class="game-header-area">
-                    <span class="game-icon">🃏</span>
-                    <h2 class="game-title">Memory Match</h2>
-                    <p class="game-desc">Flip the cards and match the definitions.</p>
-                </div>
-                <div class="topic-list">
-                    <a href="match1.html" class="topic-btn">Match 1</a>
-                    <a href="match2.html" class="topic-btn">Match 2</a>
-                    <a href="match3.html" class="topic-btn">Match 3</a>
-                    <a href="match4.html" class="topic-btn">Match 4</a>
-                    <a href="match5.html" class="topic-btn">5. Assessment Match</a>
-                </div>
-            </div>
-
-            <div class="game-column">
-                <div class="game-header-area">
-                    <span class="game-icon">💰</span>
-                    <h2 class="game-title">Millionaire</h2>
-                    <p class="game-desc">Escalating questions. Can you reach 100 points?</p>
-                </div>
-                <div class="topic-list">
-                    <a href="millionaire1.html" class="topic-btn">Millionaire 1</a>
-                    <a href="millionaire2.html" class="topic-btn">Millionaire 2</a>
-                    <a href="millionaire3.html" class="topic-btn">Millionaire 3</a>
-                    <a href="millionaire4.html" class="topic-btn">Millionaire 4</a>
-                    <a href="millionaire5.html" class="topic-btn">5. Assessment Millionaire</a>
-                </div>
-            </div>
-
-            <div class="game-column">
-                <div class="game-header-area">
-                    <span class="game-icon">🐍</span>
-                    <h2 class="game-title">Snake</h2>
-                    <p class="game-desc">Eat the correct answers to grow your snake!</p>
-                </div>
-                <div class="topic-list">
-                    <a href="snake1.html" class="topic-btn">Snake 1</a>
-                    <a href="snake2.html" class="topic-btn">Snake 2</a>
-                    <a href="snake3.html" class="topic-btn">Snake 3</a>
-                    <a href="snake4.html" class="topic-btn">Snake 4</a>
-                    <a href="snake5.html" class="topic-btn">5. Assessment Snake</a>
-                </div>
-            </div>
-
-            <div class="game-column">
-                <div class="game-header-area">
-                    <span class="game-icon">📊</span>
-                    <h2 class="game-title">Presentation</h2>
-                    <p class="game-desc">Interactive diagram and layout games.</p>
-                </div>
-                <div class="topic-list">
-                    <a href="presentation1/presentation1.html" class="topic-btn">1. Term 1 Presentation</a>
-                    <a href="presentation2/presentation2.html" class="topic-btn">Presentation 2</a>
-                    <a href="presentation3/presentation3.html" class="topic-btn">Presentation 3</a>
-                    <a href="presentation4/presentation4.html" class="topic-btn">Presentation 4</a>
-                    <a href="presentation5/presentation5.html" class="topic-btn">Presentation 5</a>
-                </div>
-            </div>
-
-        </div>
-    </main>
+        </main>
+    </div>
 
     <footer>
-        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>May Learning Hub</h3>
+                <p>A growing learning platform for teachers and learners, designed to make notes, games, and activities easier to access and use.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="https://mmayaya.github.io/mayhub/">Home</a>
+                <a href="https://mmayaya.github.io/mayhub/about">About</a>
+                <a href="https://mmayaya.github.io/mayhub/#feedback">Feedback</a>
+                <a href="https://mmayaya.github.io/mayhub/suppdown">App &amp; Support</a>
+            </div>
+            <div class="footer-note">
+                <h4>Site Note</h4>
+                <p>Content is organised by subject, grade, and term to support structured classroom learning, revision, and app-based access.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+        </div>
     </footer>
 
+    <script>
+        // Mobile Navigation Toggle script
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', () => {
+            const isOpen = navLinks.classList.toggle('show');
+            navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+    </script>
 </body>
 </html>
