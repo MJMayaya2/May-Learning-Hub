@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | History: South Africa 1860-1890</title>
+    <style>
+        /* CSS styling identical to original */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">History Quiz: South Africa (1860 - 1890)</h1>
+        <p class="game-subtitle">Explore Indentured Labour, the Diamond Rush, and Pre-colonial Life!</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Indentured Labour", a: "Workers from India bound by a long-term contract to work on Natal sugar plantations for a fixed period." },
+                { q: "Passenger Indians", a: "Immigrants from India who paid for their own passage on ships to Natal, mainly to trade and open shops." },
+                { q: "Great Trek", a: "The movement of Boer Trekkers from the Cape into the interior (Transvaal and Orange Free State) in the late 1830s." },
+                { q: "Subsistence Farming", a: "A system where people farm for themselves and their families, making nearly everything they need." },
+                { q: "Independent African Kingdom", a: "African societies that remained self-governing and not controlled by colonists before the 1860s." },
+                { q: "Sugar Plantation", a: "Large farms in the British colony of Natal where indentured Indian workers were first brought to work in 1860." },
+                { q: "Rations", a: "Fixed amounts of food, such as rice or mealie meal, that employers were required to provide to indentured workers." },
+                { q: "Colonists", a: "Settlers, either British or Boer, who lived in and controlled specific areas of Southern Africa." },
+                { q: "Merchant", a: "A person involved in trade or business, a role taken by many Passenger Indians who became wealthy." },
+                { q: "Witwatersrand", a: "The inland region where many traders moved following the discovery of gold in the 1880s." },
+                { q: "Kimberley", a: "The site in South Africa where diamonds were discovered in 1867, leading to massive economic changes." },
+                { q: "Boers", a: "Descendants of Dutch settlers who moved into the interior of Southern Africa." },
+                { q: "Corrugated Iron Structures", a: "Materials used to build houses for indentured workers, often replacing earlier thatched huts." },
+                { q: "Garden Plots", a: "Small pieces of land provided to workers to grow their own vegetables and spices when they went on strike for food." },
+                { q: "Coal Fields", a: "Industrial areas in northern Natal where Indian businessmen set up shops after moving inland." },
+                { q: "Staple Food", a: "The main food source of a population; for Indian workers, this was rice, which had to be imported to Natal." },
+                { q: "Discovery of Diamonds", a: "The 1867 event that triggered the movement of traders and wealth into the interior of South Africa." },
+                { q: "Trade", a: "The exchange of goods between different groups, which existed in Southern Africa long before European arrival." },
+                { q: "Mauritius", a: "One of the regions from which Passenger Indians migrated to Natal alongside Western India." },
+                { q: "Gujarati-speaking", a: "The language primarily spoken by many Muslim Passenger Indians who arrived from Western India." }
+            ],
+            'terms': [
+                { q: "The year the first indentured Indian laborers arrived in the colony of Natal.", a: "1860" },
+                { q: "The primary crop grown on plantations in Natal that required Indian labour.", a: "Sugar" },
+                { q: "The name given to Indians who paid for their own ship passage to trade and open shops.", a: "Passenger Indians" },
+                { q: "The two Boer republics established in the interior after the Great Trek.", a: "Transvaal and Orange Free State" },
+                { q: "The location where diamonds were discovered in 1867.", a: "Kimberley" },
+                { q: "The specific language spoken by many wealthy Indian merchants from Western India.", a: "Gujarati" },
+                { q: "The European group that controlled the colonies of the Cape and Natal in the 1860s.", a: "British" },
+                { q: "The staple food that Indian workers went on strike for because they were being given mealie meal instead.", a: "Rice" },
+                { q: "The region where many traders moved to set up business near the gold fields in the 1880s.", a: "Witwatersrand" },
+                { q: "The century in which the first Europeans arrived and began trading with Africans.", a: "15th Century" },
+                { q: "The name for Boer descendants who moved into the Transvaal during the 1830s.", a: "Trekkers" },
+                { q: "The region in northern Natal where Indian businessmen moved to serve the mining industry.", a: "Coal fields" },
+                { q: "The country that did NOT exist as a single unified entity in the 1860s.", a: "South Africa" },
+                { q: "The material used to make the thatched huts some workers initially lived in.", a: "Thatch (Grass/Reeds)" },
+                { q: "Small pieces of land given to workers to grow their own Indian vegetables and spices.", a: "Garden plots" },
+                { q: "The group that Passenger Indians mainly consisted of in terms of their economic goal.", a: "Traders / Merchants" },
+                { q: "The independent societies that Boers struggled against to hold onto colonized land.", a: "African Kingdoms" },
+                { q: "The primary way of life for most people in South Africa during the 19th century.", a: "Farming off the land" },
+                { q: "The country from which rice had to be imported into Natal because it didn't grow there.", a: "India" },
+                { q: "The group of people who were descendants of the Dutch.", a: "Boers" }
+            ],
+            'multipleChoice': [
+                { q: "What was the main reason indentured workers were brought from India to Natal?", options: ["A) To mine diamonds", "B) To work on sugar plantations", "C) To build the Great Trek", "D) To open shops"], a: "B) To work on sugar plantations" },
+                { q: "When did the first indentured workers arrive in Natal?", options: ["A) 1830", "B) 1850", "C) 1860", "D) 1867"], a: "C) 1860" },
+                { q: "Before the 1860s, what did most people in South Africa do for a living?", options: ["A) Worked in factories", "B) Mined gold", "C) Farmed off the land", "D) Worked in shipping"], a: "C) Farmed off the land" },
+                { q: "Why were 'Passenger Indians' different from indentured workers?", options: ["A) They were prisoners", "B) They paid for their own ship passage", "C) They were brought by force", "D) They only stayed for one year"], a: "B) They paid for their own ship passage" },
+                { q: "In which year were diamonds discovered in Kimberley?", options: ["A) 1860", "B) 1830", "C) 1867", "D) 1886"], a: "C) 1867" },
+                { q: "What did indentured workers do when they were given mealie meal instead of rice?", options: ["A) They left Natal", "B) They went on strike", "C) They stopped eating", "D) They became farmers"], a: "B) They went on strike" },
+                { q: "Where did many Passenger Indian traders move after the discovery of gold and diamonds?", options: ["A) Back to India", "B) To the Cape coast", "C) Inland (e.g. Witwatersrand)", "D) To independent kingdoms"], a: "C) Inland (e.g. Witwatersrand)" },
+                { q: "Which group controlled the Natal and Cape colonies in the 1860s?", options: ["A) The Dutch", "B) The British", "C) The Portuguese", "D) The French"], a: "B) The British" },
+                { q: "From which area in India did many Gujarati-speaking Muslims come?", options: ["A) Southern India", "B) Western India", "C) Calcutta", "D) Delhi"], a: "B) Western India" },
+                { q: "What was provided to workers so they could grow their own spices and vegetables?", options: ["A) Free seeds", "B) Higher wages", "C) Garden plots", "D) Imported food boxes"], a: "C) Garden plots" },
+                { q: "Who were the Boers descendants of?", options: ["A) The British", "B) The Dutch", "C) The Germans", "D) The Americans"], a: "B) The Dutch" },
+                { q: "In the 1860s, South Africa was described as:", options: ["A) A united country", "B) Many scattered communities", "C) A British province", "D) An empty land"], a: "B) Many scattered communities" },
+                { q: "What kind of structures did some workers move into after living in thatched huts?", options: ["A) Tents", "B) Corrugated iron or brick houses", "C) Caves", "D) Wooden cabins"], a: "B) Corrugated iron or brick houses" },
+                { q: "Which crop did NOT grow in Natal and had to be imported from India?", options: ["A) Maize", "B) Sugar", "C) Rice", "D) Wheat"], a: "C) Rice" },
+                { q: "Trade between Africans and Europeans began in which century?", options: ["A) 15th Century", "B) 18th Century", "C) 19th Century", "D) 20th Century"], a: "A) 15th Century" },
+                { q: "Where did the Boers (Trekkers) go during the Great Trek?", options: ["A) To India", "B) To the Transvaal and Orange Free State", "C) To London", "D) To Mauritius"], a: "B) To the Transvaal and Orange Free State" },
+                { q: "Passenger Indians mainly came to Natal to:", options: ["A) Farm sugar", "B) Work in coal mines", "C) Trade and open shops", "D) Fight in wars"], a: "C) Trade and open shops" },
+                { q: "Which discovery in the 1880s led to traders moving inland?", options: ["A) Diamonds", "B) Gold", "C) Coal", "D) Copper"], a: "B) Gold" },
+                { q: "What language did many Muslim Passenger Indians speak?", options: ["A) Hindi", "B) Gujarati", "C) Tamil", "D) English"], a: "B) Gujarati" },
+                { q: "Businessmen from India set up businesses near which fields in northern Natal?", options: ["A) Sugar fields", "B) Diamond fields", "C) Coal fields", "D) Gold fields"], a: "C) Coal fields" }
+            ],
+            'trueFalse': [
+                { q: "South Africa existed as a unified country in the early 1860s.", options: ["True", "False"], a: "False", exp: "South Africa was made up of scattered independent kingdoms and colonies." },
+                { q: "Indentured workers were brought from India specifically for sugar plantations.", options: ["True", "False"], a: "True", exp: "The sugar industry in Natal relied on this contracted labour from 1860." },
+                { q: "Passenger Indians were forced to come to Natal by the British.", options: ["True", "False"], a: "False", exp: "They paid for their own passage and came voluntarily to trade." },
+                { q: "Diamonds were discovered in Kimberley in 1867.", options: ["True", "False"], a: "True", exp: "This discovery changed the economic landscape of Southern Africa." },
+                { q: "Indian workers went on strike because they wanted to be given rice.", options: ["True", "False"], a: "True", exp: "Rice was their staple food, but they were often given mealie meal instead." },
+                { q: "The British controlled the Transvaal and Orange Free State in 1860.", options: ["True", "False"], a: "False", exp: "These were areas colonized by Boer Trekkers." },
+                { q: "Many Passenger Indians became wealthy merchants and business people.", options: ["True", "False"], a: "True", exp: "They moved to mining areas and established successful businesses." },
+                { q: "Employers were required to provide indentured workers with free housing.", options: ["True", "False"], a: "True", exp: "Initially, this included thatched huts or iron structures." },
+                { q: "Rice grew abundantly in Natal during the 1860s.", options: ["True", "False"], a: "False", exp: "Rice did not grow in Natal and had to be imported from India." },
+                { q: "African farming societies had traded with one another for centuries before 1860.", options: ["True", "False"], a: "True", exp: "Trade was a well-established practice among independent African groups." },
+                { q: "The Great Trek took place in the late 1830s.", options: ["True", "False"], a: "True", exp: "Boer families moved inland to escape British control in the Cape." },
+                { q: "Some Passenger Indians came from Mauritius.", options: ["True", "False"], a: "True", exp: "They came from Mauritius as well as Western India." },
+                { q: "Indentured workers were given garden plots to grow their own vegetables.", options: ["True", "False"], a: "True", exp: "This was a way to compensate for the lack of preferred food rations." },
+                { q: "Businessmen from India moved to the coal fields of northern Natal.", options: ["True", "False"], a: "True", exp: "They set up shops near industrial and mining centers." },
+                { q: "The Boers were descendants of the British colonists.", options: ["True", "False"], a: "False", exp: "The Boers were descendants of the Dutch settlers." },
+                { q: "Indian traders moved to the Witwatersrand after gold was discovered.", options: ["True", "False"], a: "True", exp: "They followed the economic opportunities created by the gold rush." },
+                { q: "The British controlled the Cape colony in the 1860s.", options: ["True", "False"], a: "True", exp: "The Cape and Natal were the two main British colonies at the time." },
+                { q: "In the 19th century, most people in South Africa lived in large cities.", options: ["True", "False"], a: "False", exp: "Almost all people lived off the land through farming." },
+                { q: "Passenger Indians mainly came to work as manual laborers.", options: ["True", "False"], a: "False", exp: "They came specifically to trade and open shops." },
+                { q: "Trekkers struggled to hold onto land because African kingdoms were still powerful.", options: ["True", "False"], a: "True", exp: "Independent kingdoms remained a significant force in the interior." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

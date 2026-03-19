@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 8 History: Diamond Mining</title>
+    <style>
+        /* CSS styling identical to original */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">History Quiz: The Mineral Revolution</h1>
+        <p class="game-subtitle">Spin the wheel to test your knowledge on Diamond Mining in Kimberley (1867 Onwards)!</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Mineral Revolution", a: "The rapid change of South Africa from an agricultural society to an industrial society following the discovery of diamonds and gold." },
+                { q: "Alluvial Diggings", a: "Mining sites located on river banks where diamonds were found near the surface in gravel or soil." },
+                { q: "Dry Diggings", a: "Mining sites located away from rivers, typically in extinct volcano pipes where diamonds were found deep underground." },
+                { q: "Claim", a: "A small piece of land (usually 30x30 feet) that a digger was legally entitled to mine for diamonds." },
+                { q: "Monopoly", a: "When one company has exclusive control over the trade or supply of a product, such as diamonds." },
+                { q: "Amalgamation", a: "The process of joining or merging smaller companies together to form one large, powerful company." },
+                { q: "Economic Depression", a: "A period of severe decline in economic activity, characterized by business failures and high unemployment." },
+                { q: "Closed Compounds", a: "Fenced-in housing where black workers were forced to live and were searched to prevent diamond theft." },
+                { q: "Illicit Diamond Buying (IDB)", a: "The illegal practice of buying or selling diamonds outside of the officially regulated mining companies." },
+                { q: "Diggers", a: "Individual miners (both black and white) who rushed to the diamond fields to find their fortune." },
+                { q: "Deep-level Mining", a: "Industrial mining that requires heavy machinery and large amounts of money to extract minerals from deep underground pipes." },
+                { q: "Griqualand West", a: "The diamond-rich territory that was taken over by the British in the late 19th century." },
+                { q: "Volcanic Pipe", a: "The vertical structure in the earth where 'dry' diamond deposits were found, such as at Kimberley." },
+                { q: "Capital", a: "The large amounts of money needed to buy expensive machinery and pay workers for industrial mining." },
+                { q: "Consolidation", a: "The action of combining many small parts (like claims) into a single, more effective whole." },
+                { q: "Migrant Labour", a: "A system where workers leave their homes for a set period to work in the mines and then return." },
+                { q: "Search House", a: "A facility in compounds where workers were physically examined to ensure they hadn't swallowed or hidden diamonds." },
+                { q: "Claimholder", a: "A person who officially owns the rights to mine a specific piece of ground." },
+                { q: "Prospecting", a: "The process of searching an area for mineral deposits like diamonds or gold." },
+                { q: "Infrastructure", a: "The basic systems like railways and buildings needed to support the rapid growth of the mining industry." }
+            ],
+            'terms': [
+                { q: "The site in South Africa where the very first diamonds were found in 1867.", a: "Hopetown" },
+                { q: "The massive pit in Kimberley created by thousands of diggers, also known as 'New Rush'.", a: "The Big Hole" },
+                { q: "The British businessman who founded the De Beers Mining Company and aimed for a monopoly.", a: "Cecil John Rhodes" },
+                { q: "The former entertainer from London who became Rhodes' biggest rival in the diamond fields.", a: "Barney Barnato" },
+                { q: "The company formed in 1888 that controlled all diamond mining and sales in Kimberley.", a: "De Beers Consolidated Mines Limited" },
+                { q: "The bank that provided Cecil Rhodes with a massive loan to buy out Barney Barnato.", a: "Rothschild International Bank" },
+                { q: "The group that made up two-thirds of the population on the diamond fields in the early 1870s.", a: "Black people" },
+                { q: "The rule that initially prevented one person from owning multiple claims to protect small diggers.", a: "One-person-one-claim" },
+                { q: "The year gold was discovered on the Witwatersrand, accelerating the Mineral Revolution.", a: "1886" },
+                { q: "The physical feature (former volcano) where diamonds are found deep underground.", a: "Extinct volcano pipe" },
+                { q: "The name of Barney Barnato's company before it was bought by Rhodes.", a: "Kimberley Central Mining Company" },
+                { q: "The material used for the walls between claims that often collapsed as digging went deeper.", a: "Ground/Soil" },
+                { q: "The primary reason black workers were kept in closed compounds.", a: "To prevent diamond theft" },
+                { q: "The economic event of 1886 that caused many small companies to go bankrupt.", a: "Economic Depression" },
+                { q: "The term used for diamonds found in river banks using water to wash the soil.", a: "Wet diggings" },
+                { q: "The color of the soil (blue ground) where diamonds were found deep in the volcanic pipes.", a: "Blue" },
+                { q: "The specific territory dispute between the British and Boers regarding the diamond fields.", a: "Griqualand West dispute" },
+                { q: "The name Barney Barnato took after moving from 'Isaacs' to show his stage background.", a: "Barnato" },
+                { q: "The type of diggers who came from America and Australia to join the rush.", a: "White diggers" },
+                { q: "The term for when Rhodes balanced production with sales to keep diamond prices high.", a: "Regulating supply" }
+            ],
+            'multipleChoice': [
+                { q: "What event in 1867 triggered the Mineral Revolution in South Africa?", options: ["A) Discovery of Gold", "B) Arrival of the British", "C) Discovery of Diamonds", "D) End of the Great Trek"], a: "C) Discovery of Diamonds" },
+                { q: "Why did the 'one-person-one-claim' rule exist in the early days of mining?", options: ["A) To prevent monopolies", "B) To make mining faster", "C) To save water", "D) To encourage deep digging"], a: "A) To prevent monopolies" },
+                { q: "In the 1870s, what happened to black claim holders in Kimberley?", options: ["A) They were given more land", "B) They were attacked and later banned from owning claims", "C) They formed De Beers", "D) They became the richest miners"], a: "B) They were attacked and later banned from owning claims" },
+                { q: "What was the main challenge of mining diamonds deep in the volcanic pipes?", options: ["A) Wild animals", "B) Lack of diamonds", "C) Collapsing walls and water flooding", "D) The heat of the volcano"], a: "C) Collapsing walls and water flooding" },
+                { q: "By 1885, how many of the four main mines in Kimberley did Cecil Rhodes control?", options: ["A) One", "B) Two", "C) Three", "D) Four"], a: "C) Three" },
+                { q: "How did Rhodes finally win control over Barney Barnato's company in 1888?", options: ["A) He won a bet", "B) He used a massive loan from Rothschild Bank", "C) He discovered a new mine", "D) The government forced Barnato out"], a: "B) He used a massive loan from Rothschild Bank" },
+                { q: "What happens to the price of diamonds if too many are sold at once?", options: ["A) The price goes up", "B) The price stays the same", "C) The price falls", "D) Diamonds become illegal"], a: "C) The price falls" },
+                { q: "Which group was forced to live in closed compounds for the entire term of their contract?", options: ["A) White diggers", "B) Black workers", "C) Factory owners", "D) British soldiers"], a: "B) Black workers" },
+                { q: "What was 'New Rush' eventually renamed to?", options: ["A) Hopetown", "B) Johannesburg", "C) Kimberley Mine", "D) Pretoria"], a: "C) Kimberley Mine" },
+                { q: "Why were diamonds easy to steal from the mines?", options: ["A) They glowed in the dark", "B) They were very large", "C) They were small and easy to swallow", "D) There were no guards"], a: "C) Small and easy to swallow" },
+                { q: "What kind of society did South Africa change into during the Mineral Revolution?", options: ["A) Agricultural society", "B) Industrial society", "C) Nomadic society", "D) Trading society"], a: "B) Industrial society" },
+                { q: "Which two rivers were involved in the early 'wet' diggings?", options: ["A) Nile and Congo", "B) Orange and Vaal", "C) Limpopo and Zambezi", "D) Tugela and Umgeni"], a: "B) Orange and Vaal" },
+                { q: "What did Cecil Rhodes do to keep diamond profits high?", options: ["A) He sold them cheaper", "B) He restricted the number of diamonds produced and sold", "C) He closed all the mines", "D) He gave diamonds to the bank"], a: "B) He restricted the number of diamonds produced and sold" },
+                { q: "What was the main reason individual diggers went bankrupt as mines got deeper?", options: ["A) They got bored", "B) They couldn't afford expensive machinery", "C) They found too many diamonds", "D) They were banned from the city"], a: "B) They couldn't afford expensive machinery" },
+                { q: "Where did Barney Barnato originally come from?", options: ["A) Cape Town", "B) London", "C) New York", "D) Berlin"], a: "B) London" },
+                { q: "What material were the corner markers of claims made of?", options: ["A) Gold", "B) Diamond", "C) Wooden pegs", "D) Stone walls"], a: "C) Wooden pegs" },
+                { q: "When was the big economic depression that left only two main companies in Kimberley?", options: ["A) 1867", "B) 1870", "C) 1886", "D) 1900"], a: "C) 1886" },
+                { q: "What was the population ratio on the diamond fields in the 1870s?", options: ["A) Mostly white", "B) Half and half", "C) Two-thirds black", "D) Only British"], a: "C) Two-thirds black" },
+                { q: "The 'Big Hole' is an example of what kind of digging?", options: ["A) Alluvial", "B) Wet", "C) Dry", "D) Beach"], a: "C) Dry" },
+                { q: "Which country took over Griqualand West after diamonds were found?", options: ["A) Germany", "B) Portugal", "C) Britain", "D) France"], a: "C) Britain" }
+            ],
+            'trueFalse': [
+                { q: "The Mineral Revolution began with the discovery of gold in 1867.", options: ["True", "False"], a: "False", exp: "It began with the discovery of diamonds in 1867; gold was found in 1886." },
+                { q: "Alluvial diamonds are found deep underground in volcano pipes.", options: ["True", "False"], a: "False", exp: "Alluvial diamonds are found near the surface on river banks." },
+                { q: "Cecil Rhodes founded the De Beers Mining Company in 1880.", options: ["True", "False"], a: "True", exp: "He eventually merged it with other companies to form a monopoly." },
+                { q: "Black people were never allowed to own claims in the early days of Kimberley.", options: ["True", "False"], a: "False", exp: "At first, many black people owned claims until they were attacked and banned by white miners." },
+                { q: "Barney Barnato was a former juggler and comedian.", options: ["True", "False"], a: "True", exp: "His real name was Barnett Isaacs and he was a talented entertainer." },
+                { q: "A monopoly means many small companies competing for the same customers.", options: ["True", "False"], a: "False", exp: "A monopoly means one company controls the entire supply/market." },
+                { q: "Rhodes balanced supply and demand to keep diamond prices high.", options: ["True", "False"], a: "True", exp: "He knew that too many diamonds on the market would make them less valuable." },
+                { q: "Closed compounds were luxury apartments for black miners.", options: ["True", "False"], a: "False", exp: "They were prison-like fenced areas used to control workers and prevent theft." },
+                { q: "Individual diggers dug so deep that the soil walls between claims often collapsed.", options: ["True", "False"], a: "True", exp: "This led to the need for large-scale company mining with proper machinery." },
+                { q: "Cecil Rhodes became the owner of the Kimberley Mine after buying out Barney Barnato.", options: ["True", "False"], a: "True", exp: "This happened in 1888 after a long competition." },
+                { q: "Before 1867, South Africa was mostly an industrial society.", options: ["True", "False"], a: "False", exp: "It was mostly an agricultural society where people lived off the land." },
+                { q: "Diamonds were first discovered at Barkly West.", options: ["True", "False"], a: "False", exp: "The first discovery was at Hopetown." },
+                { q: "The 'Big Hole' was originally a hill that was dug into a giant pit.", options: ["True", "False"], a: "True", exp: "It was an extinct volcano pipe that miners dug out over many years." },
+                { q: "The British government supported black claim holders in their fight against white miners.", options: ["True", "False"], a: "False", exp: "The British passed laws that favored white claim holders and restricted black ownership." },
+                { q: "IDB stands for 'Internal Diamond Business'.", options: ["True", "False"], a: "False", exp: "It stands for Illicit (Illegal) Diamond Buying." },
+                { q: "Machinery like pumps were needed because the deep mine shafts often flooded.", options: ["True", "False"], a: "True", exp: "Rhodes actually started his fortune with a pumping company." },
+                { q: "Barney Barnato's original surname was Isaacs.", options: ["True", "False"], a: "True", exp: "He changed it to 'Barnato' for his stage career." },
+                { q: "By 1888, De Beers Consolidated Mines Limited had a total monopoly in Kimberley.", options: ["True", "False"], a: "True", exp: "Rhodes controlled all the major mines and the sale of diamonds." },
+                { q: "The Mineral Revolution only affected the people living in Kimberley.", options: ["True", "False"], a: "False", exp: "It changed the entire economy and infrastructure of Southern Africa." },
+                { q: "Black workers were searched before leaving the closed compounds.", options: ["True", "False"], a: "True", exp: "This was a strict rule to ensure no diamonds were smuggled out." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

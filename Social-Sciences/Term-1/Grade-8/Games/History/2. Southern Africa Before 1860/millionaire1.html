@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 8 History Millionaire</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 History Challenge</h1>
+        <p class="game-subtitle">Southern Africa & Indian Labour (Grade 8 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "For most of the 19th century, how did the majority of people in South Africa sustain themselves?", options: ["By working in urban factories", "By mining for diamonds", "By living off the land and farming", "By trading spices internationally"], a: 2, hint: "They were self-sufficient, making nearly everything they needed." },
+            { q: "In the 1860s, was the territory known as 'South Africa' a single, united country?", options: ["Yes", "No"], a: 1, hint: "It was a collection of independent kingdoms and separate colonies." },
+            { q: "What name was given to the descendants of the Dutch who migrated inland during the 1830s?", options: ["Boers", "British Settlers", "French Huguenots", "Portuguese Explorers"], a: 0, hint: "They were also known as Trekkers." },
+            { q: "Which two interior regions did the Trekkers move to in the late 1830s?", options: ["Cape and Natal", "Transvaal and Orange Free State", "London and Mauritius", "Gauteng and Limpopo"], a: 1, hint: "These became independent Boer republics." },
+            { q: "Independent African kingdoms remained powerful and made European colonization difficult during the 1860s.", options: ["True", "False"], a: 0, hint: "Groups like the Zulu and others successfully defended their territory for a long time." },
+            { q: "In 1860, the British controlled which two specific colonies?", options: ["The Cape and Natal", "Transvaal and OFS", "Natal and Zululand", "The Cape and Mozambique"], a: 0, hint: "One in the south, one on the east coast." },
+            { q: "A person bound by a contract to work for an employer for a specific period is known as...", options: ["A slave", "An indentured labourer", "A volunteer", "A tourist"], a: 1, hint: "This system brought thousands of people from India to Natal." },
+            { q: "Why was the Natal region considered ideal for the commercial growth of sugar cane?", options: ["Because of its extremely cold winters", "Its warm climate and suitable soil", "It was the only place with coal", "It had no independent kingdoms"], a: 1, hint: "Environmental factors were essential for this tropical crop." },
+            { q: "Where did British farmers come from in the 1850s to begin Natal's sugar industry?", options: ["India", "Mauritius", "The United States", "China"], a: 1, hint: "An Indian Ocean island already successful in sugar production." },
+            { q: "Before sugar became widely available, what was the primary substance used in Britain for sweetening?", options: ["Salt", "Honey", "Vinegar", "Lemon juice"], a: 1, hint: "A natural product collected by bees." },
+            { q: "Which powerful trading company ruled major Indian ports like Madras and Calcutta in the 1700s?", options: ["The VOC", "The British East India Company", "The Natal Sugar Co.", "De Beers"], a: 1, hint: "Commonly referred to as 'The Company'." },
+            { q: "The 1784 India Act resulted in the British Government taking more direct control over India from the East India Company.", options: ["True", "False"], a: 0, hint: "This shifted power from a private company to the state." },
+            { q: "In which year was Queen Victoria proclaimed the Empress of India?", options: ["1843", "1858", "1867", "1886"], a: 1, hint: "This happened after the Indian Rebellion of 1857." },
+            { q: "What was the original geographical origin of the sugar cane plant?", options: ["Great Britain", "India and Southeast Asia", "The Cape Colony", "North America"], a: 1, hint: "It was an Eastern crop introduced to Western colonies." },
+            { q: "The demand for sugar in Britain grew rapidly because of the popularity of which drinks?", options: ["Milk and Water", "Tea, Coffee, and Cocoa", "Wine and Beer", "Fruit Juices"], a: 1, hint: "New hot beverages required sweetening to become popular." },
+            { q: "By law, what were employers in Natal required to provide for free to their indentured workers?", options: ["Horses", "Basic housing", "Bicycles", "Private schools"], a: 1, hint: "Accommodation was a standard part of the labor contract." },
+            { q: "What staple food item from India had to be imported because it did not grow well in Natal?", options: ["Maize", "Rice", "Potatoes", "Wheat"], a: 1, hint: "A grain that needs significant water and specific heat." },
+            { q: "Indentured workers went on strike primarily because they were being fed mealie meal instead of rice.", options: ["True", "False"], a: 0, hint: "They protested to maintain their traditional cultural diet." },
+            { q: "Garden plots were provided to workers so they could grow their own...", options: ["Sugar cane", "Vegetables and spices", "Diamonds", "Cotton"], a: 1, hint: "This allowed them to supplement their rations with familiar foods." },
+            { q: "Passenger Indians were given that name because they...", options: ["Worked as ship crew", "Paid for their own passage to Natal", "Were only visiting as tourists", "Operated the local trains"], a: 1, hint: "Unlike indentured workers, they were free and self-funded." },
+            { q: "From which regions did Passenger Indians primarily migrate?", options: ["London and Paris", "Western India and Mauritius", "The Cape and Natal", "Australia and America"], a: 1, hint: "Many were Gujarati-speaking and had trading backgrounds." },
+            { q: "Many Passenger Indians were Gujarati-speaking and of the Muslim faith.", options: ["True", "False"], a: 0, hint: "This was a major demographic of the early passenger immigrants." },
+            { q: "What was the primary reason Passenger Indians came to the Natal colony?", options: ["To work as plantation laborers", "To trade and open retail shops", "To work in the coal mines", "To join the British army"], a: 1, hint: "They were primarily merchants and business owners." },
+            { q: "Indian traders began moving inland in the 1870s and 1880s due to the discovery of...", options: ["Crude oil", "Diamonds and Gold", "Coal and Iron", "Fresh water springs"], a: 1, hint: "The 'Mineral Revolution' created massive new markets." },
+            { q: "Indian businessmen moved to the coal fields located in which part of South Africa?", options: ["Northern Natal", "The Western Cape", "Gauteng", "The Eastern Cape"], a: 0, hint: "An area near the existing sugar plantations." },
+            { q: "Where else did Indian traders set up business besides the coal fields and the Witwatersrand?", options: ["Near the Kimberley diamond fields", "In London", "In downtown Durban only", "In Mauritius"], a: 0, hint: "They followed the mining wealth to the 'Big Hole' area." },
+            { q: "What type of permanent housing was built for workers later in the century to replace thatched huts?", options: ["Wooden shacks", "Brick houses joined together", "Canvas tents", "High-rise apartments"], a: 1, hint: "These were more durable than the initial temporary structures." },
+            { q: "African farming societies had traded with each other for many centuries before Europeans arrived.", options: ["True", "False"], a: 0, hint: "Trade networks were well-established long before 1488." },
+            { q: "In what year did the British take over Natal as a colony?", options: ["1830", "1843", "1860", "1886"], a: 1, hint: "This occurred shortly after the Trekkers arrived in the region." },
+            { q: "The Boer republics struggled to hold land because independent African kingdoms were still very powerful.", options: ["True", "False"], a: 0, hint: "Sovereignty was a constant point of conflict and negotiation." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("History Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "History Millionaire!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Walked away with:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

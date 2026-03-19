@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 8 History Memory Match</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 8 History: The Industrial Revolution</h1>
+        <p class="game-subtitle">Match the concepts and definitions from Britain (1750-1850) and Southern Africa!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Wealth & Farming Economy</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Machines & Technology</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Social Impact & Child Labour</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Resistance & Trade Unions</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Wealth from trade in slaves, cotton, and sugar." }, { id: 1, text: "Trans-Atlantic Slave Trade" },
+                { id: 2, text: "Handicrafts like weaving done at home in farming villages." }, { id: 2, text: "Cottage Industries" },
+                { id: 3, text: "Fencing land to create private property, ending common grazing." }, { id: 3, text: "Enclosure System" },
+                { id: 4, text: "Women who spun and combed wool into thread at home." }, { id: 4, text: "Spinsters" },
+                { id: 5, text: "Producing only enough food to feed one's own family." }, { id: 5, text: "Subsistence Farming" },
+                { id: 6, text: "An important British seaport for the slave trade." }, { id: 6, text: "Bristol" },
+                { id: 7, text: "Inventions that improved crop and livestock production." }, { id: 7, text: "Agricultural Revolution" },
+                { id: 8, text: "Men who used hand looms to weave wool into cloth." }, { id: 8, text: "Weavers" },
+                { id: 9, text: "Shared farmland without fences where livestock grazed." }, { id: 9, text: "Common Land" },
+                { id: 10, text: "A material from America used in the British cloth industry." }, { id: 10, text: "Raw Cotton" }
+            ],
+            'topic2': [
+                { id: 1, text: "Using machines to make goods in large factories." }, { id: 1, text: "Industrialisation" },
+                { id: 2, text: "He improved the technology of the steam engine in 1770." }, { id: 2, text: "James Watt" },
+                { id: 3, text: "Material needed for machines to withstand steam heat." }, { id: 3, text: "Iron" },
+                { id: 4, text: "Steam engine locomotive developed by George Stephenson." }, { id: 4, text: "The Rocket" },
+                { id: 5, text: "He invented 'tarmac' for hard-surface roads." }, { id: 5, text: "John MacAdam" },
+                { id: 6, text: "Large buildings built to house big machines and workers." }, { id: 6, text: "Factories" },
+                { id: 7, text: "Power source for the very first industrial machines." }, { id: 7, text: "Water Power" },
+                { id: 8, text: "Essential fuel used to boil water to create steam." }, { id: 8, text: "Coal" },
+                { id: 9, text: "The main way goods like coal were transported after 1830." }, { id: 9, text: "Railways" },
+                { id: 10, text: "Producing goods quickly and in very large quantities." }, { id: 10, text: "Mass Production" }
+            ],
+            'topic3': [
+                { id: 1, text: "Movement of people from rural areas to towns and cities." }, { id: 1, text: "Urbanisation" },
+                { id: 2, text: "Places for the very poor to work for food and sleep." }, { id: 2, text: "Workhouses" },
+                { id: 3, text: "Law banning children under ten from working underground." }, { id: 3, text: "Mines Act of 1842" },
+                { id: 4, text: "Crammed back-to-back rows of workers' houses." }, { id: 4, text: "Overcrowded Housing" },
+                { id: 5, text: "They could crawl under machines to clean them." }, { id: 5, text: "Child Labourers" },
+                { id: 6, text: "Diseases spread quickly here due to open sewers." }, { id: 6, text: "Industrial Towns" },
+                { id: 7, text: "Reason why whole families had to work long hours." }, { id: 7, text: "Low Wages" },
+                { id: 8, text: "A common sight that caused pollution in factory towns." }, { id: 8, text: "Smoking Chimneys" },
+                { id: 9, text: "Indentured workers were sent here from India in 1860." }, { id: 9, text: "Natal Colony" },
+                { id: 10, text: "This 1867 discovery started SA's industrial revolution." }, { id: 10, text: "Diamonds (Kimberley)" }
+            ],
+            'topic4': [
+                { id: 1, text: "Workers who destroyed machines in factories." }, { id: 1, text: "Luddites" },
+                { id: 2, text: "1830 farm worker protests against threshing machines." }, { id: 2, text: "Swing Riots" },
+                { id: 3, text: "Secret name used by leaders of the farm protests." }, { id: 3, text: "Captain Swing" },
+                { id: 4, text: "Organised groups demanding better hours and pay." }, { id: 4, text: "Trade Unions" },
+                { id: 5, text: "Early name for unions where workers saved money." }, { id: 5, text: "Friendly Societies" },
+                { id: 6, text: "Huge union formed in 1833 with 500,000 members." }, { id: 6, text: "Grand National Consolidated" },
+                { id: 7, text: "1851 event showing Britain's technological superiority." }, { id: 7, text: "The Great Exhibition" },
+                { id: 8, text: "Huge iron and glass building in London's Hyde Park." }, { id: 8, text: "Crystal Palace" },
+                { id: 9, text: "The result for many craft-workers when machines arrived." }, { id: 9, text: "Unemployment" },
+                { id: 10, text: "Industrial resister who famously broke machines in 1779." }, { id: 10, text: "Ned Ludd" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! History Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

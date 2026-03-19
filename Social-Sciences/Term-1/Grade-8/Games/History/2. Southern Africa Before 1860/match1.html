@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 8 History: Southern Africa Before 1860</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 8 History: Southern Africa Before 1860</h1>
+        <p class="game-subtitle">Match the concepts and facts about political settlements and indentured labour!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Political Settlement</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Sugar & Natal Colony</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">India & British Rule</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Labour & Immigrants</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Most people in 19th century SA lived this way." }, { id: 1, text: "Off the land (farming)" },
+                { id: 2, text: "Status of 'South Africa' as a country in the 1860s." }, { id: 2, text: "Did not exist" },
+                { id: 3, text: "Descendants of the Dutch in the Transvaal." }, { id: 3, text: "Boers (Trekkers)" },
+                { id: 4, text: "The year the British took over Natal as a colony." }, { id: 4, text: "1843" },
+                { id: 5, text: "Movement of Boers to the interior in the 1830s." }, { id: 5, text: "The Great Trek" },
+                { id: 6, text: "The two colonies controlled by the British." }, { id: 6, text: "Cape and Natal" },
+                { id: 7, text: "They remained independent and powerful in the 1860s." }, { id: 7, text: "African Kingdoms" },
+                { id: 8, text: "Year when first Europeans arrived in South Africa." }, { id: 8, text: "15th Century" },
+                { id: 9, text: "Activity practiced between African societies for centuries." }, { id: 9, text: "Trade" },
+                { id: 10, text: "Area Boer Trekkers settled in the late 1830s." }, { id: 10, text: "Orange Free State" }
+            ],
+            'topic2': [
+                { id: 1, text: "Natal's climate that was perfect for sugar cane." }, { id: 1, text: "Soil and warm climate" },
+                { id: 2, text: "Main use for sugar in Britain and the world." }, { id: 2, text: "Sweeten drinks & food" },
+                { id: 3, text: "Island farmers who came to Natal in the 1850s." }, { id: 3, text: "Mauritius" },
+                { id: 4, text: "Original home of the sugar cane plant." }, { id: 4, text: "India & SE Asia" },
+                { id: 5, text: "Used to sweeten food in Britain before the 18th century." }, { id: 5, text: "Honey" },
+                { id: 6, text: "Trade that introduced sugar to Britain." }, { id: 6, text: "Trans-Atlantic Slave Trade" },
+                { id: 7, text: "Drinks that became popular in Britain due to trade." }, { id: 7, text: "Tea, Coffee, and Cocoa" },
+                { id: 8, text: "Century Spanish explorers took sugar to the Caribbean." }, { id: 8, text: "16th Century" },
+                { id: 9, text: "Labour type from India for sugar plantations." }, { id: 9, text: "Indentured Labour" },
+                { id: 10, text: "Main destination for sugar grown in Natal." }, { id: 10, text: "Britain and Europe" }
+            ],
+            'topic3': [
+                { id: 1, text: "Status of India before British control." }, { id: 1, text: "Collection of many states" },
+                { id: 2, text: "Indian ports controlled by the East India Company." }, { id: 2, text: "Madras and Calcutta" },
+                { id: 3, text: "1784 law giving government control of Indian land." }, { id: 3, text: "The India Act" },
+                { id: 4, text: "Year all states became the colony of 'British India'." }, { id: 4, text: "1858" },
+                { id: 5, text: "Title given to Queen Victoria in 1858." }, { id: 5, text: "Empress of India" },
+                { id: 6, text: "Company that controlled Indian ports from early 1700s." }, { id: 6, text: "British East India Company" },
+                { id: 7, text: "Entity that took control from the East India Company." }, { id: 7, text: "British Government" },
+                { id: 8, text: "Century Britain began taking control of Indian states." }, { id: 8, text: "18th Century" },
+                { id: 9, text: "Collective name for Indian states under rule after 1858." }, { id: 9, text: "British India" },
+                { id: 10, text: "Location of the trading port Calcutta." }, { id: 10, text: "India" }
+            ],
+            'topic4': [
+                { id: 1, text: "Basic necessity employers had to provide for free." }, { id: 1, text: "Housing (Free House)" },
+                { id: 2, text: "Type of house sometimes made of metal." }, { id: 2, text: "Corrugated iron structure" },
+                { id: 3, text: "Indian staple food that had to be imported to Natal." }, { id: 3, text: "Rice" },
+                { id: 4, text: "Action taken by workers when denied rice." }, { id: 4, text: "Strikes" },
+                { id: 5, text: "Land provided for growing vegetables and spices." }, { id: 5, text: "Garden plots" },
+                { id: 6, text: "Indians who paid for their own travel to Natal." }, { id: 6, text: "Passenger Indians" },
+                { id: 7, text: "Main reason Passenger Indians came to Natal." }, { id: 7, text: "To trade and open shops" },
+                { id: 8, text: "Year diamonds were discovered in Kimberley." }, { id: 8, text: "1867" },
+                { id: 9, text: "Origins of most Passenger Indians." }, { id: 9, text: "Western India & Mauritius" },
+                { id: 10, text: "Mining area traders moved to in the 1880s." }, { id: 10, text: "Witwatersrand" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! You've completed the History revision for this section in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>
