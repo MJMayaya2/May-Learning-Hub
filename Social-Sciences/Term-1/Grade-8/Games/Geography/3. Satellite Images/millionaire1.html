@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 8 Geography: Satellite Images Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Satellite Images (Grade 8 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What are satellite images?", options: ["Traditional hand-held photos", "Digital images taken by artificial satellites", "Paintings of the landscape", "Maps drawn by explorers"], a: 1, hint: "They are captured from orbit[cite: 30, 31]." },
+            { q: "Instead of being traditional photos, satellite images record what?", options: ["Audio signals", "Air pressure", "Energy reflections from the Earth's surface", "Wind speeds"], a: 2, hint: "Check the definition on page 2[cite: 32, 33]." },
+            { q: "Satellites help us monitor land use. Which of these is an example of land use?", options: ["Cloud formations", "Farming, cities, and mining", "The speed of light", "Ocean tides"], a: 1, hint: "Look under 'Land Use' on page 2[cite: 36]." },
+            { q: "What are the two main types of satellite orbits?", options: ["Horizontal and Vertical", "Geostationary and Polar-orbiting", "Circular and Square", "Static and Dynamic"], a: 1, hint: "Check page 3 or 5." },
+            { q: "At what approximate altitude do Geostationary (GEO) satellites orbit?", options: ["850 km", "10,000 km", "35,800 km", "100,000 km"], a: 2, hint: "Look at the GEO diagram on page 5[cite: 58, 59]." },
+            { q: "At what approximate altitude do Polar-orbiting (LEO) satellites orbit?", options: ["850 km", "35,800 km", "5,000 km", "1,200 km"], a: 0, hint: "Check the LEO diagram on page 5[cite: 60]." },
+            { q: "Which type of satellite provides continuous scans and real-time images of specific regions like North America?", options: ["Polar-orbiting", "Geostationary", "Lunar-orbiting", "Submarine"], a: 1, hint: "These stay over one spot[cite: 64]." },
+            { q: "Which satellite orbit creates a 'swath' over the entire world to produce high-resolution global mosaics?", options: ["Geostationary", "Polar-orbiting", "Fixed-position", "Equatorial"], a: 1, hint: "These move from pole to pole[cite: 66]." },
+            { q: "How does water generally appear in standard satellite images?", options: ["Bright red", "Pure white", "Very dark or black", "Light green"], a: 2, hint: "Unless it is shallow or silty[cite: 46]." },
+            { q: "In infrared satellite images, healthy vegetation often appears in what color?", options: ["Blue", "Deep green", "Shades of red", "Yellow"], a: 2, hint: "Check 'Information from Satellite Images' on page 4[cite: 48]." },
+            { q: "Why do meteorologists track cloud patterns in satellite images?", options: ["To find buried treasure", "To predict the weather and track storms", "To count airplanes", "To monitor ocean depth"], a: 1, hint: "Page 4 explains its use in weather prediction[cite: 49, 50]." },
+            { q: "What is an application of infrared imagery in meteorology?", options: ["Measuring ground height", "Tracking animal migration", "Detecting cloud top temperatures", "Finding lost hikers"], a: 2, hint: "Check the data applications on page 5[cite: 56, 67]." },
+            { q: "What are 'Rivers in the sky'?", options: ["High-speed winds", "Mid-level moisture currents", "Actual water flowing through clouds", "A type of lightning"], a: 1, hint: "This is found under data applications[cite: 68]." },
+            { q: "Satellite data is used in computer models for...", options: ["Playing video games", "Numerical Weather Prediction", "Drawing city maps", "Designing new satellites"], a: 1, hint: "This helps create 5-day forecasts[cite: 69, 70]." },
+            { q: "True or False: Polar-orbiting satellites stay in one fixed position over the Earth.", options: ["True", "False"], a: 1, hint: "That describes Geostationary satellites[cite: 62, 65]." },
+            { q: "True or False: Shallow or silty water may not appear dark in satellite images.", options: ["True", "False"], a: 0, hint: "Look at the bracketed text on page 4[cite: 46, 47]." },
+            { q: "Satellite images record energy reflections. This is a form of:", options: ["Remote Sensing", "Traditional Photography", "Sonar Mapping", "Radio Broadcasting"], a: 0, hint: "They record reflections from the surface[cite: 33]." },
+            { q: "Which orbit is better for tracking a fast-moving hurricane in real-time?", options: ["Polar", "Geostationary", "Lunar", "Solar"], a: 1, hint: "They provide continuous scans[cite: 64]." },
+            { q: "Which orbit is better for seeing the entire world at high resolution?", options: ["Polar-orbiting", "Geostationary", "Stationary", "Flat"], a: 0, hint: "They create global mosaics[cite: 66]." },
+            { q: "What is used to predict the weather up to 5 days in advance?", options: ["Infrared photos only", "Manual observations", "Numerical Weather Prediction (Computer Models)", "A crystal ball"], a: 2, hint: "Check the forecast section on page 5[cite: 71]." },
+            { q: "How does healthy vegetation appear in deep, non-infrared green satellite images?", options: ["Pale yellow", "Deep green", "Brown", "Bright orange"], a: 1, hint: "Check page 4[cite: 48]." },
+            { q: "Satellites can be used to track specific weather events like:", options: ["Earthquakes", "Tornadoes", "Storms and cyclones", "Volcanic eruptions only"], a: 2, hint: "Check page 4[cite: 50]." },
+            { q: "Numerical Weather Prediction is also known as a:", options: ["Mechanical Model", "Drawing Model", "Computer Model", "Manual Model"], a: 2, hint: "Check page 5[cite: 70]." },
+            { q: "What is an instrument derived application of satellites?", options: ["Counting people", "Sea surface temperature", "Predicting history", "Controlling the wind"], a: 1, hint: "Check the bottom of page 5[cite: 72]." },
+            { q: "Geostationary satellites orbit at 35,800 km. Polar satellites orbit at:", options: ["35,800 km", "500,000 km", "850 km", "10 km"], a: 2, hint: "Check the orbit types on page 5[cite: 60]." },
+            { q: "Satellite images allow us to distinguish between urban and...", options: ["Underwater land", "Built-up areas", "Rural (open) land", "Space areas"], a: 2, hint: "Look under 'Land Use' on page 4[cite: 9]." },
+            { q: "True or False: Modern satellite images are strictly black and white.", options: ["True", "False"], a: 1, hint: "They record various energy reflections[cite: 32, 33]." },
+            { q: "Water Vapor is a data application for:", options: ["Polar satellites", "Geostationary satellites", "Both", "Neither"], a: 1, hint: "Check the GEO section on page 5[cite: 57]." },
+            { q: "Which term refers to satellites that are man-made objects launched into space?", options: ["Moons", "Artificial Satellites", "Stars", "Comets"], a: 1, hint: "Check page 2[cite: 31]." },
+            { q: "What is a major benefit of using satellites for land use monitoring?", options: ["They make the soil more fertile", "They provide a broad view of how land is used", "They can harvest crops", "They change the weather"], a: 1, hint: "They see things like farming and mining from above[cite: 36]." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "History Millionaire!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Walked away with:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

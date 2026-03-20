@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 8 Geography: The Globe</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 8 Geography: The Globe</h1>
+        <p class="game-subtitle">Master time zones, rotation, and revolution with this memory challenge!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Rotation & Day/Night</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Time Zones</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">SA Standard Time (SAST)</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Revolution & Seasons</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "The Earth rotates on its axis in this direction." }, { id: 1, text: "West to East" },
+                { id: 2, text: "The amount of time for one full rotation." }, { id: 2, text: "24 hours" },
+                { id: 3, text: "The result of the Earth's rotation on its axis." }, { id: 3, text: "Day and Night" },
+                { id: 4, text: "The side of the Earth facing away from the sun." }, { id: 4, text: "Experiences Night" },
+                { id: 5, text: "The side of the Earth facing the sun." }, { id: 5, text: "Experiences Day" },
+                { id: 6, text: "The angle at which the Earth's axis is tilted." }, { id: 6, text: "23.5°" },
+                { id: 7, text: "Imaginary line through the North and South Poles." }, { id: 7, text: "Axis" },
+                { id: 8, text: "The movement of Earth spinning on its own axis." }, { id: 8, text: "Rotation" },
+                { id: 9, text: "The primary source of light for the Earth." }, { id: 9, text: "The Sun" },
+                { id: 10, text: "One of Earth's movements that creates days." }, { id: 10, text: "Rotation" }
+            ],
+            'topic2': [
+                { id: 1, text: "Total number of time zones the Earth is divided into." }, { id: 1, text: "24 time zones" },
+                { id: 2, text: "Degrees of longitude represented by each time zone." }, { id: 2, text: "15°" },
+                { id: 3, text: "Calculation for degrees per hour: 360° divided by..." }, { id: 3, text: "24 hours" },
+                { id: 4, text: "The starting point (0° longitude) for world time." }, { id: 4, text: "Greenwich Meridian" },
+                { id: 5, text: "Abbreviation for Greenwich Mean Time." }, { id: 5, text: "GMT" },
+                { id: 6, text: "Line at 180° where the calendar date changes." }, { id: 6, text: "International Date Line" },
+                { id: 7, text: "Time is ahead of GMT when traveling in this direction." }, { id: 7, text: "East (+)" },
+                { id: 8, text: "Time is behind GMT when traveling in this direction." }, { id: 8, text: "West (-)" },
+                { id: 9, text: "Lines used to determine the world's time zones." }, { id: 9, text: "Longitude" },
+                { id: 10, text: "Longitude degree of the Greenwich Meridian." }, { id: 10, text: "0°" }
+            ],
+            'topic3': [
+                { id: 1, text: "Longitude line used to set South Africa's time." }, { id: 1, text: "30° East" },
+                { id: 2, text: "Calculation for SAST: 30° divided by 15 equals..." }, { id: 2, text: "2 hours" },
+                { id: 3, text: "The relationship between SAST and GMT." }, { id: 3, text: "GMT + 2" },
+                { id: 4, text: "City in SA where the sun rises earlier than Cape Town." }, { id: 4, text: "Durban" },
+                { id: 5, text: "Even if sunrises differ, all of SA follows the same..." }, { id: 5, text: "Standard Time" },
+                { id: 6, text: "Abbreviation for South African Standard Time." }, { id: 6, text: "SAST" },
+                { id: 7, text: "The meridian SAST is based on." }, { id: 7, text: "30° East Meridian" },
+                { id: 8, text: "If it is 12:00 GMT, the time in South Africa is..." }, { id: 8, text: "14:00" },
+                { id: 9, text: "Reason all of SA uses one time zone." }, { id: 9, text: "National uniformity" },
+                { id: 10, text: "SAST is how many hours ahead of GMT?" }, { id: 10, text: "Two hours" }
+            ],
+            'topic4': [
+                { id: 1, text: "Movement of the Earth traveling around the sun." }, { id: 1, text: "Revolution" },
+                { id: 2, text: "Shape of the Earth's path around the sun." }, { id: 2, text: "Elliptical orbit" },
+                { id: 3, text: "Total time taken for one full revolution." }, { id: 3, text: "365.25 days" },
+                { id: 4, text: "The primary cause of the four seasons on Earth." }, { id: 4, text: "Earth's Tilt (23.5°)" },
+                { id: 5, text: "The four seasons: Spring, Summer, Autumn and..." }, { id: 5, text: "Winter" },
+                { id: 6, text: "The shortest day of the year in the Southern Hemisphere." }, { id: 6, text: "June 21 (Winter Solstice)" },
+                { id: 7, text: "Occurs when the sun is directly over the Equator." }, { id: 7, text: "Equinox" },
+                { id: 8, text: "Date when day and night are of equal length in March." }, { id: 8, text: "21 March" },
+                { id: 9, text: "The longest day of the year in the Southern Hemisphere." }, { id: 9, text: "21 Dec (Summer Solstice)" },
+                { id: 10, text: "One revolution of the Earth takes exactly one..." }, { id: 10, text: "Year" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Geography Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

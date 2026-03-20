@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 8 Geography: Earth as a Globe Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">The Earth as a Globe Quiz</h1>
+        <p class="game-subtitle">30-Question Millionaire Challenge (Geography Grade 8)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">Try Again</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "In which direction does the Earth rotate on its axis?", options: ["North to South", "East to West", "West to East", "South to North"], a: 2, hint: "Check page 2 for the direction of rotation." },
+            { q: "How long does it take for the Earth to complete one full rotation?", options: ["12 hours", "24 hours", "365 days", "1 hour"], a: 1, hint: "This time period makes one full day and night." },
+            { q: "True or False: The side of the Earth facing the sun experiences night.", options: ["True", "False"], a: 1, hint: "Think about which side gets light." },
+            { q: "Into how many time zones is the Earth divided?", options: ["12", "24", "15", "360"], a: 1, hint: "Page 6 mentions the total number of global time zones." },
+            { q: "Each time zone represents how many degrees of longitude?", options: ["10°", "15°", "30°", "60°"], a: 1, hint: "360 degrees divided by 24 hours equals this value." },
+            { q: "Which line of longitude is the starting point for world time (0°)?", options: ["Equator", "Tropic of Cancer", "Greenwich Meridian", "International Date Line"], a: 2, hint: "Also known as the Prime Meridian." },
+            { q: "What is the name of the 180° longitude line where the calendar date changes?", options: ["Greenwich Meridian", "International Date Line", "Equator", "Tropic of Capricorn"], a: 1, hint: "Look at the time zone section on page 6." },
+            { q: "South Africa uses which longitude line to set its standard time (SAST)?", options: ["0°", "15° East", "30° East", "45° East"], a: 2, hint: "Check page 8 for South African Standard Time details." },
+            { q: "What is South African Standard Time (SAST) in relation to GMT?", options: ["GMT - 2", "GMT + 1", "GMT + 2", "GMT + 4"], a: 2, hint: "30 degrees divided by 15 degrees per hour gives the difference." },
+            { q: "True or False: All of South Africa follows the same time, even though the sun rises earlier in Durban than in Cape Town.", options: ["True", "False"], a: 0, hint: "Standard time is applied across the whole country." },
+            { q: "What is the term for the Earth's movement as it travels around the sun?", options: ["Rotation", "Revolution", "Orbiting", "Spinning"], a: 1, hint: "Page 9 defines this movement." },
+            { q: "What is the shape of the Earth's orbit around the sun?", options: ["Circular", "Square", "Elliptical", "Rectangular"], a: 2, hint: "It's an elongated circle shape." },
+            { q: "How long does one full revolution of the Earth around the sun take?", options: ["24 hours", "30 days", "365 1/4 days", "100 days"], a: 2, hint: "This represents one full year." },
+            { q: "At what angle is the Earth tilted on its axis?", options: ["0°", "23.5°", "45°", "90°"], a: 1, hint: "Check the diagram on page 4 or text on page 9." },
+            { q: "What is the primary cause of the four seasons on Earth?", options: ["Distance from the sun", "The speed of rotation", "The tilt of the Earth", "The size of the moon"], a: 2, hint: "Check page 9, bullet point 3." },
+            { q: "On which date does the Summer Solstice occur in the Southern Hemisphere?", options: ["June 21", "September 23", "December 21", "March 21"], a: 2, hint: "This is the longest day for us in South Africa." },
+            { q: "On which date does the Winter Solstice occur in the Southern Hemisphere?", options: ["June 21", "September 23", "December 21", "March 21"], a: 0, hint: "This is the shortest day of the year." },
+            { q: "What is an Equinox?", options: ["When the sun is over the Equator", "When the sun is over the North Pole", "When day is longer than night", "When the Earth stops rotating"], a: 0, hint: "Page 12 describes this event." },
+            { q: "Which date marks the Vernal (Autumnal for us) Equinox in March?", options: ["March 1", "March 15", "March 21", "March 31"], a: 2, hint: "Check the dates on page 11 or 12." },
+            { q: "Which date marks the September Equinox?", options: ["September 1", "September 21", "September 23", "September 30"], a: 2, hint: "This is when day and night are equal length." },
+            { q: "During which solstice is the Southern Hemisphere tilted towards the sun?", options: ["Summer Solstice", "Winter Solstice", "March Equinox", "September Equinox"], a: 0, hint: "This results in the longest day of the year." },
+            { q: "During which solstice is the Southern Hemisphere tilted AWAY from the sun?", options: ["Summer Solstice", "Winter Solstice", "March Equinox", "September Equinox"], a: 1, hint: "This results in the shortest day of the year." },
+            { q: "True or False: Day and night are of equal length everywhere on Earth during an Equinox.", options: ["True", "False"], a: 0, hint: "Page 12 states day and night are equal length." },
+            { q: "The Earth travels in its orbit around...", options: ["The Moon", "The Sun", "Mars", "The North Star"], a: 1, hint: "Revolution refers to this travel path." },
+            { q: "Day and night are caused by the Earth's...", options: ["Revolution", "Rotation", "Gravity", "Distance from Mars"], a: 1, hint: "This happens every 24 hours." },
+            { q: "What does GMT stand for?", options: ["General Map Time", "Global Mean Time", "Greenwich Mean Time", "Geography Master Time"], a: 2, hint: "It is based on the 0° longitude line." },
+            { q: "What does IDL stand for in geography?", options: ["Internal Degree Line", "International Date Line", "Indian District Latitude", "Island Day Limit"], a: 1, hint: "It is at the 180° mark." },
+            { q: "Where does the sun rise earlier in South Africa?", options: ["Cape Town", "Johannesburg", "Durban", "Bloemfontein"], a: 2, hint: "Check the SAST section on page 8." },
+            { q: "What is the side of the Earth facing AWAY from the sun called?", options: ["Day", "Night", "Twilight", "Equinox"], a: 1, hint: "Look at the diagram on page 2." },
+            { q: "How many seasons are mentioned as results of the Earth's revolution?", options: ["2", "4", "6", "12"], a: 1, hint: "Check the 'Seasons' section on page 9." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = qData.options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden');
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [0, 1, 2, 3].filter(i => i !== correctIndex);
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

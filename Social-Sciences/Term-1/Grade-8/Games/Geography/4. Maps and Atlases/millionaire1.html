@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 8 Geography Millionaire</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Geography Millionaire</h1>
+        <p class="game-subtitle">Topic: Maps and Atlases (Grade 8 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">Try Again</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is the correct definition of an Atlas?", options: ["A type of handheld GPS device", "A collection of maps, tables, and charts bound in a book", "A single map of the entire world", "A textbook for history students"], a: 1, hint: "Check the definition on page 2[cite: 35]." },
+            { q: "Where is the index typically located in an atlas?", options: ["At the very back", "On the front cover", "Right after the table of contents", "In the middle of the book"], a: 0, hint: "Page 2 explains its location[cite: 36]." },
+            { q: "How are places listed in the atlas index?", options: ["By population size", "In chronological order of discovery", "In alphabetical order", "By their distance from the equator"], a: 2, hint: "Think about how dictionaries are organized[cite: 37]." },
+            { q: "What information does the index provide to help you find specific locations?", options: ["Temperature and rainfall", "Latitude and longitude grid references", "The name of the local leader", "The history of the country"], a: 1, hint: "Look for 'Grid References' on page 2[cite: 38, 39]." },
+            { q: "In which direction do lines of latitude run across a map?", options: ["North to South", "Diagonally from corner to corner", "West to East", "Only in circles"], a: 2, hint: "These are horizontal lines[cite: 42]." },
+            { q: "Latitude is measured North or South of which starting line?", options: ["The Greenwich Meridian", "The Tropic of Capricorn", "The Equator", "The South Pole"], a: 2, hint: "It's the 0° line in the middle of the earth[cite: 43]." },
+            { q: "In which direction do lines of longitude run?", options: ["West to East", "North to South", "Around the circumference of the equator", "From the center of the earth outwards"], a: 1, hint: "These are vertical lines[cite: 44]." },
+            { q: "Longitude is measured East or West of which specific line?", options: ["The Equator", "The International Date Line", "The Greenwich Meridian", "The Antarctic Circle"], a: 2, hint: "Also known as the Prime Meridian[cite: 44]." },
+            { q: "Each degree of latitude or longitude is divided into how many minutes?", options: ["100 minutes", "10 minutes", "30 minutes", "60 minutes"], a: 3, hint: "Check 'Degrees and Minutes' on page 3[cite: 45]." },
+            { q: "According to the document, what is the approximate latitude range of South Africa?", options: ["Between 22° S and 35° S", "Between 0° and 10° N", "Between 45° S and 60° S", "Between 15° N and 25° N"], a: 0, hint: "Look for 'South Africa's Location'[cite: 46]." },
+            { q: "True or False: Lines of longitude run from West to East.", options: ["True", "False"], a: 1, hint: "Check the direction for longitude on page 3[cite: 44]." },
+            { q: "What is an example of a Word Scale?", options: ["1:50 000", "Distance = Speed x Time", "One centimeter represents fifty thousand cm on the ground", "A bar marked with kilometers"], a: 2, hint: "It is written out as a sentence[cite: 75]." },
+            { q: "What is the Ratio or Number Scale used as an example on page 5?", options: ["1:100", "1:50 000", "50:1", "1:1 000 000"], a: 1, hint: "Look under 'Ratio/Number Scale'[cite: 77]." },
+            { q: "In a 1:50 000 scale, what does '1 unit on the map' represent?", options: ["1 kilometer on the ground", "50 000 units on the ground", "The total distance to the equator", "50 000 centimeters only"], a: 1, hint: "The first number is the map, the second is the ground[cite: 77, 78]." },
+            { q: "What is the formula used to calculate ground distance?", options: ["Distance = Map Measurement / Scale Factor", "Distance = Map Measurement + Scale Factor", "Distance = Map Measurement X Scale Factor", "Distance = Scale Factor - Map Measurement"], a: 2, hint: "Check 'The Formula' on page 5[cite: 86]." },
+            { q: "After calculating distance, what should you always convert your final answer to?", options: ["Millimeters or Centimeters", "Kilometres or Meters", "Degrees or Minutes", "Miles or Inches"], a: 1, hint: "Units must be standard ground measurements[cite: 86]." },
+            { q: "True or False: The index provides latitude and longitude references.", options: ["True", "False"], a: 0, hint: "Page 2 explains what the index provides[cite: 38, 39]." },
+            { q: "Which of these lines is used as the 0° mark for longitude?", options: ["The Equator", "The Greenwich Meridian", "The Tropic of Cancer", "The South Pole"], a: 1, hint: "Page 3 mentions this line for longitude[cite: 44]." },
+            { q: "True or False: Latitude lines run West to East.", options: ["True", "False"], a: 0, hint: "Check the definition of latitude[cite: 42]." },
+            { q: "What does the index list in alphabetical order?", options: ["Authors of the maps", "Map scales", "Places", "Types of charts"], a: 2, hint: "Check page 2, bullet point 2[cite: 37]." },
+            { q: "If the scale is 1:50 000, the '50 000' is known as the...", options: ["Map measurement", "Conversion rate", "Scale factor", "Grid reference"], a: 2, hint: "Use this in the distance formula[cite: 86]." },
+            { q: "On the world map (page 4), what is the latitude of the Equator?", options: ["90°", "180°", "0°", "45°"], a: 2, hint: "The central horizontal line is the starting point[cite: 51]." },
+            { q: "Lines of longitude are measured in which direction from the starting meridian?", options: ["North or South", "East or West", "Clockwise or Counter-clockwise", "Only towards the East"], a: 1, hint: "Think about the Prime Meridian[cite: 44]." },
+            { q: "True or False: Each degree is divided into 100 minutes.", options: ["True", "False"], a: 1, hint: "Check the number of minutes in a degree[cite: 45]." },
+            { q: "Which tool is essentially a 'book of maps'?", options: ["A Globe", "An Index", "An Atlas", "A Satellite Image"], a: 2, hint: "Page 2 defines this[cite: 35]." },
+            { q: "True or False: The Equator is the starting line for measuring longitude.", options: ["False", "True"], a: 0, hint: "Equator is for latitude, not longitude[cite: 43, 44]." },
+            { q: "What is used to divide a degree into smaller, more precise units?", options: ["Seconds", "Millidegrees", "Minutes", "Decimals"], a: 2, hint: "Page 3: 'Each degree is divided into...'[cite: 45]." },
+            { q: "True or False: South Africa is roughly between 22° N and 35° N.", options: ["False", "True"], a: 0, hint: "South Africa is in the Southern Hemisphere[cite: 46]." },
+            { q: "What do you multiply the Map Measurement by to find ground distance?", options: ["The Grid Reference", "The Map Scale Factor", "The Latitude", "The Longitude"], a: 1, hint: "Look at the distance formula[cite: 86]." },
+            { q: "The index provides grid references to help you find ________ locations.", options: ["Random", "Specific", "Historical", "Alphabetical"], a: 1, hint: "Check page 2, final bullet point[cite: 39]." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Millionaire!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Score:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

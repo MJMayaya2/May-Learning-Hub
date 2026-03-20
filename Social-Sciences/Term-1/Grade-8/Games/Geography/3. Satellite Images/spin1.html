@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 8 Geography: Satellite Images</title>
+    <style>
+        /* CSS styling identical to original */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Satellite Images</h1>
+        <p class="game-subtitle">Test your Grade 8 Map Skills! Select a category, spin the wheel, and identify the Earth from above.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Satellite Image", a: "Digital images taken by artificial satellites orbiting Earth that record energy reflections." },
+                { q: "Geostationary Orbit", a: "An orbit about 35,800 km above Earth where satellites stay over one spot to provide continuous scans." },
+                { q: "Polar Orbit", a: "A low-Earth orbit (about 850 km) where satellites travel over the poles to map the whole world." },
+                { q: "Energy Reflections", a: "The data recorded by satellites from the Earth's surface instead of traditional 'light on film' photography." },
+                { q: "Meteorology", a: "The study of the atmosphere and weather using data like cloud patterns and water vapor." },
+                { q: "Land Use", a: "How land is managed for different activities like farming, mining, or city building." },
+                { q: "Urban Area", a: "A built-up region with buildings and infrastructure seen on satellite images." },
+                { q: "Rural Land", a: "Open or natural land, such as forests or open countryside, distinguished from built-up areas." },
+                { q: "Infrared Imagery", a: "A type of satellite data that can distinguish healthy vegetation by displaying it in shades of red." },
+                { q: "Water Vapor", a: "Mid-level moisture currents in the atmosphere, often called 'rivers in the sky'." },
+                { q: "Swath", a: "The strip of Earth's surface that a polar-orbiting satellite observes as it passes over." },
+                { q: "Global Mosaic", a: "A complete image of the entire Earth created by combining multiple swaths from polar satellites." },
+                { q: "Hurricane Monitoring", a: "The use of geostationary satellites to provide real-time images of large storm systems." },
+                { q: "Numerical Weather Prediction", a: "Using computer models and satellite data to produce a weather forecast (e.g., 5-day)." },
+                { q: "Cloud Top Temperatures", a: "Data recorded by satellites to help meteorologists understand the intensity of a major storm." },
+                { q: "Sea Surface Temperature", a: "A data application where satellites measure the heat of the ocean's surface." },
+                { q: "Ocean Winds", a: "The pattern of wind over the sea detected by specialized satellite instruments." },
+                { q: "Real-time Images", a: "Images delivered almost immediately after being captured, used for tracking active weather events." },
+                { q: "Cloud Patterns", a: "Visible arrangements of clouds on satellite images used to predict weather and track cyclones." },
+                { q: "Artificial Satellite", a: "A man-made object placed in orbit around the Earth to collect data or provide communications." }
+            ],
+            'terms': [
+                { q: "The man-made objects that orbit the Earth to take digital images.", a: "Artificial Satellites" },
+                { q: "The specific orbit located exactly 35,800 km above the Earth's surface.", a: "Geostationary Orbit" },
+                { q: "The orbit that allows satellites to produce high-resolution global mosaics by traveling over the poles.", a: "Polar-Orbiting Orbit" },
+                { q: "The altitude of a typical polar-orbiting satellite (LEO).", a: "850 km" },
+                { q: "The color healthy plants typically appear as in infrared satellite images.", a: "Red" },
+                { q: "The color deep, clear water usually appears as on a standard satellite image.", a: "Very dark or Black" },
+                { q: "The scientific term for the moisture currents in the atmosphere detected by satellites.", a: "Water Vapor" },
+                { q: "The visual arrangement of clouds used to track cyclones.", a: "Cloud Patterns" },
+                { q: "The type of area described as 'built-up' on a satellite image.", a: "Urban area" },
+                { q: "The term for the way land is being managed, such as for farming or mining.", a: "Land Use" },
+                { q: "A type of image created by putting together many strips of data from polar satellites.", a: "Global Mosaic" },
+                { q: "The science of weather forecasting using satellite information.", a: "Meteorology" },
+                { q: "The specific term for computer-based models used for a 5-day forecast.", a: "Numerical Weather Prediction" },
+                { q: "The measurement of heat on the upper part of a major storm recorded by satellites.", a: "Cloud top temperatures" },
+                { q: "The specific type of images provided by geostationary satellites for continuous monitoring.", a: "Continuous rapid scans" },
+                { q: "The organization mentioned as a source of geostationary satellite data.", a: "NASA (or NOAA/EUMETSAT)" },
+                { q: "The opposite of an urban area on a satellite image.", a: "Rural (open) land" },
+                { q: "The nickname for moisture currents shown in infrared imagery.", a: "Rivers in the sky" },
+                { q: "The strip of Earth covered in a single pass of a polar-orbiting satellite.", a: "Swath" },
+                { q: "The color vegetation appears on standard (visible) satellite images.", a: "Deep green" }
+            ],
+            'multipleChoice': [
+                { q: "What do artificial satellites record to create an image?", options: ["A) Sound waves", "B) Energy reflections", "C) Air temperature only", "D) Traditional film light"], a: "B) Energy reflections" },
+                { q: "At what height do geostationary satellites orbit?", options: ["A) 850 km", "B) 35,800 km", "C) 1,000 km", "D) 100,000 km"], a: "B) 35,800 km" },
+                { q: "Which orbit is best for creating a high-resolution global mosaic of the whole world?", options: ["A) Geostationary", "B) Polar-orbiting", "C) Lunar orbit", "D) Stationary"], a: "B) Polar-orbiting" },
+                { q: "On a satellite image, healthy vegetation in an infrared image usually appears...", options: ["A) Deep green", "B) Bright yellow", "C) Shades of red", "D) Black"], a: "C) Shades of red" },
+                { q: "Water that is deep and clear appears as what color on a satellite image?", options: ["A) Bright blue", "B) Very dark or black", "C) Red", "D) White"], a: "B) Very dark or black" },
+                { q: "What is the main use of cloud pattern data from satellites?", options: ["A) Locating gold mines", "B) Tracking farming yields", "C) Weather prediction and tracking storms", "D) Building new cities"], a: "C) Weather prediction and tracking storms" },
+                { q: "Built-up areas with lots of infrastructure are classified as:", options: ["A) Rural", "B) Urban", "C) Agricultural", "D) Natural"], a: "B) Urban" },
+                { q: "How high is the orbit of a Polar-orbiting satellite (LEO)?", options: ["A) 35,800 km", "B) 850 km", "C) 10,000 km", "D) 500 km"], a: "B) 850 km" },
+                { q: "Which type of satellite provides 'continuous rapid scans' of a specific region like North America?", options: ["A) Polar", "B) Geostationary", "C) GPS", "D) Solar"], a: "B) Geostationary" },
+                { q: "What are mid-level moisture currents sometimes called in satellite meteorology?", options: ["A) Cloud rivers", "B) Rivers in the sky", "C) Storm paths", "D) Ocean currents"], a: "B) Rivers in the sky" },
+                { q: "Which organization is NOT mentioned as a source of satellite data in the document?", options: ["A) NASA", "B) SpaceX", "C) NOAA", "D) EUMETSAT"], a: "B) SpaceX" },
+                { q: "What do meteorologists use to produce 5-day weather forecasts?", options: ["A) Numerical Weather Prediction computer models", "B) Traditional hand-drawn maps only", "C) Ground thermometers only", "D) Telescope photos"], a: "A) Numerical Weather Prediction computer models" },
+                { q: "How does shallow or silty water differ from deep water on a satellite image?", options: ["A) It is even blacker", "B) It is not very dark or black", "C) It turns bright red", "D) It cannot be seen"], a: "B) It is not very dark or black" },
+                { q: "Infrared imagery is particularly useful for distinguishing:", options: ["A) Types of cars", "B) Healthy vegetation", "C) Different types of soil", "D) Individual buildings"], a: "B) Healthy vegetation" },
+                { q: "Which orbit creates a 'swath' over the Earth as it travels toward the poles?", options: ["A) Geostationary", "B) Polar-orbiting", "C) Equatorial", "D) Lunar"], a: "B) Polar-orbiting" },
+                { q: "Satellite images are primarily used to see how land is being used, including:", options: ["A) Walking paths", "B) Farming, cities, and mining", "C) Underground caves", "D) Sleeping patterns"], a: "B) Farming, cities, and mining" },
+                { q: "What allows geostationary satellites to stay over the same spot on Earth?", options: ["A) They move at the same speed as Earth's rotation", "B) They are tethered to the ground", "C) They don't move at all", "D) They orbit the moon"], a: "A) They move at the same speed as Earth's rotation" },
+                { q: "Cloud top temperatures are useful for:", options: ["A) Finding mineral deposits", "B) Understanding storm intensity", "C) Counting livestock", "D) Measuring tree height"], a: "B) Understanding storm intensity" },
+                { q: "In what sense are satellite images NOT like traditional photos?", options: ["A) They are digital", "B) They record energy reflections instead of traditional film light", "C) They show the Earth", "D) They are taken from space"], a: "B) High-energy reflection recording" },
+                { q: "Which of these is a data application for satellites mentioned in the document?", options: ["A) Sea surface temperature", "B) Underwater photography", "C) Subterranean mapping", "D) Animal migration tracking"], a: "A) Sea surface temperature" }
+            ],
+            'trueFalse': [
+                { q: "Satellite images are digital images that record energy reflections.", options: ["True", "False"], a: "True", exp: "They are not traditional photos; they capture reflections from the Earth's surface." },
+                { q: "Geostationary satellites orbit at an altitude of 850 km.", options: ["True", "False"], a: "False", exp: "Geostationary satellites orbit at 35,800 km." },
+                { q: "Polar-orbiting satellites are used to create high-resolution global mosaics.", options: ["True", "False"], a: "True", exp: "They travel over the poles to cover the entire Earth strip by strip." },
+                { q: "Healthy vegetation appears red in infrared satellite images.", options: ["True", "False"], a: "True", exp: "Infrared sensors highlight the heat signature of healthy plants as red." },
+                { q: "Cloud patterns are used by meteorologists to track storms and cyclones.", options: ["True", "False"], a: "True", exp: "Satellite images allow experts to monitor cloud movement in real-time." },
+                { q: "Deep water appears bright blue on most satellite images.", options: ["True", "False"], a: "False", exp: "Deep water usually appears very dark or black." },
+                { q: "Geostationary satellites provide continuous rapid scans of a specific area.", options: ["True", "False"], a: "True", exp: "They stay over the same location, making them ideal for monitoring weather." },
+                { q: "Satellites can help distinguish between urban and rural land use.", options: ["True", "False"], a: "True", exp: "Built-up areas look very different from open countryside on these images." },
+                { q: "Numerical Weather Prediction uses computer models to forecast weather.", options: ["True", "False"], a: "True", exp: "These models use satellite data for 5-day forecasts." },
+                { q: "Polar-orbiting satellites stay over the same spot on Earth at all times.", options: ["True", "False"], a: "False", exp: "Geostationary satellites stay in one spot; Polar satellites orbit the poles." },
+                { q: "Infrared imagery is used to track mid-level moisture currents.", options: ["True", "False"], a: "True", exp: "This is often referred to as 'water vapor' imagery." },
+                { q: "Shallow or silty water appears black on a satellite image.", options: ["True", "False"], a: "False", exp: "Water only appears black if it is deep and clear; silt lightens the color." },
+                { q: "Artificial satellites help us see how land is being used for mining.", options: ["True", "False"], a: "True", exp: "Land use monitoring is a key function of Earth-observation satellites." },
+                { q: "A global mosaic is made by a single geostationary satellite.", options: ["True", "False"], a: "False", exp: "A global mosaic is created by combining multiple swaths from polar satellites." },
+                { q: "Meteorologists use cloud patterns to predict the weather.", options: ["True", "False"], a: "True", exp: "Cloud movements are essential indicators for upcoming weather." },
+                { q: "Urban areas are described as built-up on satellite images.", options: ["True", "False"], a: "True", exp: "Infrastructure and buildings create a distinct 'built-up' signature." },
+                { q: "Geostationary satellites are useful for monitoring hurricanes.", options: ["True", "False"], a: "True", exp: "Their continuous monitoring helps track the real-time movement of storms." },
+                { q: "Satellite images record energy reflections from the Earth's surface.", options: ["True", "False"], a: "True", exp: "This is how the digital data is captured." },
+                { q: "Sea surface temperature is a data application of satellite imagery.", options: ["True", "False"], a: "True", exp: "Satellites can measure the thermal energy of the ocean's surface." },
+                { q: "There are only two types of orbits discussed in the document.", options: ["True", "False"], a: "True", exp: "The focus is on Polar and Geostationary orbits." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>
