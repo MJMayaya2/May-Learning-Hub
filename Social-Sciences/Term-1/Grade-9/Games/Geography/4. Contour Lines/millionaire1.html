@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 9 Geography: Contour Lines Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Topographic Maps & Contour Lines (Grade 9 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is the correct term for a map that shows the shape of the land, height above sea level, and both natural and human features?", options: ["Weather Map", "Road Map", "Topographic Map", "Climate Map"], a: 2, hint: "Check page 3 of the document." },
+            { q: "What is the definition of a contour line?", options: ["A line connecting points of equal temperature", "A line connecting points of equal height above sea level", "A line showing the distance between two cities", "A line representing a political border"], a: 1, hint: "These are the brown lines on your map." },
+            { q: "Which of these height clues is considered the most accurate on a topographic map?", options: ["Spot heights", "Contours", "Trigonometrical stations", "Benchmarks"], a: 2, hint: "Also known as Trig Beacons." },
+            { q: "What is the height of land above sea level called?", options: ["Elevation", "Gradient", "Scale", "Latitude"], a: 0, hint: "Look at the definition on page 7." },
+            { q: "True or False: A topographic map shows human features such as roads and buildings.", options: ["True", "False"], a: 0, hint: "Check the 'What is a Topographic Map?' section." },
+            { q: "What symbol is used on a map to represent a Trigonometrical station?", options: ["A small black dot", "An arrow and horizontal line", "A small triangle with a dot in the center", "A square with a number"], a: 2, hint: "Check page 10." },
+            { q: "On a trig beacon symbol, what does the bottom number represent?", options: ["The station number", "The exact height in meters", "The distance to the next beacon", "The year it was built"], a: 1, hint: "Look at the diagram on page 11." },
+            { q: "Where would you usually find a Trigonometrical station located?", options: ["In a river valley", "Along a flat road", "On the highest point of a hill or mountain", "Inside a building"], a: 2, hint: "Check page 12." },
+            { q: "What symbol represents a Spot height?", options: ["A triangle", "A small black dot followed by a number", "An arrow", "A dashed line"], a: 1, hint: "See page 14." },
+            { q: "True or False: Spot heights represent a physical concrete beacon that you can see on the ground.", options: ["True", "False"], a: 1, hint: "Unlike Trig Stations, these are just measured points on a map." },
+            { q: "Where are Benchmarks (height clues) usually found?", options: ["On mountain peaks", "In the ocean", "Along human-made features like roads or railways", "Only in forests"], a: 2, hint: "Check page 17." },
+            { q: "What is the symbol for a Benchmark?", options: ["A dot", "A triangle", "An arrow pointing to a horizontal line", "A circle"], a: 2, hint: "Look at page 18." },
+            { q: "Which rule about contour lines is correct?", options: ["They often cross each other", "They never cross each other", "They only show human features", "They are always blue"], a: 1, hint: "Check the 'Important rules' on page 21." },
+            { q: "What is the definition of a 'contour interval'?", options: ["The length of a contour line", "The difference in height between two contour lines", "The distance between two hills", "The highest point on a map"], a: 1, hint: "See page 22." },
+            { q: "If your contour lines are marked 100m, 120m, and 140m, what is the contour interval?", options: ["10 meters", "20 meters", "40 meters", "100 meters"], a: 1, hint: "Calculate the difference between two consecutive lines." },
+            { q: "What does it indicate when contour lines are far apart on a map?", options: ["A steep slope", "A gentle slope", "A vertical cliff", "A deep river"], a: 1, hint: "Check page 23." },
+            { q: "What does it indicate when contour lines are close together?", options: ["Land rises slowly", "Land is perfectly flat", "Land rises quickly (steep slope)", "There is a large lake"], a: 2, hint: "See page 23." },
+            { q: "What term describes the steepness of a slope?", options: ["Altitude", "Relief", "Gradient", "Scale"], a: 2, hint: "Check page 24." },
+            { q: "In South Africa, what is the scale commonly used for topographic maps?", options: ["1:10 000", "1:50 000", "1:100 000", "1:1 000 000"], a: 1, hint: "Look at page 24." },
+            { q: "On a 1:50 000 topographic map, what does 1 cm on the map represent in reality?", options: ["50 meters", "500 meters", "5 kilometers", "50 kilometers"], a: 1, hint: "Check the scale conversion on page 24." },
+            { q: "What shape do contour lines form when representing a river valley?", options: ["Circular shapes", "Elongated ovals", "V-shaped patterns", "Square patterns"], a: 2, hint: "Check page 26." },
+            { q: "In which direction does the 'V' shape of a river valley contour point?", options: ["Downstream", "Towards the ocean", "Upstream (towards higher land)", "Towards the left"], a: 2, hint: "Check the important rule on page 27." },
+            { q: "How do hills and mountains appear on a contour map?", options: ["As straight parallel lines", "As circular or oval contour lines", "As single dots", "As blue shaded areas"], a: 1, hint: "Check page 28." },
+            { q: "Where is the highest contour line located in a hill or mountain pattern?", options: ["On the outer edge", "In the center", "At the bottom of the page", "Next to a road"], a: 1, hint: "Heights increase towards the center." },
+            { q: "What is a ridge?", options: ["A deep hole in the ground", "A long narrow area of high land", "A flat plain", "A small circular hill"], a: 1, hint: "Check page 28." },
+            { q: "True or False: Ridges often separate two valleys.", options: ["True", "False"], a: 0, hint: "See page 29." },
+            { q: "What is a 'spur'?", options: ["A large mountain range", "A smaller ridge extending from a hill or mountain", "A type of river", "A man-made bridge"], a: 1, hint: "Look at the definition on page 30." },
+            { q: "What shape do contour lines form for a spur?", options: ["Circles", "U or V shapes pointing downhill", "U or V shapes pointing uphill", "Straight lines"], a: 1, hint: "Check page 31." },
+            { q: "If a contour line is labelled 200m, what is the height of every single point on that line?", options: ["Between 100m and 200m", "Exactly 200 metres above sea level", "200 metres from the nearest road", "It depends on the scale"], a: 1, hint: "Check the 'Important rules' on page 21." },
+            { q: "Contour lines on a map are usually what color?", options: ["Blue", "Green", "Brown", "Black"], a: 2, hint: "Check the definition on page 8." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

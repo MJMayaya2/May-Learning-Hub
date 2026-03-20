@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 9 History Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input {
+            width: 100%;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 2px solid #cce0ff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .hint { color: #555; font-size: 0.95rem; }
+        .hidden { display: none !important; }
+
+        @media (max-width: 800px) { .name-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-correct:hover { background: #1e7e34; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect:hover { background: #bd2130; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; animation: fadeIn 0.4s; }
+        .steal-title { color: #856404; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-steal:hover { background: #e0a800; transform: translateY(-2px); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 9 History Jeopardy</h1>
+        <p class="game-subtitle">The Rise of Nazi Germany</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1 name" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2 name" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3 name" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4 name" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+            <p class="hint">Each player has unique questions about the document!</p>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" id="stealTitle">STEAL!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const player1Cats = [
+            { name: "Versailles Terms", questions: [
+                { points: 10, q: "In what year did World War I end?", a: "1918" },
+                { points: 20, q: "What was the name of the democratic government formed in the city of Weimar?", a: "Weimar Republic" },
+                { points: 30, q: "Under what clause did Germany admit that it was to blame for the war?", a: "War Guilt Clause" },
+                { points: 40, q: "Name a specific territory Germany lost to Belgium.", a: "Eupen-Malmedy" },
+                { points: 50, q: "Who was the Kaiser of Germany overthrown at the end of WWI?", a: "Kaiser Wilhelm II" }
+            ]},
+            { name: "Rise of Nazis", questions: [
+                { points: 10, q: "In what year did Hitler become the leader of the Nazi Party?", a: "1921" },
+                { points: 20, q: "What were Hitler's brown-shirted supporters called in German?", a: "Sturmabteilung (SA)" },
+                { points: 30, q: "What symbol was carried on flags during Nazi parades?", a: "The Swastika" },
+                { points: 40, q: "What is the name of the book Hitler wrote while in jail?", a: "Mein Kampf (My Struggle)" },
+                { points: 50, q: "What was the motto of the Nazi Storm Troopers (SA)?", a: "All opposition must be stamped into the ground" }
+            ]},
+            { name: "Great Depression", questions: [
+                { points: 10, q: "Which country's stock market collapse triggered the Great Depression?", a: "USA (United States of America)" },
+                { points: 20, q: "In which New York street was the stock market situated?", a: "Wall Street" },
+                { points: 30, q: "What year did the Wall Street stock market collapse occur?", a: "1929" },
+                { points: 40, q: "What happened to German businesses as a result of the American economic crash?", a: "Many closed or collapsed" },
+                { points: 50, q: "Why did businesses collapse more rapidly in Germany after the crash?", a: "USA wanted back the money it had lent to Germany" }
+            ]},
+            { name: "Nazi Dictatorship", questions: [
+                { points: 10, q: "What 1933 Act gave Hitler complete and total power?", a: "Enabling Act" },
+                { points: 20, q: "What title, meaning 'The Leader', did Hitler take as dictator?", a: "Der Führer" },
+                { points: 30, q: "Where was the first concentration camp set up in 1933?", a: "Dachau" },
+                { points: 40, q: "In a dictatorship, who makes all the rules?", a: "One person (The dictator)" },
+                { points: 50, q: "Who was the President who signed the Enabling Act into law?", a: "Hindenburg" }
+            ]}
+        ];
+
+        const player2Cats = [
+            { name: "Treaty Punishments", questions: [
+                { points: 10, q: "In what year was the Peace Treaty of Versailles signed?", a: "1919" },
+                { points: 20, q: "Were the Treaty terms discussed with Germany or dictated to them?", a: "Dictated" },
+                { points: 30, q: "Name the coalfields given to France for 15 years.", a: "Saar coalfields" },
+                { points: 40, q: "Which country was Germany forbidden from uniting with?", a: "Austria" },
+                { points: 50, q: "What term is used for the millions of dollars Germany had to pay for war damage?", a: "Reparations" }
+            ]},
+            { name: "Early Nazi Party", questions: [
+                { points: 10, q: "What color shirts did the Storm Troopers (SA) wear?", a: "Brown" },
+                { points: 20, q: "What was the name of the failed 1923 coup attempt by Hitler?", a: "Beer Hall Putsch (or military coup/putsch)" },
+                { points: 30, q: "How many months did Hitler spend in jail for the 1923 coup?", a: "Nine months" },
+                { points: 40, q: "Which group often beat up people who disagreed with the Nazis?", a: "The Storm Troopers (SA)" },
+                { points: 50, q: "What does 'Mein Kampf' mean in English?", a: "My Struggle" }
+            ]},
+            { name: "Economic Crisis", questions: [
+                { points: 10, q: "What term describes the rise in prices and fall in value of money in Weimar?", a: "Inflation" },
+                { points: 20, q: "What happened to the price of goods during the Great Depression?", a: "Became very high/inflated" },
+                { points: 30, q: "Who did the Nazis promise 'law and order' and jobs to?", a: "The German public/voters" },
+                { points: 40, q: "After WWI, who lent Germany money to help its economy recover?", a: "American government (USA)" },
+                { points: 50, q: "What fraction of Germans did NOT support the Nazis in 1933 according to the election?", a: "Many Germans (they didn't have a total majority)" }
+            ]},
+            { name: "Racial Obsession", questions: [
+                { points: 10, q: "What term did Hitler use for his 'pure' German race?", a: "Aryan" },
+                { points: 20, q: "What is the specific term for the hatred of Jewish people?", a: "Anti-Semitism" },
+                { points: 30, q: "What laws were passed in 1935 regarding Jewish rights?", a: "Nuremberg Laws" },
+                { points: 40, q: "What symbol were Jews forced to wear on their clothing?", a: "Yellow Star of David" },
+                { points: 50, q: "What is the term for a group blamed for a country's troubles for no reason?", a: "Scapegoat" }
+            ]}
+        ];
+
+        const player3Cats = [
+            { name: "Democracy Failure", questions: [
+                { points: 10, q: "Germany became a ____ in 1918 instead of being ruled by a king.", a: "Republic" },
+                { points: 20, q: "Why did many Germans struggle with democracy initially?", a: "No history of democracy/used to Kaiser/authoritarian rule" },
+                { points: 30, q: "What was the name for the German Parliament?", a: "Reichstag" },
+                { points: 40, q: "Rich farmland known as the 'corridor' was given to which country?", a: "Poland" },
+                { points: 50, q: "What specific group of elite black-uniformed guards used double lightning symbols?", a: "The SS (Schutzstaffel)" }
+            ]},
+            { name: "Hitler's Leadership", questions: [
+                { points: 10, q: "Hitler was a brilliant ____ speaker who could hold huge crowds.", a: "Public" },
+                { points: 20, q: "Where did the Nazis say the Weimar government 'stabbed Germany'?", a: "In the back" },
+                { points: 30, q: "Which elite group wore badges with skulls and silver daggers?", a: "The SS" },
+                { points: 40, q: "What did Hitler combine in 1934 to become a total dictator?", a: "Chancellor and President" },
+                { points: 50, q: "The SS is an abbreviation for what German name?", a: "Schutzstaffel" }
+            ]},
+            { name: "Public Support", questions: [
+                { points: 10, q: "Who gave financial support to the Nazis besides the military?", a: "Wealthy businessmen" },
+                { points: 20, q: "What was used at rallies and on radio to increase Anti-Semitism?", a: "Propaganda" },
+                { points: 30, q: "The Nazi Party was the only party allowed after the ____ Act.", a: "Enabling" },
+                { points: 40, q: "What did the Nazis use to control people's thoughts and actions?", a: "Propaganda" },
+                { points: 50, q: "Skillful use of ____ convinced many that the Nazis could save them.", a: "Propaganda" }
+            ]},
+            { name: "Concentration Camps", questions: [
+                { points: 10, q: "Prisoners at Dachau were subjected to military ____ and beatings.", a: "Drills" },
+                { points: 20, q: "Why were concentration camps built in 1933?", a: "Prisons became overcrowded with opponents" },
+                { points: 30, q: "Which camp town is specifically mentioned as the first one?", a: "Dachau" },
+                { points: 40, q: "A red triangle on a prisoner's uniform identified them as what?", a: "Political opponent" },
+                { points: 50, q: "A purple triangle identified which specific group of victims?", a: "Jehovah's Witnesses" }
+            ]}
+        ];
+
+        const player4Cats = [
+            { name: "German Losses", questions: [
+                { points: 10, q: "In what year did World War I start?", a: "1914" },
+                { points: 20, q: "Germany was not allowed to build up a ____ force again.", a: "Defence (or Military)" },
+                { points: 30, q: "Name the city run by the League of Nations as a free city.", a: "Danzig" },
+                { points: 40, q: "Territory known as Alsace-Lorraine was returned to which country?", a: "France" },
+                { points: 50, q: "Germany lost all her ____ in Africa and elsewhere.", a: "Colonies" }
+            ]},
+            { name: "Nazi Organization", questions: [
+                { points: 10, q: "What year was the Nazi Party considered very well organized?", a: "1932" },
+                { points: 20, q: "Hitler's title as the head of the Reichstag was ____.", a: "Chancellor" },
+                { points: 30, q: "Name a tool Nazis used to spread their message, such as posters or ____.", a: "Leaflets/Films/Radio" },
+                { points: 40, q: "What type of military group was the SA?", a: "Storm Troopers" },
+                { points: 50, q: "Nazis used ____ to persuade people Hitler had all the answers.", a: "Propaganda" }
+            ]},
+            { name: "Economy & Votes", questions: [
+                { points: 10, q: "In which year did Hitler win the largest number of votes?", a: "1933" },
+                { points: 20, q: "What did the US want from Germany after Wall Street crashed?", a: "Lent money back" },
+                { points: 30, q: "Banks and ____ closed in Germany during the Depression.", a: "Factories" },
+                { points: 40, q: "Did German big business support the Weimar democracy?", a: "No" },
+                { points: 50, q: "Inflation rose dramatically just after which major event ended?", a: "World War I" }
+            ]},
+            { name: "Fascist Features", questions: [
+                { points: 10, q: "In a fascist state, there is no freedom of speech or the ____.", a: "Press" },
+                { points: 20, q: "Fascism involves the belief in a great leader who holds all ____.", a: "Power" },
+                { points: 30, q: "What kind of police force spies on people in a fascist state?", a: "Secret police" },
+                { points: 40, q: "What was the Pink Triangle symbol used to identify?", a: "Homosexuals" },
+                { points: 50, q: "What did the brown triangle identify in concentration camps?", a: "Roma (Gypsies)" }
+            ]}
+        ];
+
+        const gameData = [player1Cats, player2Cats, player3Cats, player4Cats];
+
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalQuestion = document.getElementById('modalQuestion');
+        const modalAnswer = document.getElementById('modalAnswer');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+        const judgementArea = document.getElementById('judgementArea');
+        const activePlayerNameLabel = document.getElementById('activePlayerName');
+        const stealArea = document.getElementById('stealArea');
+        const stealButtonsContainer = document.getElementById('stealButtons');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() {
+            document.getElementById('nameSetupSection').classList.remove('hidden');
+        }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header';
+                    h.innerText = c.name;
+                    board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn';
+                        btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points;
+            activeTileButton = btn;
+            modalCategory.innerText = `${playerNames[pIdx]} | ${catName}`;
+            modalQuestion.innerText = qData.q;
+            modalAnswer.innerText = qData.a;
+            activePlayerNameLabel.innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block';
+            answerArea.style.display = 'none';
+            stealArea.style.display = 'none';
+            modal.style.display = 'flex';
+        }
+
+        function revealAnswer() {
+            btnReveal.style.display = 'none';
+            answerArea.style.display = 'block';
+            judgementArea.style.display = 'flex';
+        }
+
+        function judgeActivePlayer(correct) {
+            if (correct) {
+                scores[currentPlayerIndex] += activePointValue;
+                updateScore(currentPlayerIndex);
+                closeModal();
+            } else {
+                judgementArea.style.display = 'none';
+                showSteal();
+            }
+        }
+
+        function showSteal() {
+            stealArea.style.display = 'block';
+            stealButtonsContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button');
+                    b.className = 'btn-steal';
+                    b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    stealButtonsContainer.appendChild(b);
+                }
+            }
+            let none = document.createElement('button');
+            none.className = 'btn-incorrect';
+            none.innerText = "No one";
+            none.onclick = closeModal;
+            stealButtonsContainer.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { activeTileButton.innerText = ""; activeTileButton.disabled = true; modal.style.display = 'none'; }
+        
+        buildBoards();
+
+        function resetPlayerNames() {
+            playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`nameInput-${i}`).value = "";
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            showNameEditor();
+        }
+    </script>
+</body>
+</html>

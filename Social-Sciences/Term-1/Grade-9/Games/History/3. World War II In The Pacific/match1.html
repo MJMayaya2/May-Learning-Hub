@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 8 History: Kimberley Diamond Mining</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 8 History: Kimberley Diamond Mining</h1>
+        <p class="game-subtitle">Match the facts about the Kimberley Diamond Rush and the De Beers Monopoly!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Discovery & Land</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Claims & Race</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Mining Challenges</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Monopoly & Figures</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "The year diamonds were first discovered in South Africa." }, { id: 1, text: "1867" },
+                { id: 2, text: "Town near where the first diamonds were found." }, { id: 2, text: "Hopetown" },
+                { id: 3, text: "The two rivers where 'wet' diggings first occurred." }, { id: 3, text: "Orange and Vaal" },
+                { id: 4, text: "Another name for 'wet' diggings along river banks." }, { id: 4, text: "Alluvial diggings" },
+                { id: 5, text: "The name for the 'dry' digging extinct volcano pipe." }, { id: 5, text: "New Rush (Big Hole)" },
+                { id: 6, text: "The territory taken over by the British in 1872." }, { id: 6, text: "Griqualand West" },
+                { id: 7, text: "Argument about who owned the diamond area." }, { id: 7, text: "Land dispute" },
+                { id: 8, text: "Reason a government was needed on the fields." }, { id: 8, text: "Law and Order" }
+            ],
+            'topic2': [
+                { id: 1, text: "A small square of land owned by a single digger." }, { id: 1, text: "A claim" },
+                { id: 2, text: "Rule stopping wealthy people buying too much land." }, { id: 2, text: "One Person One Claim" },
+                { id: 3, text: "What happened to claim walls as mines got deeper." }, { id: 3, text: "Gradual collapse" },
+                { id: 4, text: "Fraction of people on the diamond fields who were black." }, { id: 4, text: "Two-thirds (66%)" },
+                { id: 5, text: "White owners' action against black claim holders." }, { id: 5, text: "Ganged up and attacked" },
+                { id: 6, text: "British law made this illegal for black people." }, { id: 6, text: "Owning claims" },
+                { id: 7, text: "Year restrictions on claim holding were lifted." }, { id: 7, text: "1876" },
+                { id: 8, text: "What black men did after losing their claims." }, { id: 8, text: "Worked for white diggers" }
+            ],
+            'topic3': [
+                { id: 1, text: "The deeper the mine, the harder it was to drain this." }, { id: 1, text: "Water" },
+                { id: 2, text: "Necessary for deep mining but very expensive." }, { id: 2, text: "Machinery" },
+                { id: 3, text: "The periods in 1881 and 1886 when businesses failed." }, { id: 3, text: "Economic Depressions" },
+                { id: 4, text: "The process of joining smaller companies together." }, { id: 4, text: "Amalgamation" },
+                { id: 5, text: "Result of having too many diamonds on the market." }, { id: 5, text: "Price drop" },
+                { id: 6, text: "The reason small diggers soon went out of business." }, { id: 6, text: "High equipment costs" },
+                { id: 7, text: "Result for bankrupt diggers unable to sell diamonds." }, { id: 7, text: "Forced to sell claims" },
+                { id: 8, text: "Difficult task of sifting gravel to find diamonds." }, { id: 8, text: "Soil separation" }
+            ],
+            'topic4': [
+                { id: 1, text: "He founded the De Beers Mining Company in 1880." }, { id: 1, text: "Cecil John Rhodes" },
+                { id: 2, text: "Rhodes' first profitable mine business." }, { id: 2, text: "Pumping water" },
+                { id: 3, text: "Former comedian who owned the Kimberley Mine." }, { id: 3, text: "Barney Barnato" },
+                { id: 4, text: "Huge monopoly formed by Rhodes in 1888." }, { id: 4, text: "De Beers Consolidated" },
+                { id: 5, text: "Entity with total control over diamond sales." }, { id: 5, text: "A Monopoly" },
+                { id: 6, text: "Bank that funded the buyout of Barnato." }, { id: 6, text: "Rothschild International" },
+                { id: 7, text: "Closed housing areas used to stop diamond theft." }, { id: 7, text: "Closed compounds" },
+                { id: 8, text: "Reason compounds were used to prevent theft." }, { id: 8, text: "Diamonds easy to swallow" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Well done! Grade 8 History Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

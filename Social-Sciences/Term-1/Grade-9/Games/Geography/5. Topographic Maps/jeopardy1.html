@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 9 Geography Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input {
+            width: 100%;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 2px solid #cce0ff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .hint { color: #555; font-size: 0.95rem; }
+        .hidden { display: none !important; }
+
+        @media (max-width: 800px) { .name-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-correct:hover { background: #1e7e34; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect:hover { background: #bd2130; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; animation: fadeIn 0.4s; }
+        .steal-title { color: #856404; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-steal:hover { background: #e0a800; transform: translateY(-2px); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 9 Geography Jeopardy</h1>
+        <p class="game-subtitle">Topic: Topographical Maps (Unique Boards)</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1 name" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2 name" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3 name" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4 name" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span> Score: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span> Score: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span> Score: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span> Score: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" id="stealTitle">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const p1Cats = [
+            { name: "Topographic Basics", questions: [
+                { points: 10, q: "What does a topographic map show regarding the shape of the land?", a: "Relief" },
+                { points: 20, q: "What is the standard ratio scale for a topographic map in South Africa?", a: "1:50 000" },
+                { points: 30, q: "Besides relief, what else does a topographic map show about land height?", a: "Height above sea level" },
+                { points: 40, q: "According to the map scale, 1 cm on the map equals how many cm on the ground?", a: "50 000 cm" },
+                { points: 50, q: "What do geographers use to accurately locate features like schools and roads on a map?", a: "Coordinates (Latitude and Longitude)" }
+            ]},
+            { name: "Landforms: Valleys", questions: [
+                { points: 10, q: "What specific letter shape do contour patterns for river valleys form?", a: "V-shape" },
+                { points: 20, q: "In a river valley pattern, which direction does the V shape point?", a: "Upstream" },
+                { points: 30, q: "Upstream is described as pointing towards which type of land?", a: "Higher land" },
+                { points: 40, q: "What can we identify about a river by looking at the direction of the V shapes?", a: "The river's flow direction" },
+                { points: 50, q: "True or False: The V-shape in a valley points toward the lowest elevation.", a: "False (it points toward higher land/upstream)" }
+            ]},
+            { name: "Measuring Distance", questions: [
+                { points: 10, q: "What tool should you use first to measure the distance between two points on a map?", a: "A ruler" },
+                { points: 20, q: "In the calculation formula, map measurement is multiplied by what?", a: "Scale Factor" },
+                { points: 30, q: "If the map measurement is 4 cm, what is the real distance in meters?", a: "2000 meters" },
+                { points: 40, q: "To convert 4 cm map distance to kilometers, what is the map measurement multiplied by?", a: "0.5" },
+                { points: 50, q: "What is the real-world distance in km for 4 cm on a 1:50 000 map?", a: "2 km" }
+            ]},
+            { name: "Location Tools", questions: [
+                { points: 10, q: "Which lines run West to East on a map?", a: "Lines of Latitude" },
+                { points: 20, q: "Latitude is measured North or South of which major imaginary line?", a: "The Equator" },
+                { points: 30, q: "How many minutes are in one degree of latitude?", a: "60 minutes" },
+                { points: 40, q: "Between which two latitudes is South Africa roughly located?", a: "22° S and 35° S" },
+                { points: 50, q: "Coordinates help geographers find specific features like mountains, roads, and ____.", a: "Rivers (or Schools)" }
+            ]}
+        ];
+
+        const p2Cats = [
+            { name: "Understanding 1:50k", questions: [
+                { points: 10, q: "What is 1 cm on the map equal to in meters on the ground?", a: "500 meters" },
+                { points: 20, q: "What is the purpose of the 1:50 000 scale?", a: "To show the relationship between map distance and ground distance" },
+                { points: 30, q: "In a ratio scale like 1:50 000, what does the number '1' represent?", a: "1 unit on the map" },
+                { points: 40, q: "Name a natural feature that a topographic map can show.", a: "Rivers (or Mountains)" },
+                { points: 50, q: "Name a human feature shown on a topographic map.", a: "Roads (or Buildings)" }
+            ]},
+            { name: "Landforms: Hills", questions: [
+                { points: 10, q: "How do hills and mountains appear as contour lines?", a: "Circular or oval lines" },
+                { points: 20, q: "In a hill pattern, where is the highest contour line located?", a: "In the centre" },
+                { points: 30, q: "As you move toward the centre of a hill pattern, what happens to the heights?", a: "They increase" },
+                { points: 40, q: "Which landform is described as circular or oval with heights increasing inward?", a: "Hill or Mountain" },
+                { points: 50, q: "If heights decrease toward the centre of a circle, is it a hill?", a: "No (it would be a depression)" }
+            ]},
+            { name: "Scale Types", questions: [
+                { points: 10, q: "What do we call a visual scale bar on a map?", a: "A line scale" },
+                { points: 20, q: "What kind of scale expresses distance as a mathematical ratio like 1:50 000?", a: "Ratio scale" },
+                { points: 30, q: "Which scale allows users to measure distance directly with a ruler or string?", a: "Line scale" },
+                { points: 40, q: "In a ratio scale, what does the second number (e.g., 50 000) represent?", a: "Units on the ground" },
+                { points: 50, q: "What is the ratio scale used for an Orthophoto map series in South Africa?", a: "1:10 000" }
+            ]},
+            { name: "Longitude Basics", questions: [
+                { points: 10, q: "Which lines run North to South on a map?", a: "Lines of Longitude" },
+                { points: 20, q: "Longitude is measured East or West of which line?", a: "Greenwich Meridian" },
+                { points: 30, q: "What do coordinates on a map help locate besides natural features?", a: "Human features (e.g., buildings, roads)" },
+                { points: 40, q: "A grid reference is another name for what location tool?", a: "Coordinates" },
+                { points: 50, q: "How many minutes are in half a degree?", a: "30 minutes" }
+            ]}
+        ];
+
+        const p3Cats = [
+            { name: "Map Features", questions: [
+                { points: 10, q: "What is the shape of the land on a topographic map called?", a: "Relief" },
+                { points: 20, q: "What do we call map images taken by artificial satellites?", a: "Satellite images" },
+                { points: 30, q: "Topographical maps use coordinates to locate features ____.", a: "Accurately" },
+                { points: 40, q: "If 1 cm = 500 m, how many meters are 2 cm?", a: "1000 meters" },
+                { points: 50, q: "Topographic maps help us understand how the land ____ and falls.", a: "Rises" }
+            ]},
+            { name: "Landforms: Ridges", questions: [
+                { points: 10, q: "What is a long, narrow area of high land called?", a: "A ridge" },
+                { points: 20, q: "What kind of shapes do contour lines form for a ridge?", a: "Elongated shapes" },
+                { points: 30, q: "Ridges often separate two of which other landform?", a: "Valleys" },
+                { points: 40, q: "What do we call the line representing the highest part of a ridge?", a: "Ridge line" },
+                { points: 50, q: "What landform separates two valleys and has elongated contours?", a: "A ridge" }
+            ]},
+            { name: "Direct Measurements", questions: [
+                { points: 10, q: "A line scale allows you to convert map distance to real distance ____.", a: "Easily" },
+                { points: 20, q: "What unit is usually used for the results of a line scale calculation?", a: "Kilometres (or Metres)" },
+                { points: 30, q: "If a line scale has markings at 0, 200, 400, what is the unit of measurement?", a: "Kilometres" },
+                { points: 40, q: "Step 2 of measuring distance is to ____ the measurement using the map scale.", a: "Convert" },
+                { points: 50, q: "What is the real distance of 1 cm on an Orthophoto map with a 1:10 000 scale?", a: "100 meters" }
+            ]},
+            { name: "Degree Science", questions: [
+                { points: 10, q: "Each degree on a map is divided into how many equal parts?", a: "60 minutes" },
+                { points: 20, q: "Is Latitude or Longitude measured North or South?", a: "Latitude" },
+                { points: 30, q: "Is Latitude or Longitude measured East or West?", a: "Longitude" },
+                { points: 40, q: "What specific coordinate lines help form a grid on the map?", a: "Latitude and Longitude" },
+                { points: 50, q: "True or False: South Africa is located entirely in the Southern Hemisphere.", a: "True" }
+            ]}
+        ];
+
+        const p4Cats = [
+            { name: "The Scale Rule", questions: [
+                { points: 10, q: "What shows the relationship between map distance and ground distance?", a: "Map scale" },
+                { points: 20, q: "In a 1:50 000 scale, what does '50 000' represent?", a: "Distance on the ground" },
+                { points: 30, q: "How many meters are 100 000 cm?", a: "1000 meters" },
+                { points: 40, q: "On a 1:50 000 map, 1 cm equals half of which distance unit?", a: "A kilometer (0.5 km)" },
+                { points: 50, q: "Which scale is a mathematical ratio: Line scale or Ratio scale?", a: "Ratio scale" }
+            ]},
+            { name: "Landforms: Spurs", questions: [
+                { points: 10, q: "What is a smaller ridge extending from a hill or mountain called?", a: "A spur" },
+                { points: 20, q: "Contour lines for spurs form U or V shapes pointing in which direction?", a: "Downhill" },
+                { points: 30, q: "If the V-shape points downhill, it represents a ____.", a: "Spur" },
+                { points: 40, q: "If the V-shape points uphill, it represents a ____.", a: "River valley" },
+                { points: 50, q: "What is the term for the area between two spurs where a valley might form?", a: "Re-entrant" }
+            ]},
+            { name: "Math of Maps", questions: [
+                { points: 10, q: "If distance is 2 cm on a 1:50 000 map, how many kilometers is it?", a: "1 km" },
+                { points: 20, q: "If distance is 2 cm on a 1:50 000 map, how many meters is it?", a: "1000 meters" },
+                { points: 30, q: "What is the 'Scale Factor' for a 1:50 000 map to get meters?", a: "500" },
+                { points: 40, q: "What is the 'Scale Factor' for a 1:50 000 map to get kilometers?", a: "0.5" },
+                { points: 50, q: "Real distance = Map Measurement X ____.", a: "Scale Factor" }
+            ]},
+            { name: "SA Location", questions: [
+                { points: 10, q: "What is the northerly latitude boundary for South Africa mentioned in the doc?", a: "22° S" },
+                { points: 20, q: "What is the southerly latitude boundary for South Africa mentioned in the doc?", a: "35° S" },
+                { points: 30, q: "Is the Greenwich Meridian at 0 degrees latitude or longitude?", a: "0 degrees longitude" },
+                { points: 40, q: "Is the Equator at 0 degrees latitude or longitude?", a: "0 degrees latitude" },
+                { points: 50, q: "What do we call the visual aid that shows 0, 200, 400 km in a bar form?", a: "Line scale" }
+            ]}
+        ];
+
+        const gameData = [p1Cats, p2Cats, p3Cats, p4Cats];
+
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalQuestion = document.getElementById('modalQuestion');
+        const modalAnswer = document.getElementById('modalAnswer');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+        const judgementArea = document.getElementById('judgementArea');
+        const activePlayerNameLabel = document.getElementById('activePlayerName');
+        const stealArea = document.getElementById('stealArea');
+        const stealButtonsContainer = document.getElementById('stealButtons');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() {
+            document.getElementById('nameSetupSection').classList.remove('hidden');
+        }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header';
+                    h.innerText = c.name;
+                    board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn';
+                        btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points;
+            activeTileButton = btn;
+            modalCategory.innerText = `${playerNames[pIdx]} | ${catName}`;
+            modalQuestion.innerText = qData.q;
+            modalAnswer.innerText = qData.a;
+            activePlayerNameLabel.innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block';
+            answerArea.style.display = 'none';
+            stealArea.style.display = 'none';
+            modal.style.display = 'flex';
+        }
+
+        function revealAnswer() {
+            btnReveal.style.display = 'none';
+            answerArea.style.display = 'block';
+            judgementArea.style.display = 'flex';
+        }
+
+        function judgeActivePlayer(correct) {
+            if (correct) {
+                scores[currentPlayerIndex] += activePointValue;
+                updateScore(currentPlayerIndex);
+                closeModal();
+            } else {
+                judgementArea.style.display = 'none';
+                showSteal();
+            }
+        }
+
+        function showSteal() {
+            stealArea.style.display = 'block';
+            stealButtonsContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button');
+                    b.className = 'btn-steal';
+                    b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    stealButtonsContainer.appendChild(b);
+                }
+            }
+            let none = document.createElement('button');
+            none.className = 'btn-incorrect';
+            none.innerText = "No one";
+            none.onclick = closeModal;
+            stealButtonsContainer.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { activeTileButton.innerText = ""; activeTileButton.disabled = true; modal.style.display = 'none'; }
+        
+        buildBoards();
+
+        function resetPlayerNames() {
+            playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`nameInput-${i}`).value = "";
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            showNameEditor();
+        }
+    </script>
+</body>
+</html>

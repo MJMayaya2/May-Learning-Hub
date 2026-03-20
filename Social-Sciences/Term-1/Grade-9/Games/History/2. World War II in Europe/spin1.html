@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 9 History: WWII in Europe</title>
+    <style>
+        /* CSS styling identical to original */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">History Quiz: WWII in Europe</h1>
+        <p class="game-subtitle">Select a category, spin the wheel, and test your Grade 9 History knowledge!</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Lebensraum", a: "The Nazi policy of expanding German territory toward Eastern Europe to find additional 'living space'." },
+                { q: "The Holocaust", a: "The systematic, state-sponsored genocide of six million Jewish people in Europe by Nazi Germany." },
+                { q: "Genocide", a: "The deliberate and systematic extermination of a particular national, racial, or religious group." },
+                { q: "Einsatzgruppen", a: "Special mobile killing squads of the SS that rounded up and shot victims into mass graves." },
+                { q: "Extermination Camp", a: "A specialized facility containing gas chambers built primarily for the mass murder of prisoners." },
+                { q: "Zyklon B", a: "The poisonous gas used by the Nazis in extermination camps to kill victims in gas chambers." },
+                { q: "Ghetto", a: "An enclosed, overcrowded part of a city where Jewish people were forced to live (e.g., the Warsaw Ghetto)." },
+                { q: "Annexation", a: "The act of taking control of a territory and adding it to one's own country (e.g., Austria in 1938)." },
+                { q: "Anti-Semitism", a: "Hostility, prejudice, or discrimination against Jewish people." },
+                { q: "Armistice", a: "An agreement made by opposing sides in a war to stop fighting for a certain time." },
+                { q: "Gestapo", a: "The official secret state police of Nazi Germany used to crush resistance." },
+                { q: "Resistance", a: "Opposing an occupying force or government through non-violent or violent actions." },
+                { q: "Schutzstaffel (SS)", a: "An elite Nazi protection squad responsible for running the extermination camps and the Holocaust." },
+                { q: "Axis Powers", a: "The alliance primarily consisting of Germany, Italy, and Japan during World War II." },
+                { q: "Allied Forces", a: "The alliance primarily consisting of Britain, France, the Soviet Union, and the United States." },
+                { q: "Concentration Camp", a: "A barbed-wire enclosure used by the Nazis to house, punish, or execute political opponents and prisoners." },
+                { q: "Final Solution", a: "The code name for Nazi Germany's plan for the systematic genocide of all European Jews." },
+                { q: "Reich", a: "The German state or empire; Hitler aimed to expand the 'Third Reich' across Europe." },
+                { q: "Führer", a: "The title used by Adolf Hitler, meaning 'The Leader,' to whom absolute obedience was required." },
+                { q: "Propaganda", a: "Biased or misleading information used to promote Nazi ideas and build support for the regime." }
+            ],
+            'terms': [
+                { q: "The year the Nazi army annexed Austria into the German Reich.", a: "1938" },
+                { q: "The date on which Britain and France declared war on Germany after the invasion of Poland.", a: "September 3, 1939" },
+                { q: "The student-led non-violent resistance group based at the University of Munich.", a: "White Rose Movement" },
+                { q: "The leader of the SS who taught his men to 'harden their hearts to human suffering'.", a: "Heinrich Himmler" },
+                { q: "The city in Poland where the Nazis built a wall to enclose a massive Jewish ghetto.", a: "Warsaw" },
+                { q: "The Italian dictator who was killed by resisters and hung in a public square in Milan.", a: "Benito Mussolini" },
+                { q: "The date of Adolf Hitler's suicide in a Berlin bunker.", a: "April 30, 1945" },
+                { q: "The specific 1935 laws that deprived Jews of citizenship and banned intermarriages.", a: "Nuremberg Laws" },
+                { q: "The church group led by Dietrich Bonhoeffer that opposed the Nazi regime.", a: "Confessing Church" },
+                { q: "The device used by the Nazis to execute resistance leaders like Sophie Scholl.", a: "Guillotine" },
+                { q: "The percentage of the German population that was Jewish before the killings began.", a: "About 1%" },
+                { q: "The total number of non-Jewish people estimated to have died in the Holocaust.", a: "Five million" },
+                { q: "The name of the Nazi mobile killing squads formed in 1941.", a: "Einsatzgruppen" },
+                { q: "The month and year when the Warsaw Ghetto Uprising began against the Nazis.", a: "April 1943" },
+                { q: "The title given to Ludwig Muller as leader of the pro-Nazi 'German Christians'.", a: "Reich Bishop" },
+                { q: "The name of Hitler's mistress whom he married just before their suicide.", a: "Eva Braun" },
+                { q: "The army that the German forces in Berlin surrendered to on May 2, 1945.", a: "Russian Army" },
+                { q: "The date when Germany officially signed an armistice and surrendered all forces.", a: "May 7, 1945" },
+                { q: "The city in which Mussolini was captured and hung in public display.", a: "Milan" },
+                { q: "The vehicles used to crowd victims for transport to extermination camps.", a: "Cattle trucks" }
+            ],
+            'multipleChoice': [
+                { q: "Why did Nazi leaders decide to re-arm Germany secretly in 1933?", options: ["A) To follow the Treaty of Versailles", "B) To build a strong defense force for expansion", "C) To save money", "D) To support the Allies"], a: "B) To build a strong defense force for expansion" },
+                { q: "Which territory was added to the German Reich in early 1939 while Britain and France did nothing?", options: ["A) Austria", "B) Part of Czechoslovakia", "C) Poland", "D) Russia"], a: "B) Part of Czechoslovakia" },
+                { q: "How many Jewish people were killed in the Holocaust in an effort to annihilate them?", options: ["A) 1 million", "B) 3 million", "C) 6 million", "D) 10 million"], a: "C) 6 million" },
+                { q: "What did victims find when they were forced into gas chambers in extermination camps?", options: ["A) Real showers", "B) Poisonous Zyklon B gas", "C) Food rations", "D) Escape tunnels"], a: "B) Poisonous Zyklon B gas" },
+                { q: "How long did it take for victims to die once the gas was released in the chambers?", options: ["A) 1 minute", "B) 15 minutes", "C) 1 hour", "D) 24 hours"], a: "B) 15 minutes" },
+                { q: "What was the purpose of the 'Confessing Church' led by Dietrich Bonhoeffer?", options: ["A) To support Hitler", "B) To oppose Nazi ideas and publish resistance material", "C) To train Nazi soldiers", "D) To build new churches"], a: "B) To oppose Nazi ideas and publish resistance material" },
+                { q: "What happened to Sophie and Hans Scholl after dropping leaflets at their university?", options: ["A) They were awarded medals", "B) They were given Gestapo protection", "C) They were caught and executed", "D) They escaped to Holland"], a: "C) They were caught and executed" },
+                { q: "What was the Nazi policy of 'slow and natural extinction' in the Warsaw Ghetto?", options: ["A) Providing vitamins", "B) Starvation, overcrowding, and disease", "C) Moving people to forests", "D) Offering free education"], a: "B) Starvation, overcrowding, and disease" },
+                { q: "What event took place on April 27, 1945, involving the Italian dictator?", options: ["A) Mussolini was elected", "B) Mussolini tried to flee but was captured and killed", "C) Mussolini joined the Allies", "D) Mussolini became Führer"], a: "B) Mussolini tried to flee but was captured and killed" },
+                { q: "Who did the German army in Berlin surrender to on May 2, 1945?", options: ["A) The British", "B) The French", "C) The Russian army", "D) The US army"], a: "C) The Russian army" },
+                { q: "Which group printed pamphlets against Nazism and dropped them in university hallways?", options: ["A) The Gestapo", "B) The SS", "C) The White Rose Movement", "D) The German Christians"], a: "C) The White Rose Movement" },
+                { q: "What was smuggled out of Germany and dropped from aircraft by the Allies after the Scholls' death?", options: ["A) Weapons", "B) Food", "C) White Rose resistance leaflets", "D) Nazi propaganda"], a: "C) White Rose resistance leaflets" },
+                { q: "Which church group signed an agreement not to interfere with Nazi politics?", options: ["A) The Catholic Church", "B) The Confessing Church", "C) The White Rose Church", "D) The Russian Church"], a: "A) The Catholic Church" },
+                { q: "What did freedom fighters in the Warsaw Ghetto smuggle in through sewer pipes?", options: ["A) Food only", "B) Weapons", "C) Nazi soldiers", "D) Radio equipment"], a: "B) Weapons" },
+                { q: "Where were the bodies of victims placed after being gassed in extermination camps?", options: ["A) In individual graves", "B) In giant ovens", "C) In local rivers", "D) In the cattle trucks"], a: "B) In giant ovens" },
+                { q: "On what date did Britain and France declare war on Germany?", options: ["A) Sept 1, 1939", "B) Sept 3, 1939", "C) May 7, 1945", "D) Jan 30, 1933"], a: "B) Sept 3, 1939" },
+                { q: "Why did Hitler commit suicide on April 30, 1945?", options: ["A) He was bored", "B) He wanted to marry Eva Braun", "C) He realized defeat was near and did not want to suffer Mussolini's fate", "D) The Allies offered him a deal"], a: "C) He realized defeat was near and did not want to suffer Mussolini's fate" },
+                { q: "What was 'lebensraum' primarily intended to provide?", options: ["A) Free trade", "B) Living space for Germans", "C) Religious freedom", "D) Peace with Poland"], a: "B) Living space for Germans" },
+                { q: "How were victims transported to extermination camps like Auschwitz?", options: ["A) By luxury bus", "B) By airplane", "C) In crowded cattle trucks", "D) By walking only"], a: "C) In crowded cattle trucks" },
+                { q: "What resulted from the firestorm after the bombing of German cities?", options: ["A) Everyone was saved", "B) It became impossible to count the victims", "C) The war ended immediately", "D) The Nazis surrendered"], a: "B) It became impossible to count the victims" }
+            ],
+            'trueFalse': [
+                { q: "Hitler's expansionist policy was driven by the need for 'lebensraum'.", options: ["True", "False"], a: "True", exp: "Lebensraum meant additional living space for Germans in Eastern Europe." },
+                { q: "The Holocaust was the end of a long process of anti-Semitism.", options: ["True", "False"], a: "True", exp: "It did not happen suddenly but followed a long history of prejudice." },
+                { q: "Jewish people made up 20% of the German population before WWII.", options: ["True", "False"], a: "False", exp: "They made up only about 1% of the population." },
+                { q: "The 'Final Solution' was a plan to move Jewish people to Africa.", options: ["True", "False"], a: "False", exp: "It was the code name for the systematic genocide of European Jews." },
+                { q: "Dietrich Bonhoeffer worked as a spy and plotted to assassinate Hitler.", options: ["True", "False"], a: "True", exp: "He was part of the failed resistance within the military and church." },
+                { q: "The White Rose Movement was a violent group that used bombs.", options: ["True", "False"], a: "False", exp: "It was a small, non-violent student resistance group." },
+                { q: "The Warsaw Ghetto freedom fighters forced the Nazis to withdraw in April 1943.", options: ["True", "False"], a: "True", exp: "They met the Nazis with gunfire during the uprising." },
+                { q: "Mussolini committed suicide at the same time as Hitler.", options: ["True", "False"], a: "False", exp: "Mussolini was captured and killed by Italian resisters on April 27, 1945." },
+                { q: "Germany officially surrendered on May 7, 1945.", options: ["True", "False"], a: "True", exp: "This led to VE (Victory in Europe) Day celebrations on May 8." },
+                { q: "The Einsatzgruppen were mobile squads that used gas chambers.", options: ["True", "False"], a: "False", exp: "They were mobile killing squads that shot victims into mass graves." },
+                { q: "The Nuremberg Laws deprived Jewish people of their citizenship rights.", options: ["True", "False"], a: "True", exp: "They also banned intermarriage between Jews and non-Jews." },
+                { q: "Building a strong defense force broke the Treaty of Versailles.", options: ["True", "False"], a: "True", exp: "Germany had agreed to limit its military after WWI." },
+                { q: "The Nazis used the term 'Final Solution' to clearly describe their crimes.", options: ["True", "False"], a: "False", exp: "They used the term to disguise the true nature of their crimes." },
+                { q: "Sophie Scholl and her brother were tried and executed by guillotine.", options: ["True", "False"], a: "True", exp: "They were caught by the Gestapo at their university." },
+                { q: "Dietrich Bonhoeffer was executed by hanging in a concentration camp.", options: ["True", "False"], a: "True", exp: "He was executed shortly before the end of the war." },
+                { q: "The survivors of the Warsaw Ghetto Uprising were freed in 1943.", options: ["True", "False"], a: "False", exp: "The survivors were sent to death camps." },
+                { q: "The Allied forces were closing in on Berlin in late April 1945.", options: ["True", "False"], a: "True", exp: "This caused the final collapse of the Nazi regime." },
+                { q: "Nazi propaganda aimed to encourage freedom of speech.", options: ["True", "False"], a: "False", exp: "Propaganda was used to control people's thoughts and actions." },
+                { q: "The SA were the elite protection squad that wore black uniforms.", options: ["True", "False"], a: "False", exp: "The SA wore brown; the SS (Schutzstaffel) wore black." },
+                { q: "The war between America and Japan ended at the same time as the war in Europe.", options: ["True", "False"], a: "False", exp: "The war in the Pacific was not yet over in May 1945." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

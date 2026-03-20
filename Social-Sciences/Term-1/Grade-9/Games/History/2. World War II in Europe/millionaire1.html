@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 9 History Millionaire: WWII in Europe</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 History Challenge</h1>
+        <p class="game-subtitle">World War II in Europe (Grade 9 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What was the Nazi policy of seeking additional 'living space' in Eastern Europe called?", options: ["Blitzkrieg", "Lebensraum", "Anschluss", "The Final Solution"], a: 1, hint: "Check page 2 of the document." },
+            { q: "In which year did the Nazi leaders decide to begin re-arming Germany secretly?", options: ["1933", "1938", "1939", "1942"], a: 0, hint: "This was shortly after Hitler took power." },
+            { q: "Which country did the Nazi army annex in 1938, expanding German territory?", options: ["Poland", "France", "Austria", "Russia"], a: 2, hint: "This annexation is also known as the Anschluss." },
+            { q: "Britain and France declared war on Germany on September 3, 1939, following the invasion of which country?", options: ["Czechoslovakia", "Belgium", "Austria", "Poland"], a: 3, hint: "This invasion started WWII." },
+            { q: "What is the official date of the Nazi invasion of Poland?", options: ["September 1, 1939", "September 3, 1939", "June 22, 1941", "May 8, 1945"], a: 0, hint: "Check the 'Outbreak of WWII' section." },
+            { q: "True or False: Jewish people made up about 1% of the German population when the Nazis took power.", options: ["True", "False"], a: 0, hint: "They were a very small minority in Germany." },
+            { q: "What term describes the systematic genocide of six million Jewish people by the Nazi regime?", options: ["The Great Trek", "The Holocaust", "The Blitz", "The Cold War"], a: 1, hint: "It was a deliberate plan of extermination." },
+            { q: "Who was the leader of the SS, the group responsible for running the extermination camps?", options: ["Heinrich Himmler", "Benito Mussolini", "Dietrich Bonhoeffer", "Sophie Scholl"], a: 0, hint: "He was one of Hitler's most powerful officials." },
+            { q: "What was the name of the special mobile killing squads that shot victims into mass graves?", options: ["The Gestapo", "The Wehrmacht", "The Einsatzgruppen", "The White Rose"], a: 2, hint: "They operated mainly in occupied Eastern territories." },
+            { q: "In 1942, what became the official name for the Nazi plan for systematic genocide?", options: ["The Great Expansion", "The Final Solution", "Operation Barbarossa", "The Weimar Republic"], a: 1, hint: "It was used to disguise their crimes." },
+            { q: "Which poisonous gas was used to kill victims in the extermination camp gas chambers?", options: ["Mustard Gas", "Carbon Monoxide", "Zyklon B", "Oxygen"], a: 2, hint: "It was released into rooms disguised as showers." },
+            { q: "Approximately how many non-Jewish people lost their lives as a result of Nazi racial policies?", options: ["One million", "Three million", "Five million", "Ten million"], a: 2, hint: "Check the Holocaust section on page 5." },
+            { q: "True or False: The gas chambers were disguised as shower rooms to trick victims.", options: ["True", "False"], a: 0, hint: "This was part of the 'Final Solution' process." },
+            { q: "What was the name of the non-violent student resistance group formed at the University of Munich?", options: ["The SS", "The Confessing Church", "The White Rose Movement", "The Iron Curtain"], a: 2, hint: "Sophie Scholl was a key member." },
+            { q: "How were Sophie Scholl and her brother Hans executed after being caught by the Gestapo?", options: ["Firing squad", "Hanging", "Guillotine", "Gas chamber"], a: 2, hint: "They were executed shortly after their trial." },
+            { q: "Who led the 'Confessing Church' which opposed Nazi interference in religious life?", options: ["Heinrich Himmler", "Dietrich Bonhoeffer", "Benito Mussolini", "Adolf Hitler"], a: 1, hint: "He also worked as a spy against Hitler." },
+            { q: "How did Dietrich Bonhoeffer die after his involvement in a failed plot to assassinate Hitler?", options: ["Suicide", "Natural causes", "Executed by hanging", "Killed in battle"], a: 2, hint: "He was executed in a concentration camp." },
+            { q: "True or False: The Catholic Church signed an agreement with the Nazis to stay out of politics.", options: ["True", "False"], a: 0, hint: "This agreement was mentioned in the document." },
+            { q: "In which year did the Warsaw Ghetto Uprising take place against the Nazi occupation?", options: ["1939", "1941", "1943", "1945"], a: 2, hint: "It was in April of that year." },
+            { q: "What did the Nazis use to crush the resistance in the Warsaw Ghetto sewers?", options: ["Fire and poisonous gas", "Water and nets", "Leaflets and songs", "Radio signals"], a: 0, hint: "They used brutal methods to end the uprising." },
+            { q: "Which dictator was killed by Italian resisters and hung in a public square in Milan?", options: ["Adolf Hitler", "Benito Mussolini", "Heinrich Himmler", "Kaiser Wilhelm II"], a: 1, hint: "He was the leader of fascist Italy." },
+            { q: "On what date did Adolf Hitler commit suicide in his bunker in Berlin?", options: ["April 27, 1945", "April 30, 1945", "May 2, 1945", "May 8, 1945"], a: 1, hint: "It was just days before the German surrender." },
+            { q: "To which army did the German forces in Berlin surrender on May 2, 1945?", options: ["The American army", "The British army", "The Russian army", "The French army"], a: 2, hint: "The capital was captured by this Allied force." },
+            { q: "When did news of the final German surrender break in the West, leading to global celebrations?", options: ["April 30", "May 2", "May 8", "June 22"], a: 2, hint: "This date is celebrated as VE Day." },
+            { q: "What is the term for the deliberate extermination of a specific national, racial, or religious group?", options: ["Annexation", "Genocide", "Lebensraum", "Propaganda"], a: 1, hint: "The Holocaust is a primary example." },
+            { q: "True or False: The war between America and Japan ended at the same time as the war in Europe.", options: ["True", "False"], a: 1, hint: "The document notes that war was not yet over in the Pacific." },
+            { q: "Building a strong defense force broke Germany's agreement with which historical treaty?", options: ["Treaty of Paris", "Treaty of Versailles", "Treaty of London", "The Nuremberg Laws"], a: 1, hint: "This treaty ended WWI." },
+            { q: "Who was the woman Hitler married just before their joint suicide in 1945?", options: ["Sophie Scholl", "Eva Braun", "Queen Victoria", "Mary Magdalene"], a: 1, hint: "She was his long-term mistress." },
+            { q: "Which group of people were forced into enclosed city areas called 'ghettos' in Poland?", options: ["Boers", "British soldiers", "Jewish people", "French students"], a: 2, hint: "The Warsaw Ghetto is the most famous example." },
+            { q: "True or False: In 1932, about half of the German voters did not support Nazi policies.", options: ["True", "False"], a: 0, hint: "Check the resistance section on page 3." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("History Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "History Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Walked away with:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

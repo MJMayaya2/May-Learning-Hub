@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 9 History: The Rise of Nazi Germany Millionaire</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 History Challenge</h1>
+        <p class="game-subtitle">The Rise of Nazi Germany (Grade 9 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "In what year did World War I come to an end with Germany's defeat?", options: ["1914", "1916", "1918", "1921"], a: 2, hint: "It was after four long years of fighting[cite: 8]." },
+            { q: "What is the term for a country that is no longer ruled by a king or monarch?", options: ["Empire", "Kingdom", "Republic", "Dictatorship"], a: 2, hint: "Germany became one after Kaiser Wilhelm II was overthrown[cite: 9]." },
+            { q: "Where was the new democratic government of Germany formed in 1919?", options: ["Berlin", "Munich", "Weimar", "Hamburg"], a: 2, hint: "This gave the new republic its name[cite: 10]." },
+            { q: "True or False: Kaiser Wilhelm II remained the ruler of Germany after the end of World War I.", options: ["True", "False"], a: 1, hint: "He was actually overthrown[cite: 9]." },
+            { q: "What was the name of the peace treaty signed in 1919 that dictated Germany's punishments?", options: ["Treaty of Berlin", "Treaty of Versailles", "Treaty of Paris", "Treaty of London"], a: 1, hint: "The winners wanted revenge through this document[cite: 18]." },
+            { q: "Which specific clause forced Germany to admit that it was entirely to blame for the war?", options: ["The Victory Clause", "The War Guilt Clause", "The Debt Clause", "The Blame Clause"], a: 1, hint: "Signing this was part of their humiliation[cite: 21]." },
+            { q: "What were the massive financial payments Germany was forced to make for war damages?", options: ["Taxes", "Reparations", "Loans", "Interest"], a: 1, hint: "They amounted to millions (and billions in later estimates)[cite: 20, 23]." },
+            { q: "Which industrial territory was returned to France as part of the Treaty of Versailles?", options: ["East Prussia", "Silesia", "Alsace-Lorraine", "Pomerania"], a: 2, hint: "France had lost this land to Germany in 1871[cite: 24]." },
+            { q: "What does it mean for a region like the Ruhr Valley to be 'demilitarised'?", options: ["No factories allowed", "No military allowed", "No laws allowed", "No taxes allowed"], a: 1, hint: "It was a zone where Germany could not station troops[cite: 24]." },
+            { q: "True or False: Under the Treaty of Versailles, Germany was forbidden to unite with Austria.", options: ["True", "False"], a: 0, hint: "This was one of the many restrictions placed on them[cite: 27]." },
+            { q: "What symbol was used on the Nazi Party flag and armbands?", options: ["The Cross", "The Star", "The Swastika", "The Eagle"], a: 2, hint: "The SA carried flags with this symbol on them[cite: 30]." },
+            { q: "What was the name of the Nazi armed group of supporters who wore brown uniforms?", options: ["The Gestapo", "The SS", "The Storm Troopers (SA)", "The Iron Guard"], a: 2, hint: "They were known for marching parades and violence[cite: 29]." },
+            { q: "What was the title of the famous book Hitler wrote while he was in jail?", options: ["The Third Reich", "Mein Kampf (My Struggle)", "Nazi Power", "The New Order"], a: 1, hint: "He wrote it after the failed putsch of 1923[cite: 37]." },
+            { q: "True or False: Hitler successfully overthrew the Weimar government during the military coup in 1923.", options: ["True", "False"], a: 1, hint: "The 'Putsch' actually failed and he was sent to jail[cite: 33, 34]." },
+            { q: "In which country did the Great Depression begin after the 1929 stock market crash?", options: ["Germany", "United Kingdom", "USA", "France"], a: 2, hint: "It happened in the building on Wall Street[cite: 39, 43]." },
+            { q: "What is the economic term for a rapid rise in prices where money loses its value?", options: ["Deflation", "Inflation", "Stagnation", "Recession"], a: 1, hint: "This rose dramatically in the Weimar Republic[cite: 46, 49]." },
+            { q: "Which event in America directly led to the collapse of the German economy in 1929?", options: ["The Gold Rush", "The Wall Street Crash", "The Civil War", "The Industrial Revolution"], a: 1, hint: "This started the global Great Depression[cite: 43]." },
+            { q: "True or False: The USA lent money to the Weimar government in the 1920s to help its economy recover.", options: ["True", "False"], a: 0, hint: "This helped stabilise Germany for a while before 1929[cite: 38, 50]." },
+            { q: "What was the official title of the leader of the Reichstag (Parliament)?", options: ["President", "King", "Chancellor", "Governor"], a: 2, hint: "Hitler was appointed to this role in 1933[cite: 49]." },
+            { q: "What is the use of exaggeration and lies to control people's thoughts and actions called?", options: ["History", "Education", "Propaganda", "Democracy"], a: 2, hint: "The Nazis used this with great skill[cite: 87]." },
+            { q: "In what year did Hitler finally take over power and the Weimar Republic come to an end?", options: ["1919", "1929", "1933", "1945"], a: 2, hint: "This was after his party won the largest number of votes[cite: 56, 65]." },
+            { q: "Which 1933 law gave complete power to Hitler to rule as a dictator?", options: ["The Nuremberg Law", "The Versailles Law", "The Enabling Act", "The Weimar Act"], a: 2, hint: "Hindenburg signed this into law[cite: 66, 68]." },
+            { q: "What title did Hitler take after Hindenburg died, meaning 'The Leader'?", options: ["Kaiser", "General", "Der Führer", "Emperor"], a: 2, hint: "He combined the roles of Chancellor and President[cite: 70]." },
+            { q: "True or False: In a dictatorship, many different political parties are allowed to exist and compete.", options: ["True", "False"], a: 1, hint: "In Nazi Germany, they were the only allowed party[cite: 67, 71]." },
+            { q: "Where was the first Nazi concentration camp set up in 1933 to house political opponents?", options: ["Auschwitz", "Berlin", "Dachau", "Munich"], a: 2, hint: "It was a town with a large barbed-wire enclosure[cite: 74]." },
+            { q: "What were the 1935 laws that stripped Jewish people of their basic rights?", options: ["The Berlin Laws", "The Weimar Laws", "The Nuremberg Laws", "The Nazi Laws"], a: 2, hint: "These laws were a major step in the persecution of Jews[cite: 75]." },
+            { q: "What term refers to the extreme hatred of or prejudice against Jewish people?", options: ["Racism", "Fascism", "Anti-Semitism", "Intolerance"], a: 2, hint: "This was a core part of Nazi ideology[cite: 76]." },
+            { q: "Which group of people were forced to wear a yellow Star of David as part of their persecution?", options: ["Political Opponents", "Jehovah's Witnesses", "Jewish people", "Homosexuals"], a: 2, hint: "This was a way to identify and target them[cite: 84]." },
+            { q: "Which color triangle symbol identified political opponents in Nazi concentration camps?", options: ["Pink", "Purple", "Red", "Brown"], a: 2, hint: "Different groups had different colored triangles[cite: 85]." },
+            { q: "True or False: Fascism is a system that supports democracy, freedom of speech, and the press.", options: ["True", "False"], a: 1, hint: "It is actually the opposite of democracy[cite: 86, 89]." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("History Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "History Mastermind!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

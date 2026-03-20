@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 9 History: World War II in Europe</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 9 History: World War II in Europe</h1>
+        <p class="game-subtitle">Match the concepts and facts about the origins, the Holocaust, and the end of WWII!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Origins & Outbreak</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">The Holocaust</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Resistance Movements</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">The End of the War</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Finding additional 'living space' for Germans." }, { id: 1, text: "Lebensraum" },
+                { id: 2, text: "Building a strong defence force broke this agreement." }, { id: 2, text: "Treaty of Versailles" },
+                { id: 3, text: "Country annexed by the Nazi army in 1938." }, { id: 3, text: "Austria" },
+                { id: 4, text: "Date of Hitler's invasion of Poland." }, { id: 4, text: "September 1, 1939" },
+                { id: 5, text: "They declared war on Germany on Sept 3, 1939." }, { id: 5, text: "Britain and France" },
+                { id: 6, text: "German leader who re-armed secretly in 1933." }, { id: 6, text: "Adolf Hitler" },
+                { id: 7, text: "Territory added to the Reich in early 1939." }, { id: 7, text: "Czechoslovakia" },
+                { id: 8, text: "The Nazis wanted to expand Germany into this region." }, { id: 8, text: "Eastern Europe" },
+                { id: 9, text: "The two main opposing sides in WWII." }, { id: 9, text: "Axis vs. Allies" },
+                { id: 10, text: "The first country Hitler invaded to start the war." }, { id: 10, text: "Poland" }
+            ],
+            'topic2': [
+                { id: 1, text: "The deliberate extermination of six million Jews." }, { id: 1, text: "The Holocaust" },
+                { id: 2, text: "1935 laws that stripped Jews of citizenship rights." }, { id: 2, text: "Nuremberg Laws" },
+                { id: 3, text: "Leader of the SS who ran extermination camps." }, { id: 3, text: "Heinrich Himmler" },
+                { id: 4, text: "Special mobile killing squads formed in 1941." }, { id: 4, text: "Einsatzgruppen" },
+                { id: 5, text: "1942 name for the systematic genocide plan." }, { id: 5, text: "The Final Solution" },
+                { id: 6, text: "Poisonous gas used in extermination camps." }, { id: 6, text: "Zyklon B" },
+                { id: 7, text: "Disguise used for gas chambers in camps." }, { id: 7, text: "Shower rooms" },
+                { id: 8, text: "Transport used to take victims to camps." }, { id: 8, text: "Cattle trucks" },
+                { id: 9, text: "Approximate percentage of Jews in Germany in 1930." }, { id: 9, text: "About 1%" },
+                { id: 10, text: "Number of non-Jews who also lost their lives." }, { id: 10, text: "Five million" }
+            ],
+            'topic3': [
+                { id: 1, text: "Non-violent resistance group of Munich students." }, { id: 1, text: "White Rose Movement" },
+                { id: 2, text: "White Rose member executed for dropping leaflets." }, { id: 2, text: "Sophie Scholl" },
+                { id: 3, text: "Church group that opposed Nazi ideas." }, { id: 3, text: "Confessing Church" },
+                { id: 4, text: "Church leader executed for a plot against Hitler." }, { id: 4, text: "Dietrich Bonhoeffer" },
+                { id: 5, text: "Walled-off area where Warsaw Jews were moved." }, { id: 5, text: "Warsaw Ghetto" },
+                { id: 6, text: "1943 conflict using smuggled weapons." }, { id: 6, text: "Warsaw Ghetto Uprising" },
+                { id: 7, text: "Church group that supported Hitler's leadership." }, { id: 7, text: "German Christians" },
+                { id: 8, text: "Agreement between Nazis and the Catholic Church." }, { id: 8, text: "Non-interference pact" },
+                { id: 9, text: "The Nazis received about this much of the 1932 vote." }, { id: 9, text: "Half (50%)" },
+                { id: 10, text: "Execution method for Sophie and Hans Scholl." }, { id: 10, text: "Guillotine" }
+            ],
+            'topic4': [
+                { id: 1, text: "Italian dictator captured and killed in April 1945." }, { id: 1, text: "Benito Mussolini" },
+                { id: 2, text: "The city where Mussolini's body was hung in public." }, { id: 2, text: "Milan" },
+                { id: 3, text: "Capital of Germany where Allied forces closed in." }, { id: 3, text: "Berlin" },
+                { id: 4, text: "German dictator who committed suicide on April 30." }, { id: 4, text: "Adolf Hitler" },
+                { id: 5, text: "Hitler's mistress who died with him in suicide." }, { id: 5, text: "Eva Braun" },
+                { id: 6, text: "The date the German army in Berlin surrendered." }, { id: 6, text: "May 2, 1945" },
+                { id: 7, text: "Date the Germans signed a total armistice." }, { id: 7, text: "May 7, 1945" },
+                { id: 8, text: "Celebrations erupted on this news break date." }, { id: 8, text: "May 8, 1945 (VE Day)" },
+                { id: 9, text: "The army that accepted the surrender of Berlin." }, { id: 9, text: "The Russian army" },
+                { id: 10, text: "Country still at war with America after Germany fell." }, { id: 10, text: "Japan" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Grade 9 History Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

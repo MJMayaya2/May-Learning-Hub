@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 9 Geography: Topographical Maps</title>
+    <style>
+        /* CSS styling */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Topographical Maps</h1>
+        <p class="game-subtitle">Test your Grade 9 Map Skills! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Topographical Map", a: "A map showing relief (shape of land), height above sea level, natural features, and human features." },
+                { q: "Relief", a: "The physical shape of the landscape, describing how the land rises and falls." },
+                { q: "1:50 000 Scale", a: "A ratio scale where 1 unit on the map represents 50,000 units on the ground." },
+                { q: "River Valley", a: "A landform shown by V-shaped contour patterns pointing upstream towards higher land." },
+                { q: "Upstream", a: "The direction towards the source of a river, characterized by higher ground." },
+                { q: "Ridge", a: "A long narrow area of high land, often separating two valleys." },
+                { q: "Spur", a: "A smaller ridge that extends from a hill or mountain, shown by V-shapes pointing downhill." },
+                { q: "Ratio Scale", a: "A scale expressed as a mathematical ratio, such as 1:50,000." },
+                { q: "Line Scale", a: "A visual scale bar on a map used to measure and convert distance directly." },
+                { q: "Latitude", a: "Imaginary lines running West to East, measured North or South of the Equator." },
+                { q: "Longitude", a: "Imaginary lines running North to South, measured East or West of the Greenwich Meridian." },
+                { q: "Elevation", a: "The vertical distance or height of a point above sea level." },
+                { q: "Natural Features", a: "Features found on maps not made by humans, such as rivers and mountains." },
+                { q: "Human Features", a: "Man-made elements on a map, such as roads and buildings." },
+                { q: "Minutes", a: "Units used in mapping where each degree of latitude or longitude is divided into 60 parts." },
+                { q: "Equator", a: "The 0° latitude line dividing the Northern and Southern hemispheres." },
+                { q: "Greenwich Meridian", a: "The 0° longitude line used as the starting point for Eastern and Western measurements." },
+                { q: "Coordinates", a: "A set of latitude and longitude values used to locate features accurately on a map." },
+                { q: "Scale", a: "The relationship between distance on a map and actual distance on the ground." },
+                { q: "Hill", a: "A landform shown by circular or oval contour lines with the highest value in the centre." }
+            ],
+            'terms': [
+                { q: "The scale where 1 cm on the map equals 500 metres on the ground.", a: "1:50 000 Scale" },
+                { q: "The specific shape contour lines form to represent a river valley.", a: "V-shaped" },
+                { q: "The landform consisting of circular or oval contour lines.", a: "Hill (or Mountain)" },
+                { q: "A long, narrow area of high land shown by elongated contours.", a: "Ridge" },
+                { q: "The term for lines running West to East on a map.", a: "Latitude" },
+                { q: "The term for lines running North to South on a map.", a: "Longitude" },
+                { q: "The number of minutes in a single degree.", a: "60" },
+                { q: "The 0° longitude line.", a: "Greenwich Meridian" },
+                { q: "The visual bar used to measure real distance easily.", a: "Line Scale" },
+                { q: "The type of map that shows both natural and human features.", a: "Topographical Map" },
+                { q: "The direction V-shaped valley contours point.", a: "Upstream" },
+                { q: "The direction U or V shaped spur contours point.", a: "Downhill" },
+                { q: "The physical shape of the land.", a: "Relief" },
+                { q: "A smaller ridge extending from a hill or mountain.", a: "Spur" },
+                { q: "The baseline (0m) for measuring elevation.", a: "Sea Level" },
+                { q: "1 cm = 50 000 cm is a description of this scale.", a: "1:50 000 Scale" },
+                { q: "Roads, buildings, and schools are examples of this.", a: "Human Features" },
+                { q: "Rivers and mountains are examples of this.", a: "Natural Features" },
+                { q: "The unit used alongside degrees for map coordinates.", a: "Minutes" },
+                { q: "The coordinate system used to locate features accurately.", a: "Grid References (or Latitude/Longitude)" }
+            ],
+            'multipleChoice': [
+                { q: "What does 1 cm represent on a 1:50 000 map?", options: ["A) 50m", "B) 500m", "C) 5km", "D) 50km"], a: "B) 500m" },
+                { q: "Which landform is represented by elongated contour shapes?", options: ["A) Hill", "B) Spur", "C) Ridge", "D) Valley"], a: "C) Ridge" },
+                { q: "How many minutes are in one degree of longitude?", options: ["A) 10", "B) 30", "C) 60", "D) 100"], a: "C) 60" },
+                { q: "In which direction do valley contour lines point?", options: ["A) Downhill", "B) Upstream", "C) East", "D) Towards the sea"], a: "B) Upstream" },
+                { q: "What is relief on a topographical map?", options: ["A) Man-made features", "B) The shape of the land", "C) Rainfall patterns", "D) Population density"], a: "B) The shape of the land" },
+                { q: "If two points are 4 cm apart on a 1:50 000 map, what is the real distance?", options: ["A) 200m", "B) 2km", "C) 4km", "D) 20km"], a: "B) 2km" },
+                { q: "Which line is at 0 degrees latitude?", options: ["A) Equator", "B) Greenwich Meridian", "C) South Pole", "D) North Pole"], a: "A) Equator" },
+                { q: "How is a ratio scale expressed?", options: ["A) As a bar", "B) In words", "C) As a ratio (e.g., 1:50 000)", "D) As a percentage"], a: "C) As a ratio (e.g., 1:50 000)" },
+                { q: "What do circular contour lines with increasing values towards the centre show?", options: ["A) Valley", "B) Plain", "C) Hill", "D) Lake"], a: "C) Hill" },
+                { q: "Latitude lines are measured in which direction?", options: ["A) East or West", "B) North or South", "C) Up or Down", "D) Diagonal"], a: "B) North or South" },
+                { q: "What feature is NOT a natural feature?", options: ["A) River", "B) Mountain", "C) Road", "D) Forest"], a: "C) Road" },
+                { q: "What feature is a human feature?", options: ["A) Marsh", "B) School", "C) Hill", "D) Valley"], a: "B) School" },
+                { q: "What scale is common for SA topographical maps?", options: ["A) 1:10 000", "B) 1:50 000", "C) 1:100 000", "D) 1:1 000 000"], a: "B) 1:50 000" },
+                { q: "A spur extends from which landform?", options: ["A) River", "B) Road", "C) Hill or Mountain", "D) Ocean"], a: "C) Hill or Mountain" },
+                { q: "Spur contours form V-shapes pointing where?", options: ["A) Upstream", "B) Downhill", "C) To the centre", "D) East"], a: "B) Downhill" },
+                { q: "What is the 0° reference for longitude?", options: ["A) Equator", "B) Greenwich Meridian", "C) South Pole", "D) North Pole"], a: "B) Greenwich Meridian" },
+                { q: "Which tool allows for easy map distance conversion?", options: ["A) Legend", "B) Index", "C) Line Scale", "D) Compass"], a: "C) Line Scale" },
+                { q: "Each degree is divided into what?", options: ["A) Seconds", "B) Units", "C) Minutes", "D) Decimals"], a: "C) Minutes" },
+                { q: "Elevation is height above what?", options: ["A) Ground level", "B) Sea level", "C) Peak level", "D) Cloud level"], a: "B) Sea level" },
+                { q: "South Africa's location is between which latitudes roughly?", options: ["A) 0° and 10°S", "B) 22°S and 35°S", "C) 50°S and 60°S", "D) 22°N and 35°N"], a: "B) 22°S and 35°S" }
+            ],
+            'trueFalse': [
+                { q: "A topographical map shows the shape of the land.", options: ["True", "False"], a: "True", exp: "This is known as relief." },
+                { q: "1 cm on a 1:50 000 map represents 500 metres.", options: ["True", "False"], a: "True", exp: "50,000 cm converted to metres is 500m." },
+                { q: "Valley contour lines point downstream.", options: ["True", "False"], a: "False", exp: "They point upstream towards higher ground." },
+                { q: "Latitude lines run North to South.", options: ["True", "False"], a: "False", exp: "Longitude lines run North to South; Latitude runs West to East." },
+                { q: "A hill is shown by circular or oval contour lines.", options: ["True", "False"], a: "True", exp: "Values increase towards the centre peak." },
+                { q: "Each degree is divided into 100 minutes.", options: ["True", "False"], a: "False", exp: "It is divided into 60 minutes." },
+                { q: "The Greenwich Meridian is at 0 degrees longitude.", options: ["True", "False"], a: "True", exp: "It is the prime meridian." },
+                { q: "Ridges often separate two valleys.", options: ["True", "False"], a: "True", exp: "They are long narrow areas of high ground." },
+                { q: "Spur contours form V-shapes pointing upstream.", options: ["True", "False"], a: "False", exp: "Spurs point downhill; valleys point upstream." },
+                { q: "Topographical maps show both human and natural features.", options: ["True", "False"], a: "True", exp: "Examples include roads (human) and rivers (natural)." },
+                { q: "A ratio scale uses visual bars to measure distance.", options: ["True", "False"], a: "False", exp: "A line scale uses visual bars; a ratio scale is a mathematical ratio." },
+                { q: "South Africa is located in the Northern Hemisphere.", options: ["True", "False"], a: "False", exp: "It is in the Southern Hemisphere, between 22°S and 35°S." },
+                { q: "Relief describes the height of land above sea level.", options: ["True", "False"], a: "False", exp: "Relief describes the shape; Elevation describes the height." },
+                { q: "1:50 000 is a standard scale for topographical maps.", options: ["True", "False"], a: "True", exp: "It is widely used in South Africa." },
+                { q: "A spur is a larger version of a mountain.", options: ["True", "False"], a: "False", exp: "A spur is a smaller ridge extending from a hill or mountain." },
+                { q: "The Equator is at 0 degrees longitude.", options: ["True", "False"], a: "False", exp: "The Equator is 0° latitude; Greenwich is 0° longitude." },
+                { q: "Coordinates help locate features accurately on a map.", options: ["True", "False"], a: "True", exp: "Using latitude, longitude, or grid references." },
+                { q: "A ratio scale expresses scale as a fraction or ratio.", options: ["True", "False"], a: "True", exp: "Example: 1:50 000." },
+                { q: "Mountains are natural features.", options: ["True", "False"], a: "True", exp: "They occur naturally in the landscape." },
+                { q: "Distance can be measured directly using a line scale.", options: ["True", "False"], a: "True", exp: "It provides a visual reference for conversion." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 9 Geography Millionaire: Topographical Maps</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Topographical Maps (Grade 9 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is shown on a topographical map to describe the shape of the land?", options: ["Atmospheric pressure", "Political borders", "Relief", "Population density"], a: 2, hint: "Check the definition on page 3. [cite: 79]" },
+            { q: "In a 1:50 000 map scale, what does 1 cm on the map represent in reality?", options: ["5 000 cm", "50 000 cm", "500 cm", "5 cm"], a: 1, hint: "The scale is a ratio of map distance to ground distance. [cite: 84]" },
+            { q: "What is the equivalent ground distance for 1 cm on a 1:50 000 scale map?", options: ["50 metres", "5 000 metres", "500 metres", "5 kilometres"], a: 2, hint: "Divide 50,000 cm by 100 to get metres. [cite: 86]" },
+            { q: "Which contour pattern is characteristic of a river valley?", options: ["Circular lines", "Elongated shapes", "V-shaped patterns", "Square blocks"], a: 2, hint: "Check the 'River Valleys' section on page 4. [cite: 89, 90]" },
+            { q: "According to the upstream rule, in which direction does the 'V' shape of river valley contours point?", options: ["Downstream", "Towards higher land", "Towards the ocean", "West"], a: 1, hint: "The 'V' points towards the source of the river. [cite: 92, 93]" },
+            { q: "How are hills and mountains represented on a topographical map?", options: ["Parallel straight lines", "Circular or oval contour lines", "Disconnected dots", "Blue shaded areas"], a: 1, hint: "Look at the patterns for high elevation features. [cite: 6]" },
+            { q: "Where is the highest contour line located when representing a hill?", options: ["On the outer edge", "In the centre", "At the bottom of the map", "Near the nearest road"], a: 1, hint: "Heights increase as you move inward. [cite: 6]" },
+            { q: "A long, narrow area of high land is known as a...", options: ["Spur", "Valley", "Ridge", "Basin"], a: 2, hint: "Check the landform definitions on page 6. [cite: 6]" },
+            { q: "What is the characteristic shape of contour lines for a ridge?", options: ["Circular", "Elongated", "Square", "V-shaped"], a: 1, hint: "Ridges are long and narrow. [cite: 7]" },
+            { q: "What is a spur?", options: ["A deep river valley", "A long narrow area of high land", "A smaller ridge extending from a hill or mountain", "A perfectly flat plain"], a: 2, hint: "Look for the definition on page 8. [cite: 8]" },
+            { q: "In which direction do the U or V-shaped contour lines of a spur point?", options: ["Uphill", "Downhill", "Towards the left", "To the nearest river"], a: 1, hint: "Check the contour rule for spurs. [cite: 9]" },
+            { q: "What does a map scale show the relationship between?", options: ["Time and Speed", "Map distance and Ground distance", "Latitude and Longitude", "North and South"], a: 1, hint: "It is the core of map interpretation. [cite: 10]" },
+            { q: "If the distance between two points on a 1:50 000 map is 4 cm, what is the real distance in metres?", options: ["400 m", "20,000 m", "2,000 m", "500 m"], a: 2, hint: "Multiply map distance by 500. [cite: 12]" },
+            { q: "How many kilometres are represented by 4 cm on a topographical map?", options: ["20 km", "0.5 km", "2 km", "4 km"], a: 2, hint: "Use the conversion 1cm = 0.5km. [cite: 13]" },
+            { q: "What is a line scale?", options: ["A mathematical ratio", "A visual scale bar on the map", "A list of coordinates", "A tool to measure relief"], a: 1, hint: "Check the description on page 14. [cite: 14]" },
+            { q: "Which type of scale expresses the relationship as a mathematical ratio like 1:50 000?", options: ["Line scale", "Word scale", "Ratio scale", "Metric scale"], a: 2, hint: "Check page 15. [cite: 15]" },
+            { q: "What is the standard scale used for South African Orthophoto maps?", options: ["1:50 000", "1:10 000", "1:100 000", "1:5 000"], a: 1, hint: "Compare the two map series on page 15. [cite: 16]" },
+            { q: "Topographical maps use which system to locate features accurately?", options: ["Population census", "Road signs", "Coordinates", "Weather reports"], a: 2, hint: "Look at the locating features section on page 16. [cite: 16]" },
+            { q: "In which direction do lines of latitude run?", options: ["North to South", "Diagonally", "West to East", "Clockwise"], a: 2, hint: "These lines are measured North or South of the Equator. [cite: 17]" },
+            { q: "Longitude lines are measured East or West of which line?", options: ["The Equator", "The International Date Line", "The Greenwich Meridian", "The South Pole"], a: 2, hint: "Check the vertical line definitions on page 18. [cite: 18]" },
+            { q: "Into how many minutes is each degree of latitude or longitude divided?", options: ["100 minutes", "10 minutes", "60 minutes", "30 minutes"], a: 2, hint: "Check the sub-units of degrees. [cite: 19]" },
+            { q: "Roughly between which latitudes is South Africa located?", options: ["22° N and 35° N", "0° and 10° S", "22° S and 35° S", "45° S and 60° S"], a: 2, hint: "Check South Africa's location on page 20. [cite: 20]" },
+            { q: "True or False: Relief refers to the height of the land above sea level.", options: ["True", "False"], a: 0, hint: "Page 3 defines topographical map content. [cite: 80]" },
+            { q: "What ground distance is represented by 2 cm on a 1:50 000 map?", options: ["1 km", "100 m", "500 m", "10 km"], a: 0, hint: "Check the ratio scale examples. [cite: 16]" },
+            { q: "Which feature can be accurately located using grid references?", options: ["Only rivers", "Only schools", "Rivers, schools, roads, and mountains", "Only towns"], a: 2, hint: "Check what coordinates help locate. [cite: 16]" },
+            { q: "True or False: Lines of longitude run North to South.", options: ["True", "False"], a: 0, hint: "Check the longitude definition on page 18. [cite: 18]" },
+            { q: "The V-shape of a river valley points towards lower land.", options: ["True", "False"], a: 1, hint: "It points upstream. [cite: 92]" },
+            { q: "Topographical maps show human features such as roads and buildings.", options: ["True", "False"], a: 0, hint: "Check page 3. [cite: 82]" },
+            { q: "What equals 1 cm on an Orthophoto map?", options: ["500 metres", "100 metres", "1 kilometre", "50 metres"], a: 1, hint: "Orthophoto maps are 1:10 000. [cite: 16]" },
+            { q: "The index is typically located at the front of an atlas.", options: ["True", "False"], a: 1, hint: "It is located at the back. [cite: 2]" }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

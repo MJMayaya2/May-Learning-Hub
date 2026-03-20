@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Spin the Wheel</title>
+    <style>
+        /* CSS styling identical to original */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">History Quiz: The Rise of Nazi Germany</h1>
+        <p class="game-subtitle">Select a category, spin the wheel, and test your Grade 9 History knowledge!</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Weimar Republic", a: "The democratic government of Germany formed in 1919 following World War I." },
+                { q: "Armistice", a: "An agreement made by opposing sides in a war to stop fighting for a certain time." },
+                { q: "Reparations", a: "Large sums of money that a defeated nation (Germany) was forced to pay for war damages." },
+                { q: "War Guilt Clause", a: "A term in the Treaty of Versailles forcing Germany to accept full responsibility for starting WWI." },
+                { q: "Demilitarised Zone", a: "An area, such as the Ruhr Valley, where Germany was forbidden to station any military forces." },
+                { q: "Nazi Party", a: "A small political group that eventually took total control of Germany under Hitler's leadership." },
+                { q: "Storm Troopers (SA)", a: "Armed groups of Nazi supporters, known as Brown Shirts, who used violence to stamp out opposition." },
+                { q: "Putsch", a: "A violent attempt to overthrow a government, such as the failed coup in Munich in 1923." },
+                { q: "Mein Kampf", a: "The book written by Adolf Hitler while in prison, meaning 'My Struggle'." },
+                { q: "Great Depression", a: "A severe worldwide economic crisis triggered by the Wall Street Crash in 1929." },
+                { q: "Inflation", a: "A dramatic rise in the price of goods where money loses its value, as seen in the Weimar Republic." },
+                { q: "Chancellor", a: "The leader of the German parliament, known as the Reichstag." },
+                { q: "Propaganda", a: "Biased or misleading information used by the Nazis to control thoughts and promote their cause." },
+                { q: "Enabling Act", a: "A 1933 law that gave Hitler the power to make laws without the consent of parliament." },
+                { q: "Dictatorship", a: "A system of government where one person makes all the rules and allows no opposition." },
+                { q: "Der Führer", a: "A German title meaning 'The Leader,' taken by Hitler after combining the roles of Chancellor and President." },
+                { q: "Concentration Camp", a: "A barbed-wire enclosure, like Dachau, used to house and punish political opponents." },
+                { q: "Aryan", a: "The term used by Nazis to describe what they considered a 'pure' and superior German race." },
+                { q: "Anti-Semitism", a: "Hostility toward or prejudice against Jewish people, which existed for centuries before Hitler." },
+                { q: "Fascism", a: "A political system led by a dictator that uses violence, propaganda, and racism to maintain control." }
+            ],
+            'terms': [
+                { q: "The German king who was overthrown at the end of World War I in 1918.", a: "Kaiser Wilhelm II" },
+                { q: "The city where the new democratic German government was established in 1919.", a: "Weimar" },
+                { q: "The specific peace treaty signed in 1919 that dictated harsh punishments to Germany.", a: "Treaty of Versailles" },
+                { q: "The hooked-cross symbol used on the Nazi flag.", a: "Swastika" },
+                { q: "The armed Nazi group that organized marching parades and wore brown uniforms.", a: "SA (or Storm Troopers)" },
+                { q: "The location of the stock market in New York that collapsed in 1929.", a: "Wall Street" },
+                { q: "The event that caused thousands of Americans to lose their money and triggered a global economic collapse.", a: "Wall Street Crash" },
+                { q: "The name of the German parliament body.", a: "Reichstag" },
+                { q: "The myth that the German army was betrayed at home by the Weimar government.", a: "Stab in the back myth" },
+                { q: "The title of the German Head of State, held by Hindenburg until 1934.", a: "President" },
+                { q: "The first concentration camp set up in 1933 in a German town.", a: "Dachau" },
+                { q: "The 1935 laws that resulted in the loss of basic rights for Jewish people.", a: "Nuremberg Laws" },
+                { q: "The elite Nazi protection squad that wore black uniforms with skull symbols.", a: "SS (Schutzstaffel)" },
+                { q: "The German word for Hitler's ideological book meaning 'My Struggle'.", a: "Mein Kampf" },
+                { q: "The 1933 law that officially ended democracy and started the Nazi dictatorship.", a: "Enabling Act" },
+                { q: "The political ideology that bans trade unions and freedom of the press.", a: "Fascism" },
+                { q: "The city in which the US stock market crash occurred.", a: "New York" },
+                { q: "The specific group Hitler obsessed over for 'racial purity'.", a: "Aryans" },
+                { q: "The type of government where Kaiser Wilhelm II was no longer king.", a: "Republic" },
+                { q: "The month and year Hitler was appointed Chancellor.", a: "January 1933" }
+            ],
+            'multipleChoice': [
+                { q: "In what year did World War I come to an end?", options: ["A) 1914", "B) 1918", "C) 1919", "D) 1933"], a: "B) 1918" },
+                { q: "Which country did Kaiser Wilhelm II flee to after being overthrown?", options: ["A) France", "B) Britain", "C) Holland", "D) Russia"], a: "C) Holland" },
+                { q: "What did the Allies want from Germany in the Treaty of Versailles?", options: ["A) To help them rebuild", "B) Revenge and payment for war damages", "C) To invite them to a banquet", "D) To keep the Kaiser in power"], a: "B) Revenge and payment for war damages" },
+                { q: "How long did Hitler stay in jail after the failed 1923 coup?", options: ["A) 9 months", "B) 5 years", "C) 10 years", "D) Life sentence"], a: "A) 9 months" },
+                { q: "Which event in 1929 led to the Great Depression?", options: ["A) Munich Putsch", "B) Wall Street Crash", "C) Signing of the Treaty", "D) Election of Hitler"], a: "B) Wall Street Crash" },
+                { q: "Why was the Weimar government blamed for the poor economy?", options: ["A) They started WWI", "B) They could not cope with the economic crisis of 1929", "C) They were too powerful", "D) They banned the Nazi party"], a: "B) They could not cope with the economic crisis of 1929" },
+                { q: "What was the result of the Enabling Act in 1933?", options: ["A) More political parties were formed", "B) It gave complete power to Hitler and the Nazis", "C) It ended World War I", "D) It freed all prisoners"], a: "B) It gave complete power to Hitler and the Nazis" },
+                { q: "What title did Hitler take after Hindenburg died in 1934?", options: ["A) Chancellor", "B) Kaiser", "C) Der Führer", "D) King"], a: "C) Der Führer" },
+                { q: "Who were the primary prisoners in the first concentration camps?", options: ["A) Foreign soldiers", "B) Nazi supporters", "C) Political opponents", "D) Wealthy businessmen"], a: "C) Political opponents" },
+                { q: "What does the term 'Anti-Semitism' mean?", options: ["A) Support for democracy", "B) Hatred of Jews", "C) Pride in the military", "D) Economic recovery"], a: "B) Hatred of Jews" },
+                { q: "Which of these was a punishment for Germany in the Treaty of Versailles?", options: ["A) They gained more land", "B) They were forbidden to unite with Austria", "C) They were given a new navy", "D) They received billions in aid"], a: "B) They were forbidden to unite with Austria" },
+                { q: "What was the motto of the Nazi Storm Troopers (SA)?", options: ["A) Peace through strength", "B) All opposition must be stamped into the ground", "C) Democracy is the future", "D) Glory to the Kaiser"], a: "B) All opposition must be stamped into the ground" },
+                { q: "Which country lent money to Germany in the 1920s to help its economy?", options: ["A) France", "B) Britain", "C) USA", "D) Russia"], a: "C) USA" },
+                { q: "What is a 'dictatorship'?", options: ["A) A rule by many parties", "B) A system where one person makes all the rules", "C) A government elected every year", "D) A kingdom ruled by a Kaiser"], a: "B) A system where one person makes all the rules" },
+                { q: "Where was the first concentration camp located?", options: ["A) Berlin", "B) Munich", "C) Dachau", "D) Weimar"], a: "C) Dachau" },
+                { q: "What was the War Guilt Clause?", options: ["A) A clause saying no one was to blame", "B) A clause forcing Germany to take total blame for the war", "C) A clause banning all guns", "D) A clause ending the Nazi party"], a: "B) A clause forcing Germany to take total blame for the war" },
+                { q: "What happened to trade unions under Fascism?", options: ["A) They were given more power", "B) They were banned", "C) They elected the leader", "D) They ran the factories"], a: "B) They were banned" },
+                { q: "Which symbol appeared on the Nazi flags?", options: ["A) A skull", "B) A swastika", "C) A lightning bolt", "D) A silver dagger"], a: "B) A swastika" },
+                { q: "What was the main purpose of Nazi propaganda?", options: ["A) To teach math", "B) To unite people and control their thoughts", "C) To encourage freedom of speech", "D) To end the military"], a: "B) To unite people and control their thoughts" },
+                { q: "How did Hitler behave as a speaker?", options: ["A) He was quiet and shy", "B) He was a brilliant public speaker who held the attention of thousands", "C) He refused to speak in public", "D) He only used radio"], a: "B) He was a brilliant public speaker who held the attention of thousands" }
+            ],
+            'trueFalse': [
+                { q: "The Weimar Republic was ruled by a King.", options: ["True", "False"], a: "False", exp: "It was a democratic republic, not a kingdom." },
+                { q: "Germany had a say in the terms of the Treaty of Versailles.", options: ["True", "False"], a: "False", exp: "The terms were dictated to Germany without their input." },
+                { q: "Hitler wrote 'Mein Kampf' while he was in jail.", options: ["True", "False"], a: "True", exp: "He wrote it during his 9-month imprisonment after the failed Putsch." },
+                { q: "The SA were also known as the Brown Shirts.", options: ["True", "False"], a: "True", exp: "They wore brown uniforms and carried flags with swastikas." },
+                { q: "The Great Depression started in Germany.", options: ["True", "False"], a: "False", exp: "It started in the USA with the Wall Street Crash." },
+                { q: "The Nazis used propaganda to build support among the German people.", options: ["True", "False"], a: "True", exp: "They used it with great skill to control actions and thoughts." },
+                { q: "The Enabling Act allowed Hitler to make rules without parliament.", options: ["True", "False"], a: "True", exp: "It gave complete power to Hitler and the Nazi Party." },
+                { q: "Anti-Semitism was a brand new idea created by Hitler in the 1930s.", options: ["True", "False"], a: "False", exp: "Hatred of Jews had existed in Europe for hundreds of years." },
+                { q: "Under Fascism, no opposition to the government is allowed.", options: ["True", "False"], a: "True", exp: "Fascism allows no freedom of speech or other political parties." },
+                { q: "Dachau was the name of a German stock market.", options: ["True", "False"], a: "False", exp: "Dachau was the first Nazi concentration camp." },
+                { q: "Reparations were payments for war damages.", options: ["True", "False"], a: "True", exp: "Germany had to pay millions in reparations after WWI." },
+                { q: "Germany lost no land after World War I.", options: ["True", "False"], a: "False", exp: "Germany lost significant territory, including Alsace-Lorraine and all colonies." },
+                { q: "Hitler's Munich Putsch of 1923 was a success.", options: ["True", "False"], a: "False", exp: "The putsch failed and Hitler was sent to jail." },
+                { q: "Inflation means that prices become very high and money loses value.", options: ["True", "False"], a: "True", exp: "Inflation rose dramatically in the Weimar Republic." },
+                { q: "The SS wore sleek black uniforms with skull symbols.", options: ["True", "False"], a: "True", exp: "They were a specialized protection squad for the Nazis." },
+                { q: "Fascist leaders cooperated with trade unions to help workers.", options: ["True", "False"], a: "False", exp: "They banned trade unions and cooperated with landowners/factory owners." },
+                { q: "The 'Stab in the back' myth blamed the army for losing the war.", options: ["True", "False"], a: "False", exp: "It blamed the Weimar government for betraying the army." },
+                { q: "The Nazi Party was the only party allowed in Germany after 1933.", options: ["True", "False"], a: "True", exp: "All other political parties were banned." },
+                { q: "Hitler combined the titles of Chancellor and President into 'Der Führer'.", options: ["True", "False"], a: "True", exp: "He did this in 1934 after President Hindenburg died." },
+                { q: "Democracy had a very strong history in Germany before 1919.", options: ["True", "False"], a: "False", exp: "Germany was used to authoritarian rule by the Kaiser." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 9 Geography: Orthophoto Maps</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../../index.html">Home</a>
+            <a href="../../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 9 Geography: Orthophoto Maps</h1>
+        <p class="game-subtitle">Match the concepts, scales, and features from your orthophoto maps lesson!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Definitions & Aerial Photos</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Scale & Measurements</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Height & Elevation</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Identifying Features</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Picture of Earth's surface taken from the air using aircraft or drones." }, { id: 1, text: "Aerial Photograph" },
+                { id: 2, text: "Corrected aerial photo adjusted to remove distortions." }, { id: 2, text: "Orthophoto Map" },
+                { id: 3, text: "Photo taken with the camera pointing straight down." }, { id: 3, text: "Vertical Aerial Photo" },
+                { id: 4, text: "Orthophoto maps combine real photos with this." }, { id: 4, text: "Map Information" },
+                { id: 5, text: "Advantage of vertical photos for mapping." }, { id: 5, text: "Shows true positions" },
+                { id: 6, text: "Type of aerial photo not used for precise mapping." }, { id: 6, text: "Oblique Aerial Photo" },
+                { id: 7, text: "Orthophoto maps include these for location." }, { id: 7, text: "Grid References" },
+                { id: 8, text: "Corrected photos are useful because they show this." }, { id: 8, text: "Real Landscape Images" },
+                { id: 9, text: "Primary method of taking aerial photos today." }, { id: 9, text: "Aircraft or Drones" },
+                { id: 10, text: "Combined with photographs to make an orthophoto." }, { id: 10, text: "Contour Lines" }
+            ],
+            'topic2': [
+                { id: 1, text: "The common scale used for orthophoto maps." }, { id: 1, text: "1:10 000" },
+                { id: 2, text: "1 cm on a 1:10 000 map represents this on the ground." }, { id: 2, text: "100 metres" },
+                { id: 3, text: "1 cm on map equals 10,000 cm on ground." }, { id: 3, text: "1:10 000 Scale" },
+                { id: 4, text: "Reason orthophoto maps show very detailed features." }, { id: 4, text: "Large Scale" },
+                { id: 5, text: "5 cm on an orthophoto map equals this distance." }, { id: 5, text: "500 metres" },
+                { id: 6, text: "Benefit of using the 1:10 000 scale." }, { id: 6, text: "Accurate Measurements" },
+                { id: 7, text: "10 cm on map equals this ground distance." }, { id: 7, text: "1 kilometre" },
+                { id: 8, text: "1:10 000 is an example of this scale type." }, { id: 8, text: "Ratio Scale" },
+                { id: 9, text: "Orthophoto scale compared to 1:50 000 topographic maps." }, { id: 9, text: "Larger Scale" },
+                { id: 10, text: "Real distance represented by 2 cm." }, { id: 10, text: "200 metres" }
+            ],
+            'topic3': [
+                { id: 1, text: "The height of land measured above sea level." }, { id: 1, text: "Elevation" },
+                { id: 2, text: "Lines joining points of equal height above sea level." }, { id: 2, text: "Contour Lines" },
+                { id: 3, text: "Height clue indicated by a triangle marker." }, { id: 3, text: "Trigonometrical Station" },
+                { id: 4, text: "A specific point on the map showing exact altitude." }, { id: 4, text: "Spot Height" },
+                { id: 5, text: "Contour lines help us understand this feature." }, { id: 5, text: "Shape of the Land" },
+                { id: 6, text: "Important rule about contour lines." }, { id: 6, text: "Never cross each other" },
+                { id: 7, text: "What close contour lines indicate." }, { id: 7, text: "Steep Land" },
+                { id: 8, text: "What widely spaced contour lines indicate." }, { id: 8, text: "Flat or Gentle Slope" },
+                { id: 9, text: "Contours help identify these landforms." }, { id: 9, text: "Hills and Valleys" },
+                { id: 10, text: "Color used for contour lines on maps." }, { id: 10, text: "Brown" }
+            ],
+            'topic4': [
+                { id: 1, text: "Rivers, hills, and forests are examples of these." }, { id: 1, text: "Natural Features" },
+                { id: 2, text: "Roads, buildings, and bridges are examples of these." }, { id: 2, text: "Human Features" },
+                { id: 3, text: "Type of feature identified: Mountains." }, { id: 3, text: "Natural Feature" },
+                { id: 4, text: "Type of feature identified: Farms." }, { id: 4, text: "Human Feature" },
+                { id: 5, text: "Orthophoto maps show real images of these." }, { id: 5, text: "Landscapes" },
+                { id: 6, text: "Human feature used for transport across water." }, { id: 6, text: "Bridge" },
+                { id: 7, text: "Natural feature consisting of a flow of water." }, { id: 7, text: "River" },
+                { id: 8, text: "Feature type: Factories and houses." }, { id: 8, text: "Human Features" },
+                { id: 9, text: "Identifying these is easier than on normal maps." }, { id: 9, text: "Map Features" },
+                { id: 10, text: "Feature type: Indigenous forests." }, { id: 10, text: "Natural Feature" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Geography Revision for Orthophoto Maps Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

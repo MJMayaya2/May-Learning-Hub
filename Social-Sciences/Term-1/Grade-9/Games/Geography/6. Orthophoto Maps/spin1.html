@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 9 Geography: Orthophoto Maps</title>
+    <style>
+        /* CSS styling */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Orthophoto Maps</h1>
+        <p class="game-subtitle">Test your knowledge on Grade 9 Orthophoto Maps! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Aerial Photograph", a: "A picture of the Earth's surface taken from the air using an aircraft or drone." },
+                { q: "Vertical Aerial Photograph", a: "An image taken directly above the ground with the camera pointing straight down." },
+                { q: "Oblique Aerial Photograph", a: "An image taken at an angle rather than straight down." },
+                { q: "Orthophoto Map", a: "A corrected aerial photograph adjusted to remove distortions, combining imagery with map information." },
+                { q: "Scale (1:10 000)", a: "A large scale where 1 cm on the map represents 100 metres on the ground." },
+                { q: "Elevation", a: "The vertical distance or height of the land above sea level." },
+                { q: "Contour Line", a: "A line joining points of equal height above sea level, used to show the shape of the land." },
+                { q: "Spot Height", a: "A point on a map showing exact altitude, used along with contours to show height." },
+                { q: "Trigonometrical Station", a: "A surveyed point of height, often marked by a concrete beacon on high ground." },
+                { q: "Natural Features", a: "Landscape elements not made by humans, such as rivers, forests, and hills." },
+                { q: "Human Features", a: "Man-made elements on the landscape, such as roads, buildings, and bridges." },
+                { q: "Distortion", a: "Inaccuracies in shape or position found in raw aerial photos that are corrected in orthophoto maps." },
+                { q: "Grid Reference", a: "A system of lines used to locate specific positions or features on an orthophoto map." },
+                { q: "Large Scale", a: "A scale like 1:10 000 that shows a small area of land in great detail." },
+                { q: "Topography", a: "The detailed mapping of the physical features (relief) of an area." },
+                { q: "Mapping", a: "The process of creating a visual representation of the Earth's surface and its features." },
+                { q: "Detail", a: "The high level of information visible on an orthophoto map due to its large scale." },
+                { q: "Corrected Image", a: "An aerial photograph that has been mathematically adjusted for true position and distance." },
+                { q: "Sea Level", a: "The baseline (0m) from which all elevation and height is measured." },
+                { q: "Relief", a: "The term describing the overall shape and steepness of the land." }
+            ],
+            'terms': [
+                { q: "The primary tool used to take vertical aerial photographs.", a: "Aircraft (or Drone)" },
+                { q: "The angle of the camera for a vertical aerial photograph.", a: "Straight Down (90 degrees)" },
+                { q: "A map created by combining corrected aerial photos with map data.", a: "Orthophoto Map" },
+                { q: "The ground distance (in metres) represented by 1 cm on an orthophoto map.", a: "100 metres" },
+                { q: "The ground distance (in cm) represented by 1 cm on an orthophoto map.", a: "10 000 cm" },
+                { q: "The term for height above sea level.", a: "Elevation" },
+                { q: "Lines that join points of equal height and never cross each other.", a: "Contour Lines" },
+                { q: "One of the three ways height is shown on an orthophoto map.", a: "Contour lines / Spot heights / Trig stations" },
+                { q: "Rivers and mountains are categorized as these types of features.", a: "Natural Features" },
+                { q: "Roads and buildings are categorized as these types of features.", a: "Human Features" },
+                { q: "The specific scale ratio used for South African orthophoto maps.", a: "1:10 000" },
+                { q: "The type of aerial photo used primarily for mapping purposes.", a: "Vertical aerial photograph" },
+                { q: "The baseline used to measure contour height.", a: "Sea Level" },
+                { q: "The term for a photograph with removed distortions.", a: "Orthophoto" },
+                { q: "The specific type of terrain shown by contour lines that are far apart.", a: "Flat (or gentle) land" },
+                { q: "The term for a photograph taken at an angle from an aircraft.", a: "Oblique aerial photograph" },
+                { q: "The feature used on an orthophoto map to help locate specific positions.", a: "Grid references" },
+                { q: "The term for the level of information visible on a 1:10 000 map.", a: "Detailed features" },
+                { q: "The surveyed point used to determine land elevation.", a: "Trigonometrical station" },
+                { q: "A measured point of height marked with a dot.", a: "Spot height" }
+            ],
+            'multipleChoice': [
+                { q: "What is an orthophoto map corrected for?", options: ["A) Color", "B) Distortions", "C) Temperature", "D) Population"], a: "B) Distortions" },
+                { q: "What does 1 cm represent on a 1:10 000 scale map?", options: ["A) 10 metres", "B) 100 metres", "C) 1 kilometre", "D) 10 kilometres"], a: "B) 100 metres" },
+                { q: "Which type of photograph shows true positions of features?", options: ["A) Horizontal", "B) Oblique", "C) Vertical aerial", "D) Sunset photo"], a: "C) Vertical aerial" },
+                { q: "On an orthophoto map, what do contour lines represent?", options: ["A) Population density", "B) Road traffic", "C) Points of equal height", "D) Rainfall"], a: "C) Points of equal height" },
+                { q: "Which of these is a human feature found on orthophoto maps?", options: ["A) Forest", "B) River", "C) Bridge", "D) Mountain"], a: "C) Bridge" },
+                { q: "What is the scale of an orthophoto map compared to a topographical map (1:50 000)?", options: ["A) Smaller scale", "B) Larger scale", "C) Same scale", "D) Less detailed"], a: "B) Larger scale" },
+                { q: "In what direction does the camera point for a vertical aerial photo?", options: ["A) Sideways", "B) Upward", "C) Straight down", "D) Diagonally"], a: "C) Straight down" },
+                { q: "What combines aerial photographs with map information?", options: ["A) Satellite image", "B) Globe", "C) Orthophoto map", "D) Compass"], a: "C) Orthophoto map" },
+                { q: "What is the common scale for orthophoto maps in South Africa?", options: ["A) 1:500", "B) 1:10 000", "C) 1:50 000", "D) 1:1 000 000"], a: "B) 1:10 000" },
+                { q: "Which height clue uses a concrete beacon?", options: ["A) Contour line", "B) Spot height", "C) Trigonometrical station", "D) Grid reference"], a: "C) Trigonometrical station" },
+                { q: "What do widely spaced contour lines indicate?", options: ["A) Steep terrain", "B) Flat or gentle land", "C) Underwater", "D) Forest area"], a: "B) Flat or gentle land" },
+                { q: "What is the purpose of drones in modern mapping?", options: ["A) Carrying mail", "B) Taking aerial photographs", "C) Predicting rain", "D) Measuring wind speed"], a: "B) Taking aerial photographs" },
+                { q: "Which of these is a natural feature?", options: ["A) Road", "B) Farm", "C) River", "D) Building"], a: "C) River" },
+                { q: "What does elevation mean?", options: ["A) Distance from a city", "B) Height above sea level", "C) Speed of an aircraft", "D) Steepness of a hill"], a: "B) Height above sea level" },
+                { q: "How are orthophoto maps different from standard photos?", options: ["A) They are black and white only", "B) They have no scale", "C) They are corrected for distortions", "D) They are taken from space"], a: "C) They are corrected for distortions" },
+                { q: "What shape do hills form on a map?", options: ["A) Straight lines", "B) Squares", "C) Circular contour lines", "D) Random dots"], a: "C) Circular contour lines" },
+                { q: "Vertical aerial photographs show:", options: ["A) The side of a building", "B) True positions of features", "C) The sky", "D) Subterranean caves"], a: "B) True positions of features" },
+                { q: "Contour lines never...", options: ["A) End", "B) Cross each other", "C) Touch the ocean", "D) Have numbers"], a: "B) Cross each other" },
+                { q: "A scale of 1:10 000 is considered:", options: ["A) Small scale", "B) Medium scale", "C) Large scale", "D) Global scale"], a: "C) Large scale" },
+                { q: "What type of map provides the most detailed human features?", options: ["A) World map", "B) Topographical map", "C) Orthophoto map", "D) Climate map"], a: "C) Orthophoto map" }
+            ],
+            'trueFalse': [
+                { q: "Vertical aerial photographs are taken at an angle.", options: ["True", "False"], a: "False", exp: "They are taken with the camera pointing straight down." },
+                { q: "Orthophoto maps combine photographs with map information.", options: ["True", "False"], a: "True", exp: "They show real images plus contours and grid references." },
+                { q: "Contour lines join points of equal height.", options: ["True", "False"], a: "True", exp: "This is their primary purpose on any map." },
+                { q: "1 cm on an orthophoto map represents 500 metres on the ground.", options: ["True", "False"], a: "False", exp: "It represents 100 metres (scale is 1:10 000)." },
+                { q: "Contour lines can cross each other in very steep areas.", options: ["True", "False"], a: "False", exp: "Contour lines never cross." },
+                { q: "Orthophoto maps are corrected to remove distortions.", options: ["True", "False"], a: "True", exp: "This makes them accurate for measuring distance and position." },
+                { q: "Rivers and hills are examples of human features.", options: ["True", "False"], a: "False", exp: "They are natural features." },
+                { q: "Elevation means height above sea level.", options: ["True", "False"], a: "True", exp: "Sea level is the universal 0m starting point." },
+                { q: "Aerial photographs can be taken using aircraft or drones.", options: ["True", "False"], a: "True", exp: "Both are common tools for mapping." },
+                { q: "A scale of 1:10 000 is a larger scale than 1:50 000.", options: ["True", "False"], a: "True", exp: "Larger scales show more detail for smaller areas." },
+                { q: "Spot heights and trig stations help show elevation.", options: ["True", "False"], a: "True", exp: "They provide specific altitude points alongside contours." },
+                { q: "Vertical photos show the side profile of buildings.", options: ["True", "False"], a: "False", exp: "They show the top-down view (roofs)." },
+                { q: "Bridges and buildings are natural features.", options: ["True", "False"], a: "False", exp: "They are man-made human features." },
+                { q: "An orthophoto map contains grid references.", options: ["True", "False"], a: "True", exp: "This helps in accurately locating features." },
+                { q: "Contour lines help us identify if the land is steep or flat.", options: ["True", "False"], a: "True", exp: "Close lines mean steep; far apart means flat." },
+                { q: "Detailed features are more visible on smaller scale maps.", options: ["True", "False"], a: "False", exp: "Detail is more visible on large scale maps like 1:10 000." },
+                { q: "Topographical maps use the same scale as orthophoto maps.", options: ["True", "False"], a: "False", exp: "Topographical is usually 1:50 000; Orthophoto is 1:10 000." },
+                { q: "Distortions are inaccuracies in shape or position.", options: ["True", "False"], a: "True", exp: "Mapping software corrects these to create orthophoto maps." },
+                { q: "The scale 1:10 000 means 1 unit on map = 10 000 units on ground.", options: ["True", "False"], a: "True", exp: "This is the definition of a ratio scale." },
+                { q: "Vertical aerial photographs cover smaller areas than horizontal ones.", options: ["True", "False"], a: "False", exp: "Vertical photos are designed to cover large areas of ground top-down." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>
