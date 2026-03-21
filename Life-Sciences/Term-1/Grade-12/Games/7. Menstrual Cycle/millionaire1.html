@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Life Sciences: Human Reproduction Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Life Sciences Challenge</h1>
+        <p class="game-subtitle">Human Reproduction (Grade 12 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "Where does the fertilization of the egg by a sperm typically occur in humans?", options: ["Uterus", "Ovary", "Fallopian Tube", "Vagina"], a: 2, hint: "It is the duct that leads from the ovary to the womb." },
+            { q: "Which male organ is responsible for the production of sperm and testosterone?", options: ["Penis", "Prostate Gland", "Testis", "Epididymis"], a: 2, hint: "They are held in the scrotum outside the body cavity." },
+            { q: "What is the primary function of the Scrotum?", options: ["Produce semen", "Keep testes at a temperature lower than body temperature", "Store mature sperm", "Ejaculation"], a: 1, hint: "Sperm production requires a cooler environment." },
+            { q: "Where are sperm cells stored until they are mature?", options: ["Seminal Vesicle", "Epididymis", "Vas Deferens", "Urethra"], a: 1, hint: "It is a highly coiled tube on top of the testis." },
+            { q: "Which gland secretes a fluid rich in fructose to provide energy for sperm?", options: ["Prostate Gland", "Cowper's Gland", "Seminal Vesicle", "Thyroid Gland"], a: 2, hint: "This sugar powers the sperm's swimming." },
+            { q: "The process of sperm formation is known as...", options: ["Oogenesis", "Spermatogenesis", "Ovulation", "Fertilization"], a: 1, hint: "It occurs in the seminiferous tubules." },
+            { q: "Which cells in the testes produce the hormone testosterone?", options: ["Sertoli cells", "Germinal epithelium", "Cells of Leydig", "Acrosomes"], a: 2, hint: "Also known as interstitial cells." },
+            { q: "What is the function of the Acrosome on a sperm cell?", options: ["Provide energy", "Swim", "Contain enzymes to dissolve the egg surface", "Store DNA"], a: 2, hint: "It is found at the very tip of the head." },
+            { q: "Which part of the sperm contains mitochondria to supply energy for swimming?", options: ["Head", "Middle piece", "Tail", "Nucleus"], a: 1, hint: "It is the section between the head and the tail." },
+            { q: "The female reproductive organ that produces eggs (ova) is the...", options: ["Uterus", "Ovary", "Cervix", "Vagina"], a: 1, hint: "Females usually have two of these." },
+            { q: "What is the name of the lining of the uterus that thickens every month?", options: ["Myometrium", "Perimetrium", "Endometrium", "Cervix"], a: 2, hint: "It is shed during menstruation if no pregnancy occurs." },
+            { q: "The process of egg formation in the ovaries is called...", options: ["Spermatogenesis", "Oogenesis", "Gestation", "Copulation"], a: 1, hint: "It involves meiosis of diploid germ cells." },
+            { q: "What is the release of a mature ovum from the Graafian follicle called?", options: ["Menstruation", "Ovulation", "Fertilization", "Implantation"], a: 1, hint: "It happens around day 14 of the cycle." },
+            { q: "Under the influence of which hormone does ovulation occur?", options: ["FSH", "Oestrogen", "Luteinising Hormone (LH)", "Progesterone"], a: 2, hint: "A 'surge' in this hormone triggers the follicle to burst." },
+            { q: "What does the empty Graafian follicle develop into after ovulation?", options: ["Primary follicle", "Corpus Luteum", "Zygote", "Endometrium"], a: 1, hint: "The 'yellow body' that secretes progesterone." },
+            { q: "Which hormone is primarily responsible for maintaining the thickness of the endometrium during pregnancy?", options: ["LH", "FSH", "Progesterone", "Testosterone"], a: 2, hint: "It is produced by the corpus luteum and later the placenta." },
+            { q: "The Pituitary gland secretes _____ to stimulate the development of a follicle in the ovary.", options: ["LH", "FSH", "Oestrogen", "Progesterone"], a: 1, hint: "Follicle-Stimulating Hormone." },
+            { q: "The Ovarian cycle and the Uterine cycle together make up the...", options: ["Life cycle", "Menstrual cycle", "Nitrogen cycle", "Gestation period"], a: 1, hint: "It typically lasts about 28 days." },
+            { q: "Day 1 to 7 of the menstrual cycle, characterized by the shedding of the endometrium, is...", options: ["Ovulation", "Menstruation", "The Luteal phase", "Fertilization"], a: 1, hint: "Commonly referred to as a 'period'." },
+            { q: "Oestrogen is produced by the _____ and helps repair the endometrium.", options: ["Corpus luteum", "Graafian follicle", "Pituitary gland", "Adrenal gland"], a: 1, hint: "The maturing egg's home." },
+            { q: "What happens to the corpus luteum if no pregnancy occurs?", options: ["It grows larger", "It produces more LH", "It degenerates", "It becomes an embryo"], a: 2, hint: "This leads to a drop in progesterone and menstruation." },
+            { q: "Which hormone inhibits (stops) the secretion of FSH so that no new follicles develop during pregnancy?", options: ["Testosterone", "Progesterone", "Thyroxin", "Adrenaline"], a: 1, hint: "High levels of this hormone act as a natural contraceptive." },
+            { q: "A fertilized egg (zygote) contains _____ chromosomes in humans.", options: ["23", "46", "92", "44"], a: 1, hint: "It is the diploid (2n) number." },
+            { q: "Which cells in the seminiferous tubules provide nutrients to the developing sperm?", options: ["Leydig cells", "Sertoli cells", "Germinal cells", "Spermatogonia"], a: 1, hint: "Think of them as 'nurse' cells." },
+            { q: "The 'neck' of the uterus that leads into the vagina is the...", options: ["Vulva", "Clitoris", "Cervix", "Fallopian tube"], a: 2, hint: "It dilates during childbirth." },
+            { q: "Where does the foetus develop for 9 months?", options: ["Ovary", "Vagina", "Uterus", "Abdomen"], a: 2, hint: "Also known as the 'womb'." },
+            { q: "Spermatogenesis and Oogenesis are both results of which type of cell division?", options: ["Mitosis", "Meiosis", "Binary fission", "Budding"], a: 1, hint: "It halves the chromosome number." },
+            { q: "At what stage of the menstrual cycle is a woman most fertile?", options: ["During menstruation", "Immediately after menstruation", "Around ovulation (Day 14)", "Just before menstruation"], a: 2, hint: "This is when the egg is available for fertilization." },
+            { q: "Which gland produces an alkaline fluid to neutralize the acidity of the vagina?", options: ["Seminal vesicle", "Prostate gland", "Testis", "Pituitary"], a: 1, hint: "It is a single doughnut-shaped gland." },
+            { q: "In the human life cycle, a zygote undergoes _____ to develop into an embryo.", options: ["Meiosis", "Mitosis", "Fertilization", "Ovulation"], a: 1, hint: "This involves making identical copies of cells for growth." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            let options = [...qData.options];
+            let correctText = options[qData.a];
+            options.sort(() => Math.random() - 0.5);
+            let correctIdx = options.indexOf(correctText);
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden', 'selected', 'correct', 'incorrect');
+                btn.setAttribute('data-correct', i === correctIdx);
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            const isCorrect = selectedBtn.getAttribute('data-correct') === 'true';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    for (let i = 0; i < 4; i++) {
+                        if (document.getElementById(`btn${i}`).getAttribute('data-correct') === 'true') {
+                            document.getElementById(`btn${i}`).classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            let hiddenCount = 0;
+            for(let i=0; i<4; i++){
+                let btn = document.getElementById(`btn${i}`);
+                if(btn.getAttribute('data-correct') === 'false' && hiddenCount < 2) {
+                    btn.classList.add('hidden');
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Life Sciences Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Science Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Life Sciences: Gestation Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Life Sciences Challenge</h1>
+        <p class="game-subtitle">Gestation & Placenta (Grade 12 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "The approx. 28-day hormonal cycle in sexually mature females is the...", options: ["Water cycle", "Menstrual cycle", "Nitrogen cycle", "Ovarian cycle only"], a: 1, hint: "It involves the uterus and the ovaries." },
+            { q: "Which tissue allows the fertilised egg to be implanted into the uterus?", options: ["Myometrium", "Endometrium", "Perimetrium", "Cervix"], a: 1, hint: "It is a thick tissue richly supplied with blood." },
+            { q: "What happens to the corpus luteum if fertilisation does NOT occur?", options: ["It grows bigger", "It produces more progesterone", "It disintegrates", "It becomes the placenta"], a: 2, hint: "This leads to a decrease in progesterone levels." },
+            { q: "The discharge of blood and mucus via the vagina when the endometrium breaks down is...", options: ["Ovulation", "Gestation", "Menstruation", "Implantation"], a: 2, hint: "It usually lasts about 5 days." },
+            { q: "Which hormone is responsible for maintaining the uterine wall during pregnancy?", options: ["FSH", "LH", "Progesterone", "Adrenaline"], a: 2, hint: "It is secreted by the corpus luteum and later the placenta." },
+            { q: "Ovulation usually occurs on which day of the menstrual cycle?", options: ["Day 1", "Day 7", "Day 14", "Day 28"], a: 2, hint: "This is when the oestrogen level begins to decrease." },
+            { q: "Which hormone level increases significantly after the 14th day of the cycle?", options: ["FSH", "Progesterone", "LH", "Oestrogen"], a: 1, hint: "Because the Graafian follicle becomes the corpus luteum." },
+            { q: "Secondary sexual characteristics in females are the responsibility of...", options: ["Progesterone", "FSH", "Oestrogen", "Testosterone"], a: 2, hint: "This hormone also helps repair the endometrium." },
+            { q: "What structure forms the attachment of the embryo to the mother?", options: ["Amnion", "Chorion", "Placenta", "Umbilical cord"], a: 2, hint: "It is where oxygen and food pass to the embryo." },
+            { q: "Which of the following is an extra-embryonic membrane?", options: ["Uterus", "Amnion", "Cervix", "Fallopian tube"], a: 1, hint: "The chorion and amnion make up these membranes." },
+            { q: "The fluid-filled sac that surrounds the developing embryo is the...", options: ["Placenta", "Amniotic sac", "Yolk sac", "Allantois"], a: 1, hint: "It secretes a fluid that acts as a shock absorber." },
+            { q: "What is the primary function of amniotic fluid?", options: ["Feed the fetus", "Protect against dehydration and shock", "Store urea", "Carry oxygen"], a: 1, hint: "It also protects against temperature changes." },
+            { q: "Which membrane forms the outer covering of the amnion?", options: ["Endometrium", "Chorion", "Testa", "Capsid"], a: 1, hint: "It is one of the two foetal membranes." },
+            { q: "Finger-like outgrowths that project into the blood spaces of the mother's uterus are...", options: ["Villi", "Chorionic villi", "Flagella", "Cilia"], a: 1, hint: "They join the foetus to the placenta." },
+            { q: "Which blood vessel carries CO2 and nitrogenous wastes FROM the foetus to the placenta?", options: ["Umbilical vein", "Umbilical artery", "Pulmonary artery", "Aorta"], a: 1, hint: "Arteries usually carry waste away from the fetus in this system." },
+            { q: "The umbilical vein is responsible for carrying...", options: ["Oxygen and nutrients to the foetus", "CO2 to the mother", "Urea to the placenta", "Urine to the bladder"], a: 0, hint: "It brings the 'good stuff' from the placenta." },
+            { q: "The umbilical cord consists of blood vessels but contains NO...", options: ["Blood", "Nerves", "Oxygen", "Glucose"], a: 1, hint: "It is a purely vascular connection." },
+            { q: "Which part of the uterus protects the developing embryo and contracts during birth?", options: ["Cervix", "Wall of the uterus (Myometrium)", "Endometrium", "Vagina"], a: 1, hint: "It has thick muscular walls." },
+            { q: "The placenta acts as a 'micro-filter' preventing most _____ from entering the foetus.", options: ["Nutrients", "Oxygen", "Pathogenic bacteria", "Antibodies"], a: 2, hint: "It protects the baby from the mother's infections." },
+            { q: "Which of the following passes FROM the mother TO the embryo via the placenta?", options: ["Urea", "Carbon dioxide", "Oxygen", "Nitrogenous waste"], a: 2, hint: "The baby needs this to breathe." },
+            { q: "Which of the following passes FROM the embryo TO the mother?", options: ["Nutrients", "Antibodies", "Urea", "FSH"], a: 2, hint: "This is a waste product of protein metabolism." },
+            { q: "The placenta provides _____ immunity for the foetus by producing antibodies.", options: ["Active", "Passive", "Natural", "Artificial"], a: 1, hint: "The foetus receives ready-made antibodies." },
+            { q: "What happens to the progesterone level if fertilisation occurs?", options: ["It drops to zero", "It stays high to maintain the pregnancy", "It only increases for one day", "It turns into LH"], a: 1, hint: "The corpus luteum remains active." },
+            { q: "Implantation is the process where the _____ attaches to the endometrium.", options: ["Sperm", "Zygote/Embryo", "Graafian follicle", "Ovary"], a: 1, hint: "This marks the beginning of clinical pregnancy." },
+            { q: "The narrow 'neck' of the uterus is called the...", options: ["Vagina", "Vulva", "Cervix", "Oviduct"], a: 2, hint: "It is located above the vagina." },
+            { q: "Extra-embryonic membranes are another name for the...", options: ["Placenta", "Chorion and Amnion", "Uterine wall", "Umbilical vessels"], a: 1, hint: "They are the 'foetal' membranes." },
+            { q: "Which hormone stimulates the initial development of the follicles?", options: ["LH", "FSH", "Oestrogen", "Progesterone"], a: 1, hint: "Follicle-Stimulating Hormone." },
+            { q: "The 'Yellow Body' in the ovary is technically called the...", options: ["Graafian follicle", "Corpus Luteum", "Primary follicle", "Ovum"], a: 1, hint: "It is formed after ovulation." },
+            { q: "During menstruation, the discharge continues for approximately how many days?", options: ["1 day", "5 days", "14 days", "28 days"], a: 1, hint: "This is the start of the new cycle." },
+            { q: "Where is the foetus located in relation to the amniotic sac?", options: ["Inside the sac", "Outside the sac", "Under the sac", "In the cervix"], a: 0, hint: "It is floating in the fluid within the sac." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            let options = [...qData.options];
+            let correctText = options[qData.a];
+            options.sort(() => Math.random() - 0.5);
+            let correctIdx = options.indexOf(correctText);
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden', 'selected', 'correct', 'incorrect');
+                btn.setAttribute('data-correct', i === correctIdx);
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            const isCorrect = selectedBtn.getAttribute('data-correct') === 'true';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    for (let i = 0; i < 4; i++) {
+                        if (document.getElementById(`btn${i}`).getAttribute('data-correct') === 'true') {
+                            document.getElementById(`btn${i}`).classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            let hiddenCount = 0;
+            for(let i=0; i<4; i++){
+                let btn = document.getElementById(`btn${i}`);
+                if(btn.getAttribute('data-correct') === 'false' && hiddenCount < 2) {
+                    btn.classList.add('hidden');
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Life Sciences Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Science Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>
