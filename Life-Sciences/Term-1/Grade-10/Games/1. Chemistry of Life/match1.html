@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Life Sciences: Chemistry of Life</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 0.95rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 10 Life Sciences: Chemistry of Life</h1>
+        <p class="game-subtitle">Match the molecules, minerals, and vitamins essential for life!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Basic Compounds</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Water & Mineral Salts</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Vitamin Functions</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Deficiency Diseases</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Small unit of matter consisting of protons, neutrons, and electrons." }, { id: 1, text: "Atom" },
+                { id: 2, text: "Pure substance made of only one type of atom." }, { id: 2, text: "Element" },
+                { id: 3, text: "Molecule made of two or more different elements chemically joined." }, { id: 3, text: "Compound" },
+                { id: 4, text: "Compounds that generally do not contain carbon." }, { id: 4, text: "Inorganic Compounds" },
+                { id: 5, text: "Complex compounds that always contain carbon (C) and hydrogen (H)." }, { id: 5, text: "Organic Compounds" },
+                { id: 6, text: "Smallest unit of a compound that maintains its properties." }, { id: 6, text: "Molecule" },
+                { id: 7, text: "A substance like water ($H_2O$) is an example of this." }, { id: 7, text: "Inorganic Compound" },
+                { id: 8, text: "A substance like glucose ($C_6H_{12}O_6$) is an example of this." }, { id: 8, text: "Organic Compound" },
+                { id: 9, text: "Consists of two or more chemically joined atoms." }, { id: 9, text: "Molecule" },
+                { id: 10, text: "Fixed proportions of different elements." }, { id: 10, text: "Compound" }
+            ],
+            'topic2': [
+                { id: 1, text: "The most important inorganic compound for life." }, { id: 1, text: "Water ($H_2O$)" },
+                { id: 2, text: "Minerals needed in small quantities (e.g., Sodium, Calcium)." }, { id: 2, text: "Macro-nutrients" },
+                { id: 3, text: "Minerals needed in very small quantities (e.g., Iron, Iodine)." }, { id: 3, text: "Micro-nutrients" },
+                { id: 4, text: "A fluid used to dissolve other substances." }, { id: 4, text: "Solvent" },
+                { id: 5, text: "Important for strong bones, teeth, and blood clotting." }, { id: 5, text: "Calcium (Ca)" },
+                { id: 6, text: "Essential for the formation of hemoglobin in red blood cells." }, { id: 6, text: "Iron (Fe)" },
+                { id: 7, text: "Component of the thyroid hormone, thyroxin." }, { id: 7, text: "Iodine (I)" },
+                { id: 8, text: "Inorganic nutrients added to soil to improve plant growth." }, { id: 8, text: "Fertilisers" },
+                { id: 9, text: "Process where excess fertilisers cause algal blooms in rivers." }, { id: 9, text: "Eutrophication" },
+                { id: 10, text: "Symbol for Phosphorus, a primary plant nutrient." }, { id: 10, text: "P" }
+            ],
+            'topic3': [
+                { id: 1, text: "Vitamins that can be stored in the body (A, D, E, K)." }, { id: 1, text: "Fat-soluble" },
+                { id: 2, text: "Vitamins that must be taken daily as they aren't stored (B, C)." }, { id: 2, text: "Water-soluble" },
+                { id: 3, text: "Vitamin A: Essential for healthy skin and..." }, { id: 3, text: "Good Vision" },
+                { id: 4, text: "Vitamin B: Required for normal nerve and heart function." }, { id: 4, text: "Metabolism" },
+                { id: 5, text: "Vitamin C: Promotes wound healing and healthy..." }, { id: 5, text: "Gums and Teeth" },
+                { id: 6, text: "Vitamin D: Essential for the absorption of..." }, { id: 6, text: "Calcium" },
+                { id: 7, text: "Vitamin E: Acts as an antioxidant to stabilize membranes." }, { id: 7, text: "Antioxidant" },
+                { id: 8, text: "A source of Vitamin C found in citrus fruits." }, { id: 8, text: "Guavas/Tomatoes" },
+                { id: 9, text: "A source of Vitamin D produced by skin in sunlight." }, { id: 9, text: "Sunlight/Egg Yolk" },
+                { id: 10, text: "A source of Vitamin A found in yellow vegetables." }, { id: 10, text: "Carrots/Pumpkin" }
+            ],
+            'topic4': [
+                { id: 1, text: "Disease caused by a lack of Vitamin A (poor dim light vision)." }, { id: 1, text: "Night Blindness" },
+                { id: 2, text: "Condition caused by lack of Vitamin B1 (nerve disorders)." }, { id: 2, text: "Beriberi" },
+                { id: 3, text: "Disease caused by lack of Vitamin C (bleeding gums)." }, { id: 3, text: "Scurvy" },
+                { id: 4, text: "Childhood disease causing soft, deformed bones (lack of Vit D)." }, { id: 4, text: "Rickets" },
+                { id: 5, text: "Adult version of rickets (soft and weak bones)." }, { id: 5, text: "Osteomalacia" },
+                { id: 6, text: "Disease from lack of Vitamin B3 (dermatitis and diarrhea)." }, { id: 6, text: "Pellagra" },
+                { id: 7, text: "Condition caused by a lack of Iron (Fe)." }, { id: 7, text: "Anaemia" },
+                { id: 8, text: "Swelling of the thyroid gland due to lack of Iodine (I)." }, { id: 8, text: "Goitre" },
+                { id: 9, text: "Vitamin A deficiency increases risk of these infections." }, { id: 9, text: "Respiratory" },
+                { id: 10, text: "General term for a lack of essential nutrients in the diet." }, { id: 10, text: "Deficiency Disease" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Fantastic job! Life Sciences Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

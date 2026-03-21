@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 10 Life Sciences: The Cell</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Life Sciences Quiz: The Cell</h1>
+        <p class="game-subtitle">Explore Cell Structure & Function! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Cell membrane", a: "A double phospholipid layer that surrounds the cell and is selectively permeable." },
+                { q: "Cytoplasm", a: "A watery fluid in which metabolic reactions occur and organelles are suspended." },
+                { q: "Nucleus", a: "The organelle that controls all cell activities and contains genetic material (DNA)." },
+                { q: "Mitochondrion", a: "The 'powerhouse' of the cell where cellular respiration takes place to produce energy." },
+                { q: "Ribosome", a: "Small structures responsible for protein synthesis." },
+                { q: "Endoplasmic Reticulum (ER)", a: "A network of membranes used for transporting substances within the cell." },
+                { q: "Golgi Apparatus", a: "An organelle involved in modifying, sorting, and packaging proteins." },
+                { q: "Vacuole", a: "A fluid-filled sac used for storage; large and central in plant cells." },
+                { q: "Cell Wall", a: "A rigid outer layer made of cellulose found only in plant cells for support." },
+                { q: "Chloroplast", a: "An organelle containing chlorophyll where photosynthesis occurs." },
+                { q: "Selectively Permeable", a: "A property of the cell membrane that allows only certain substances to pass through." },
+                { q: "Organelle", a: "A minute structure within a cell that performs a specific function." },
+                { q: "Prokaryotic Cell", a: "A simple cell that lacks a true nucleus or membrane-bound organelles (e.g., Bacteria)." },
+                { q: "Eukaryotic Cell", a: "A complex cell with a true nucleus and membrane-bound organelles." },
+                { q: "Cytosol", a: "The liquid part of the cytoplasm, excluding the organelles." },
+                { q: "Nuclear Membrane", a: "A double membrane that surrounds the nucleus, containing pores for transport." },
+                { q: "Chromatin", a: "A network of DNA and proteins found inside the nucleus." },
+                { q: "Centriole", a: "An organelle in animal cells involved in cell division." },
+                { q: "Lysosome", a: "An organelle containing digestive enzymes to break down waste." },
+                { q: "Turgor Pressure", a: "The pressure exerted by the vacuole against the cell wall to keep the plant cell firm." }
+            ],
+            'terms': [
+                { q: "The basic unit of structure and function in all living organisms.", a: "The cell" },
+                { q: "The organelle where cellular respiration occurs.", a: "Mitochondrion" },
+                { q: "The rigid support structure found only in plant cells.", a: "Cell wall" },
+                { q: "The liquid that fills the cell and holds organelles.", a: "Cytoplasm" },
+                { q: "The green pigment found in chloroplasts.", a: "Chlorophyll" },
+                { q: "The specialized DNA segments that determine traits.", a: "Genes" },
+                { q: "The site of protein synthesis.", a: "Ribosome" },
+                { q: "The organelle that acts as the 'brain' or control center of the cell.", a: "Nucleus" },
+                { q: "The substance plant cell walls are primarily made of.", a: "Cellulose" },
+                { q: "The organelle involved in moving materials, often called 'Rough' or 'Smooth'.", a: "Endoplasmic Reticulum" },
+                { q: "Membrane-bound sac for water and food storage.", a: "Vacuole" },
+                { q: "The theory stating that all living things are made of cells.", a: "Cell Theory" },
+                { q: "Thread-like structures of DNA found during cell division.", a: "Chromosomes" },
+                { q: "Pores in the nuclear membrane that allow passage of molecules.", a: "Nuclear pores" },
+                { q: "Animal cells lack this rigid outer layer.", a: "Cell wall" },
+                { q: "Plastids used for photosynthesis.", a: "Chloroplasts" },
+                { q: "The type of cell that has lysosomes but no cell wall.", a: "Animal cell" },
+                { q: "The organelle that modifies and packages proteins.", a: "Golgi body / apparatus" },
+                { q: "Double phospholipid layer that controls entry into the cell.", a: "Cell membrane" },
+                { q: "A cell structure visible only under an electron microscope.", a: "Organelle" }
+            ],
+            'multipleChoice': [
+                { q: "Which of the following is found in plant cells but NOT in animal cells?", options: ["A) Nucleus", "B) Cell wall", "C) Mitochondrion", "D) Cell membrane"], a: "B) Cell wall" },
+                { q: "The cell membrane is composed mainly of proteins and:", options: ["A) Carbohydrates", "B) Phospholipids", "C) Nucleic acids", "D) Minerals"], a: "B) Phospholipids" },
+                { q: "Where is the genetic information of a cell stored?", options: ["A) Ribosome", "B) Nucleus", "C) Golgi body", "D) Cytoplasm"], a: "B) Nucleus" },
+                { q: "Which organelle is responsible for producing energy (ATP)?", options: ["A) Vacuole", "B) Mitochondrion", "C) ER", "D) Lysosome"], a: "B) Mitochondrion" },
+                { q: "Ribosomes are specifically responsible for:", options: ["A) Photosynthesis", "B) Protein synthesis", "C) Respiration", "D) Waste removal"], a: "B) Protein synthesis" },
+                { q: "The large central vacuole in plants helps maintain:", options: ["A) Genetic code", "B) Turgor pressure", "C) Protein count", "D) Heat"], a: "B) Turgor pressure" },
+                { q: "Which organelle contains chlorophyll?", options: ["A) Leucoplast", "B) Chromoplast", "C) Chloroplast", "D) Mitochondrion"], a: "C) Chloroplast" },
+                { q: "The 'fluid mosaic model' describes the structure of the:", options: ["A) Cell wall", "B) Cell membrane", "C) Nucleus", "D) DNA"], a: "B) Cell membrane" },
+                { q: "Rough ER differs from Smooth ER because it has _____ attached.", options: ["A) Lysosomes", "B) Ribosomes", "C) Genes", "D) Plastids"], a: "B) Ribosomes" },
+                { q: "Plastids that store starch are called:", options: ["A) Chloroplasts", "B) Leucoplasts", "C) Chromoplasts", "D) Vacuoles"], a: "B) Leucoplasts" },
+                { q: "Which part of the cell is selectively permeable?", options: ["A) Cell wall", "B) Cell membrane", "C) Cytoplasm", "D) Nucleolus"], a: "B) Cell membrane" },
+                { q: "Cells that lack membrane-bound organelles are:", options: ["A) Eukaryotic", "B) Prokaryotic", "C) Animal cells", "D) Fungi"], a: "B) Prokaryotic" },
+                { q: "The Golgi body's primary function is:", options: ["A) Energy production", "B) Modification and packaging", "C) DNA replication", "D) Support"], a: "B) Modification and packaging" },
+                { q: "Animal cells often have small, temporary structures called:", options: ["A) Large vacuoles", "B) Small vacuoles", "C) Cell walls", "D) Chloroplasts"], a: "B) Small vacuoles" },
+                { q: "Which organelle is involved in breaking down old cell parts?", options: ["A) Ribosome", "B) Lysosome", "C) ER", "D) Golgi"], a: "B) Lysosome" },
+                { q: "The cell theory states that cells come from:", options: ["A) Air", "B) Pre-existing cells", "C) Soil", "D) Water"], a: "B) Pre-existing cells" },
+                { q: "The nuclear membrane contains _____ to allow substances through.", options: ["A) Thorns", "B) Pores", "C) Chlorophyll", "D) Lipids"], a: "B) Pores" },
+                { q: "A characteristic of plant cells is having a _____ shape.", options: ["A) Irregular", "B) Regular / Fixed", "C) Round", "D) Moving"], a: "B) Regular / Fixed" },
+                { q: "Photosynthesis takes place in the:", options: ["A) Nucleus", "B) Mitochondrion", "C) Chloroplast", "D) Ribosome"], a: "C) Chloroplast" },
+                { q: "Chromatin is found inside the:", options: ["A) Cytoplasm", "B) Vacuole", "C) Nucleus", "D) Mitochondrion"], a: "C) Nucleus" }
+            ],
+            'trueFalse': [
+                { q: "Animal cells have a rigid cell wall made of cellulose.", options: ["True", "False"], a: "False", exp: "Only plant cells have a cell wall." },
+                { q: "The nucleus is the control center of the cell.", options: ["True", "False"], a: "True", exp: "It regulates activities through genetic material." },
+                { q: "Mitochondria are found in both plant and animal cells.", options: ["True", "False"], a: "True", exp: "Both require energy through cellular respiration." },
+                { q: "Chloroplasts are used for cellular respiration.", options: ["True", "False"], a: "False", exp: "Chloroplasts are for photosynthesis; mitochondria are for respiration." },
+                { q: "Ribosomes can be found floating freely in the cytoplasm.", options: ["True", "False"], a: "True", exp: "They can be free or attached to the rough ER." },
+                { q: "The cell membrane is completely impermeable.", options: ["True", "False"], a: "False", exp: "It is selectively permeable, allowing some substances through." },
+                { q: "Vacuoles are larger in plant cells than in animal cells.", options: ["True", "False"], a: "True", exp: "Plants have a large permanent central vacuole." },
+                { q: "The Golgi body modifies proteins before they leave the cell.", options: ["True", "False"], a: "True", exp: "It processes and packages them into vesicles." },
+                { q: "Cellulose is found in the cell membranes of animal cells.", options: ["True", "False"], a: "False", exp: "Cellulose is only in the cell walls of plant cells." },
+                { q: "Prokaryotic cells have a true nucleus.", options: ["True", "False"], a: "False", exp: "They lack a membrane-bound nucleus." },
+                { q: "Lysosomes are common in animal cells.", options: ["True", "False"], a: "True", exp: "They help with waste digestion." },
+                { q: "All living things are made of cells.", options: ["True", "False"], a: "True", exp: "This is a core principle of the Cell Theory." },
+                { q: "Mitochondria produce oxygen during respiration.", options: ["True", "False"], a: "False", exp: "They use oxygen to produce energy (ATP) and release CO2." },
+                { q: "The nucleolus is found inside the nucleus.", options: ["True", "False"], a: "True", exp: "It is involved in making ribosomes." },
+                { q: "Rough ER has ribosomes on its surface.", options: ["True", "False"], a: "True", exp: "This gives it a 'rough' appearance." },
+                { q: "Turgor pressure keeps a plant from wilting.", options: ["True", "False"], a: "True", exp: "The vacuole pushes against the wall to keep the cell firm." },
+                { q: "Animal cells have chloroplasts.", options: ["True", "False"], a: "False", exp: "Animals do not photosynthesize." },
+                { q: "Genes are found on chromosomes.", options: ["True", "False"], a: "True", exp: "They carry instructions for traits." },
+                { q: "The cell membrane separates the cell from its environment.", options: ["True", "False"], a: "True", exp: "It forms the outer boundary of the living cell." },
+                { q: "Cells only come from non-living matter.", options: ["True", "False"], a: "False", exp: "The Cell Theory states they come from pre-existing cells." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

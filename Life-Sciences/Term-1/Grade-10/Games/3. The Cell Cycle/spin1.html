@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 10 Life Sciences: Mitosis</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Life Sciences Quiz: Mitosis & Cell Cycle</h1>
+        <p class="game-subtitle">Master Cell Division! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Cell Cycle", a: "The series of events that take place in a cell leading to its growth and division into two daughter cells." },
+                { q: "Interphase", a: "The longest phase of the cell cycle where the cell grows, performs normal functions, and replicates its DNA." },
+                { q: "Mitosis", a: "The process of nuclear division where one nucleus divides into two identical nuclei." },
+                { q: "Cytokinesis", a: "The division of the cytoplasm that follows mitosis, resulting in two separate cells." },
+                { q: "Prophase", a: "The first stage of mitosis where chromosomes become visible and the nuclear membrane disappears." },
+                { q: "Metaphase", a: "The stage of mitosis where chromosomes line up along the equator of the cell." },
+                { q: "Anaphase", a: "The stage of mitosis where sister chromatids are pulled apart to opposite poles of the cell." },
+                { q: "Telophase", a: "The final stage of mitosis where two new nuclear membranes form around the chromosomes at each pole." },
+                { q: "Chromatid", a: "One half of a replicated chromosome; identical to its sister chromatid." },
+                { q: "Centromere", a: "The region of a chromosome where two sister chromatids are joined together." },
+                { q: "Spindle Fibres", a: "Protein structures that move chromosomes during mitosis." },
+                { q: "Cancer", a: "A disease caused by uncontrolled cell division resulting from damaged DNA." },
+                { q: "Tumour", a: "A mass of cells formed by uncontrolled cell division." },
+                { q: "Carcinogen", a: "A substance or agent (like UV rays or cigarette smoke) that can cause cancer by damaging DNA." },
+                { q: "Replication", a: "The process of copying DNA during the S-phase of Interphase." },
+                { q: "Daughter Cells", a: "The two genetically identical cells produced at the end of mitosis and cytokinesis." },
+                { q: "Equator", a: "The middle of the cell where chromosomes align during metaphase." },
+                { q: "Poles", a: "The opposite ends of the cell toward which chromosomes move during anaphase." },
+                { q: "Centriole", a: "A structure in animal cells that helps organize spindle fibres." },
+                { q: "Cell Plate", a: "A structure that forms during cytokinesis in plant cells to become the new cell wall." }
+            ],
+            'terms': [
+                { q: "The longest phase of the cell cycle.", a: "Interphase" },
+                { q: "The phase where DNA synthesis (replication) occurs.", a: "S-phase" },
+                { q: "The division of the nucleus.", a: "Mitosis" },
+                { q: "The division of the cytoplasm.", a: "Cytokinesis" },
+                { q: "The phase of mitosis where chromosomes align at the equator.", a: "Metaphase" },
+                { q: "The phase where sister chromatids separate.", a: "Anaphase" },
+                { q: "Identical arms of a replicated chromosome.", a: "Sister chromatids" },
+                { q: "Structure that holds two chromatids together.", a: "Centromere" },
+                { q: "Uncontrolled cell division.", a: "Cancer" },
+                { q: "Agent that causes DNA damage leading to cancer.", a: "Carcinogen" },
+                { q: "A mass of abnormally dividing cells.", a: "Tumour" },
+                { q: "The phase where the nuclear membrane reforms.", a: "Telophase" },
+                { q: "Mitosis ensures daughter cells are genetically _____.", a: "Identical" },
+                { q: "In plants, cytokinesis involves the formation of a _____.", a: "Cell plate" },
+                { q: "Type of division used for growth and repair.", a: "Mitosis" },
+                { q: "The 'resting' state where a cell performs functions but doesn't divide.", a: "G0 phase" },
+                { q: "Stage of mitosis where chromatin condenses into chromosomes.", a: "Prophase" },
+                { q: "Structures that pull chromatids to the poles.", a: "Spindle fibres" },
+                { q: "Treatment using drugs to kill cancer cells.", a: "Chemotherapy" },
+                { q: "Treatment using high-energy rays to kill cancer cells.", a: "Radiotherapy" }
+            ],
+            'multipleChoice': [
+                { q: "In which stage of the cell cycle is DNA replicated?", options: ["A) Prophase", "B) Metaphase", "C) Interphase", "D) Anaphase"], a: "C) Interphase" },
+                { q: "Chromosomes line up at the equator during:", options: ["A) Prophase", "B) Metaphase", "C) Anaphase", "D) Telophase"], a: "B) Metaphase" },
+                { q: "The purpose of mitosis in multicellular organisms is:", options: ["A) Producing gametes", "B) Growth and repair", "C) Decreasing cell size", "D) Creating variation"], a: "B) Growth and repair" },
+                { q: "Cancer is best defined as:", options: ["A) A bacterial infection", "B) Uncontrolled cell division", "C) A lack of vitamins", "D) Too much Interphase"], a: "B) Uncontrolled cell division" },
+                { q: "Sister chromatids pull apart and move to poles during:", options: ["A) Metaphase", "B) Anaphase", "C) Telophase", "D) Cytokinesis"], a: "B) Anaphase" },
+                { q: "In plant cells, what forms during cytokinesis?", options: ["A) Cleavage furrow", "B) Cell plate", "C) Centrioles", "D) Spindle fibres"], a: "B) Cell plate" },
+                { q: "How many daughter cells are produced from one parent cell in mitosis?", options: ["A) 1", "B) 2", "C) 4", "D) 8"], a: "B) 2" },
+                { q: "Which of the following is a carcinogen?", options: ["A) Fresh fruit", "B) UV radiation", "C) Exercise", "D) Clean water"], a: "B) UV radiation" },
+                { q: "During prophase, the _____ disappears.", options: ["A) DNA", "B) Nuclear membrane", "C) Cytoplasm", "D) Cell wall"], a: "B) Nuclear membrane" },
+                { q: "The two identical daughter cells have _____ number of chromosomes as the parent cell.", options: ["A) Half the", "B) Double the", "C) The same", "D) A random"], a: "C) The same" },
+                { q: "What treatment uses drugs to destroy cancer cells?", options: ["A) Radiotherapy", "B) Surgery", "C) Chemotherapy", "D) Physiotherapy"], a: "C) Chemotherapy" },
+                { q: "Interphase consists of which sub-phases?", options: ["A) P, M, A, T", "B) G1, S, G2", "C) Mitosis and Cytokinesis", "D) Prophase only"], a: "B) G1, S, G2" },
+                { q: "What joins two sister chromatids together?", options: ["A) Spindle", "B) Centromere", "C) Centriole", "D) Cytoplasm"], a: "B) Centromere" },
+                { q: "Which phase is the actual division of the cytoplasm?", options: ["A) Mitosis", "B) Cytokinesis", "C) Interphase", "D) Synthesis"], a: "B) Cytokinesis" },
+                { q: "In animal cells, the cell membrane pinches inward to form a:", options: ["A) Cell plate", "B) Cleavage furrow", "C) Spindle", "D) Nucleolus"], a: "B) Cleavage furrow" },
+                { q: "Which phase marks the end of nuclear division?", options: ["A) Anaphase", "B) Telophase", "C) Metaphase", "D) Prophase"], a: "B) Telophase" },
+                { q: "What happens during the S-phase of the cell cycle?", options: ["A) The cell dies", "B) DNA is synthesized", "C) The cell splits in two", "D) Spindles form"], a: "B) DNA is synthesized" },
+                { q: "Uncontrolled division forms a mass of cells called a:", options: ["A) Cyst", "B) Organ", "C) Tumour", "D) Tissue"], a: "C) Tumour" },
+                { q: "Chromosomes are composed of:", options: ["A) Lipids", "B) DNA and proteins", "C) Only starch", "D) Water"], a: "B) DNA and proteins" },
+                { q: "Mitosis ensures that genetic information remains:", options: ["A) Different", "B) Mutated", "C) Unchanged", "D) Doubled"], a: "C) Unchanged" }
+            ],
+            'trueFalse': [
+                { q: "Mitosis results in two genetically different daughter cells.", options: ["True", "False"], a: "False", exp: "Daughter cells are genetically identical to each other and the parent cell." },
+                { q: "Interphase is the shortest phase of the cell cycle.", options: ["True", "False"], a: "False", exp: "Interphase is the longest phase, occupying about 90% of the cycle." },
+                { q: "Cancer cells divide faster and more often than normal cells.", options: ["True", "False"], a: "True", exp: "This uncontrolled division is the hallmark of cancer." },
+                { q: "Plant cells form a cleavage furrow during cytokinesis.", options: ["True", "False"], a: "False", exp: "They form a cell plate because of their rigid cell wall." },
+                { q: "DNA replication happens during the Prophase of mitosis.", options: ["True", "False"], a: "False", exp: "Replication happens during the S-phase of Interphase." },
+                { q: "Spindle fibres pull chromatids to the poles during anaphase.", options: ["True", "False"], a: "True", exp: "They attach to centromeres to separate the chromatids." },
+                { q: "Radiotherapy uses chemicals to treat cancer.", options: ["True", "False"], a: "False", exp: "Radiotherapy uses radiation; chemotherapy uses chemicals/drugs." },
+                { q: "A parent cell with 46 chromosomes will produce daughter cells with 46 chromosomes after mitosis.", options: ["True", "False"], a: "True", exp: "Mitosis maintains the chromosome number." },
+                { q: "The cell cycle is a continuous process.", options: ["True", "False"], a: "True", exp: "It repeats for growth and maintenance throughout life." },
+                { q: "Exposure to high levels of radiation can cause cancer.", options: ["True", "False"], a: "True", exp: "Radiation is a known carcinogen that damages DNA." },
+                { q: "Cytokinesis is part of mitosis.", options: ["True", "False"], a: "False", exp: "Mitosis is nuclear division; cytokinesis is cytoplasmic division." },
+                { q: "The nuclear membrane disappears during Metaphase.", options: ["True", "False"], a: "False", exp: "It disappears during Prophase." },
+                { q: "Chromosomes line up in single file during Metaphase.", options: ["True", "False"], a: "True", exp: "This ensures equal distribution of genetic material." },
+                { q: "Growth of an organism occurs by increasing the size of cells only.", options: ["True", "False"], a: "False", exp: "Growth occurs primarily by increasing the number of cells via mitosis." },
+                { q: "Benign tumours do not spread to other parts of the body.", options: ["True", "False"], a: "True", exp: "Unlike malignant tumours, they remain localized." },
+                { q: "DNA synthesis occurs in the G1 phase.", options: ["True", "False"], a: "False", exp: "It occurs in the S-phase (Synthesis phase)." },
+                { q: "Mitosis is used for sexual reproduction.", options: ["True", "False"], a: "False", exp: "Mitosis is for asexual growth/repair; meiosis is for sexual reproduction." },
+                { q: "The centromere splits during Anaphase.", options: ["True", "False"], a: "True", exp: "This allows sister chromatids to move to opposite poles." },
+                { q: "Smoking is a lifestyle choice that increases cancer risk.", options: ["True", "False"], a: "True", exp: "Tobacco smoke contains many powerful carcinogens." },
+                { q: "Telophase is the reverse of Prophase.", options: ["True", "False"], a: "True", exp: "Nuclear membranes reform and chromosomes de-condense." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

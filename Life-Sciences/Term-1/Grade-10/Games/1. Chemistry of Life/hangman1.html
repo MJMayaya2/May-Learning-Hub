@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Life Sciences Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Life Sciences Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 10: The Chemistry of Life (Chapter 1)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "ATOM", topic: "Intro", hint: "The smallest unit of matter, living or non-living." },
+            { word: "MOLECULE", topic: "Intro", hint: "Consists of two or more chemically joined atoms." },
+            { word: "ELEMENT", topic: "Intro", hint: "A pure substance that cannot be broken down into simpler substances." },
+            { word: "COMPOUND", topic: "Intro", hint: "Built from two or more different elements chemically joined in fixed proportions." },
+            { word: "INORGANIC", topic: "Compounds", hint: "Compounds that do not contain the element carbon (C)." },
+            { word: "ORGANIC", topic: "Compounds", hint: "Compounds made by living organisms that contain Carbon, Hydrogen, and Oxygen." },
+            { word: "SOLVENT", topic: "Water", hint: "Water acts as a ____ because many substances dissolve in it." },
+            { word: "LUBRICANT", topic: "Water", hint: "Water prevents friction in joints, acting as a ____." },
+            { word: "HYDROPHILIC", topic: "Water", hint: "Substances that 'love' water and dissolve easily in it." },
+            { word: "HYDROPHOBIC", topic: "Water", hint: "Substances that 'fear' water and do not dissolve in it (e.g., lipids)." },
+            { word: "MINERALS", topic: "Inorganic", hint: "Inorganic substances required by living organisms for proper functioning." },
+            { word: "MACRONUTRIENTS", topic: "Minerals", hint: "Minerals needed in large quantities, like Nitrogen and Calcium." },
+            { word: "MICRONUTRIENTS", topic: "Minerals", hint: "Minerals needed in small quantities, like Iron and Sodium." },
+            { word: "EUTROPHICATION", topic: "Minerals", hint: "Process where fertilizers leach into rivers, causing algae overgrowth and oxygen loss." },
+            { word: "MONOSACCHARIDE", topic: "Carbohydrates", hint: "The simplest form of sugar, the monomer of carbohydrates (e.g., Glucose)." },
+            { word: "DISACCHARIDE", topic: "Carbohydrates", hint: "Two monosaccharides joined together (e.g., Sucrose)." },
+            { word: "POLYSACCHARIDE", topic: "Carbohydrates", hint: "Many monosaccharides joined together (e.g., Starch or Cellulose)." },
+            { word: "GLUCOSE", topic: "Carbohydrates", hint: "The primary source of energy for all living cells." },
+            { word: "GLYCOGEN", topic: "Carbohydrates", hint: "The form in which glucose is stored in animal liver and muscles." },
+            { word: "CELLULOSE", topic: "Carbohydrates", hint: "Found in plant cell walls, provides structural support and fiber." },
+            { word: "LIPIDS", topic: "Organic", hint: "Organic molecules consisting of one glycerol and three fatty acids." },
+            { word: "PHOSPHOLIPID", topic: "Lipids", hint: "A type of lipid that forms the core of the cell membrane." },
+            { word: "CHOLESTEROL", topic: "Lipids", hint: "A lipid essential for cell membranes but can lead to heart disease if too high." },
+            { word: "AMINO ACIDS", topic: "Proteins", hint: "The building blocks (monomers) of proteins." },
+            { word: "PEPTIDE BOND", topic: "Proteins", hint: "The chemical bond that joins amino acids together." },
+            { word: "DENATURE", topic: "Proteins", hint: "When a protein (or enzyme) loses its shape and function due to heat or pH changes." },
+            { word: "ENZYME", topic: "Proteins", hint: "A biological catalyst that speeds up chemical reactions in cells." },
+            { word: "SUBSTRATE", topic: "Enzymes", hint: "The specific substance an enzyme acts upon." },
+            { word: "CATALYST", topic: "Enzymes", hint: "A substance that speeds up a reaction without being used up itself." },
+            { word: "VITAMINS", topic: "Organic", hint: "Organic compounds required in small amounts for metabolic health." },
+            { word: "SCURVY", topic: "Vitamins", hint: "Disease caused by a deficiency of Vitamin C." },
+            { word: "RICKETS", topic: "Vitamins", hint: "Disease in children causing soft/deformed bones due to lack of Vitamin D." },
+            { word: "ANEMIA", topic: "Minerals", hint: "Condition caused by a deficiency of Iron (Fe)." },
+            { word: "GOITRE", topic: "Minerals", hint: "Swelling of the thyroid gland caused by Iodine (I) deficiency." },
+            { word: "NITROGEN", topic: "Minerals", hint: "Essential macronutrient (N) for protein and chlorophyll synthesis." },
+            { word: "PHOSPHORUS", topic: "Minerals", hint: "Essential for bone formation and ATP (Energy) production." },
+            { word: "MAGNESIUM", topic: "Minerals", hint: "The central element in a chlorophyll molecule." },
+            { word: "CHLOROPHYLL", topic: "Organic", hint: "Green pigment in plants used for photosynthesis." },
+            { word: "HEMOGLOBIN", topic: "Proteins", hint: "Protein in red blood cells that transports oxygen; requires Iron." },
+            { word: "PROTEINS", topic: "Organic", hint: "The most abundant organic compound in the body, used for growth/repair." },
+            { word: "MALNUTRITION", topic: "Health", hint: "Poor health resulting from an unbalanced or insufficient diet." },
+            { word: "GLYCEROL", topic: "Lipids", hint: "The backbone molecule of a fat (lipid)." },
+            { word: "FATTY ACIDS", topic: "Lipids", hint: "Lipids are composed of glycerol and three ____." },
+            { word: "MONOMER", topic: "Intro", hint: "A single building block of a larger molecule." },
+            { word: "POLYMER", topic: "Intro", hint: "A large molecule made of repeating building blocks." },
+            { word: "HYDROLYSIS", topic: "Intro", hint: "Chemical breakdown of a compound due to reaction with water." },
+            { word: "CONDENSATION", topic: "Intro", hint: "Reaction where two molecules join and a water molecule is released." },
+            { word: "CHLORINE", topic: "Minerals", hint: "Mineral important for water balance and stomach acid." },
+            { word: "POTASSIUM", topic: "Minerals", hint: "Mineral (K) essential for nerve function and water balance." },
+            { word: "CALCIUM", topic: "Minerals", hint: "Mineral (Ca) needed for strong bones, teeth, and blood clotting." },
+            { word: "IODINE", topic: "Minerals", hint: "Required for the production of the hormone thyroxine." },
+            { word: "STARCH", topic: "Carbohydrates", hint: "The form in which plants store extra glucose." },
+            { word: "CHITIN", topic: "Carbohydrates", hint: "Polysaccharide forming the exoskeleton of insects." },
+            { word: "FRUCTOSE", topic: "Carbohydrates", hint: "Monosaccharide found in fruit." },
+            { word: "MALTOSE", topic: "Carbohydrates", hint: "Disaccharide found in germinating seeds." },
+            { word: "LACTOSE", topic: "Carbohydrates", hint: "The sugar found in milk." },
+            { word: "GALACTOSE", topic: "Carbohydrates", hint: "Monosaccharide that combines with glucose to make lactose." },
+            { word: "POLYPEPTIDE", topic: "Proteins", hint: "A long chain of amino acids." },
+            { word: "ANTIBODIES", topic: "Proteins", hint: "Proteins that help the immune system fight infections." },
+            { word: "HORMONE", topic: "Proteins", hint: "Proteins like Insulin that regulate body processes." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Science Master!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for The Chemistry of Life!";
+            document.getElementById('modalWord').innerText = "BIOLOGY PRO";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

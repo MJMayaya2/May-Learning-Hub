@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Life Sciences: The Cell Cycle</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 0.95rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 10 Life Sciences: The Cell Cycle</h1>
+        <p class="game-subtitle">Match the phases of mitosis, cell functions, and cancer concepts!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">The Cell Cycle</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Phases of Mitosis</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Plant vs Animal Mitosis</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Cancer & Tumours</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "The longest phase where the cell grows and replicates DNA." }, { id: 1, text: "Interphase" },
+                { id: 2, text: "The actual division of the cell nucleus." }, { id: 2, text: "Mitosis" },
+                { id: 3, text: "The division of the cytoplasm to form two separate cells." }, { id: 3, text: "Cytokinesis" },
+                { id: 4, text: "DNA replication occurs during this part of Interphase." }, { id: 4, text: "S-phase" },
+                { id: 5, text: "Role of mitosis: Adding more cells for size increase." }, { id: 5, text: "Growth" },
+                { id: 6, text: "Role of mitosis: Healing a cut or replacing dead cells." }, { id: 6, text: "Repair" },
+                { id: 7, text: "The resting state where a cell is not preparing to divide." }, { id: 7, text: "G0 Phase" },
+                { id: 8, text: "Number of identical daughter cells formed from one parent cell." }, { id: 8, text: "Two" },
+                { id: 9, text: "Stage of the cycle where organelles are copied." }, { id: 9, text: "G1 Phase" },
+                { id: 10, text: "Final preparation phase before mitosis starts." }, { id: 10, text: "G2 Phase" }
+            ],
+            'topic2': [
+                { id: 1, text: "Chromatids condense and nuclear membrane disappears." }, { id: 1, text: "Prophase" },
+                { id: 2, text: "Chromosomes line up at the cell equator." }, { id: 2, text: "Metaphase" },
+                { id: 3, text: "Sister chromatids are pulled to opposite poles." }, { id: 3, text: "Anaphase" },
+                { id: 4, text: "New nuclear membranes form around daughter nuclei." }, { id: 4, text: "Telophase" },
+                { id: 5, text: "Structures that pull chromatids apart." }, { id: 5, text: "Spindle Fibers" },
+                { id: 6, text: "The point where two sister chromatids are joined." }, { id: 6, text: "Centromere" },
+                { id: 7, text: "Thread-like genetic material visible in interphase." }, { id: 7, text: "Chromatin" },
+                { id: 8, text: "Structure in animal cells that forms spindle fibers." }, { id: 8, text: "Centrioles" },
+                { id: 9, text: "What chromatids are called once they separate." }, { id: 9, text: "Daughter Chromosomes" },
+                { id: 10, text: "The center line of the cell during metaphase." }, { id: 10, text: "Equator" }
+            ],
+            'topic3': [
+                { id: 1, text: "Cytokinesis occurs by forming a cleavage furrow." }, { id: 1, text: "Animal Cells" },
+                { id: 2, text: "Cytokinesis occurs by forming a cell plate." }, { id: 2, text: "Plant Cells" },
+                { id: 3, text: "Cell membrane pinches inward at the center." }, { id: 3, text: "Cleavage Furrow" },
+                { id: 4, text: "Structure that becomes the new cell wall in plants." }, { id: 4, text: "Cell Plate" },
+                { id: 5, text: "Possess centrioles to organize spindle fibers." }, { id: 5, text: "Animal Cells" },
+                { id: 6, text: "Lack centrioles but still form spindle fibers." }, { id: 6, text: "Plant Cells" },
+                { id: 7, text: "The number of chromosomes in daughter cells is..." }, { id: 7, text: "Equal to Parent" },
+                { id: 8, text: "Mitosis ensures genetic information remains..." }, { id: 8, text: "Unchanged" },
+                { id: 9, text: "Ring of microfilaments that causes constriction." }, { id: 9, text: "Contractile Ring" },
+                { id: 10, text: "Phase where the main differences in cytokinesis occur." }, { id: 10, text: "Telophase" }
+            ],
+            'topic4': [
+                { id: 1, text: "Disease caused by uncontrolled cell division." }, { id: 1, text: "Cancer" },
+                { id: 2, text: "A mass of cells formed by uncontrolled division." }, { id: 2, text: "Tumour" },
+                { id: 3, text: "Substances or factors that cause cancer (e.g., UV rays)." }, { id: 3, text: "Carcinogens" },
+                { id: 4, text: "Cancer treatment using drugs to destroy cells." }, { id: 4, text: "Chemotherapy" },
+                { id: 5, text: "Cancer treatment using high-energy rays to kill cells." }, { id: 5, text: "Radiotherapy" },
+                { id: 6, text: "Damaged genetic material that triggers cancer." }, { id: 6, text: "Mutated DNA" },
+                { id: 7, text: "Cancer-causing factor found in cigarette smoke." }, { id: 7, text: "Chemicals/Tars" },
+                { id: 8, text: "A biological cause of certain cancers." }, { id: 8, text: "Viruses" },
+                { id: 9, text: "Type of tumor that does not spread." }, { id: 9, text: "Benign" },
+                { id: 10, text: "Type of tumor that invades other tissues." }, { id: 10, text: "Malignant" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Grade 10 Cell Cycle Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>
