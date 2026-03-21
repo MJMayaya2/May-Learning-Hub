@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Life Sciences Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Life Sciences Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 12: Human Reproduction (Chapter 6)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "GAMETOGENESIS", topic: "Intro", hint: "The general process of forming haploid gametes via meiosis." },
+            { word: "SPERMATOGENESIS", topic: "Male", hint: "The production of sperm cells in the seminiferous tubules." },
+            { word: "OOGENESIS", topic: "Female", hint: "The production of ova (eggs) in the ovaries." },
+            { word: "TESTES", topic: "Male", hint: "Male gonads responsible for producing sperm and testosterone." },
+            { word: "OVARIES", topic: "Female", hint: "Female gonads responsible for producing ova, oestrogen, and progesterone." },
+            { word: "SEMINIFEROUS", topic: "Male", hint: "Tubules where spermatogenesis specifically takes place." },
+            { word: "EPIDIDYMIS", topic: "Male", hint: "Where sperm are stored until they mature." },
+            { word: "VAS DEFERENS", topic: "Male", hint: "Sperm duct that carries sperm from the testes to the urethra." },
+            { word: "PROSTATE GLAND", topic: "Male", hint: "Gland that secretes an alkaline fluid to neutralize vaginal acidity." },
+            { word: "SEMINAL VESICLE", topic: "Male", hint: "Gland that provides fructose to nourish sperm." },
+            { word: "SERTOLI CELLS", topic: "Male", hint: "Cells that provide nutrients to developing sperm cells." },
+            { word: "ACROSOME", topic: "Sperm", hint: "The 'cap' of the sperm containing enzymes to dissolve the egg's surface." },
+            { word: "MITOCHONDRIA", topic: "Sperm", hint: "Found in the middle piece; supplies energy for swimming." },
+            { word: "FALLOPIAN TUBE", topic: "Female", hint: "Where fertilization typically occurs; also called the oviduct." },
+            { word: "UTERUS", topic: "Female", hint: "The 'womb' where the fetus develops during pregnancy." },
+            { word: "ENDOMETRIUM", topic: "Female", hint: "The inner lining of the uterus that thickens and sheds during the cycle." },
+            { word: "GRAAFIAN", topic: "Oogenesis", hint: "The mature follicle that houses the developing ovum." },
+            { word: "OVULATION", topic: "Oogenesis", hint: "The release of a haploid ovum from the ovary into the fallopian tube." },
+            { word: "CORPUS LUTEUM", topic: "Hormones", hint: "The empty follicle that secretes progesterone after ovulation." },
+            { word: "PROGESTERONE", topic: "Hormones", hint: "Hormone that maintains the thickness of the endometrium for pregnancy." },
+            { word: "OESTROGEN", topic: "Hormones", hint: "Hormone responsible for repair and thickening of the endometrium." },
+            { word: "TESTOSTERONE", topic: "Male", hint: "The primary male sex hormone." },
+            { word: "LH", topic: "Hormones", hint: "Luteinising Hormone; triggers ovulation." },
+            { word: "FSH", topic: "Hormones", hint: "Follicle Stimulating Hormone; triggers the maturation of the follicle." },
+            { word: "PUBERTY", topic: "Intro", hint: "The stage of life when reproductive organs become functional." },
+            { word: "GAMETES", topic: "Intro", hint: "Collective term for sperm (n) and eggs (n)." },
+            { word: "HAPLOID", topic: "Genetics", hint: "Human gametes contain 23 chromosomes, making them ____." },
+            { word: "DIPLOID", topic: "Genetics", hint: "Germinal epithelium cells are ____ (46 chromosomes)." },
+            { word: "ZHYGOTE", topic: "Fertilisation", hint: "The 2n cell formed when sperm and egg fuse." },
+            { word: "COPULATION", topic: "Reproduction", hint: "The physical act of depositing sperm into the female." },
+            { word: "VAGINA", topic: "Female", hint: "The birth canal and site where sperm is deposited." },
+            { word: "CERVIX", topic: "Female", hint: "The lower, narrow part of the uterus." },
+            { word: "SCROTUM", topic: "Male", hint: "The sac that holds the testes outside the body to keep them cool." },
+            { word: "INTERSTITIAL", topic: "Male", hint: "Cells of Leydig are ____ cells that produce testosterone." },
+            { word: "MENSTRUATION", topic: "Cycle", hint: "The shedding of the endometrium if fertilization does not occur." },
+            { word: "PITUITARY", topic: "Hormones", hint: "The gland that secretes FSH and LH." },
+            { word: "FOLLICLE", topic: "Oogenesis", hint: "A fluid-filled sac in the ovary containing an immature egg." },
+            { word: "FOETUS", topic: "Reproduction", hint: "The name of the developing baby in the uterus after 8 weeks." },
+            { word: "EMBRYO", topic: "Reproduction", hint: "The developing human from 2 to 8 weeks after fertilization." },
+            { word: "IMPLANTATION", topic: "Reproduction", hint: "The process of the embryo attaching to the endometrium." },
+            { word: "PLACENTA", topic: "Reproduction", hint: "Organ that provides oxygen and nutrients to the fetus." },
+            { word: "UMBILICAL CORD", topic: "Reproduction", hint: "The connection between the fetus and the placenta." },
+            { word: "ALKALINE", topic: "Male", hint: "Type of fluid produced by the prostate gland." },
+            { word: "FRUCTOSE", topic: "Male", hint: "Sugar provided by the seminal vesicle for sperm energy." },
+            { word: "TAIL", topic: "Sperm", hint: "The part of the sperm used for locomotion (flagellum)." },
+            { word: "HEAD", topic: "Sperm", hint: "Part of the sperm containing the haploid nucleus." },
+            { word: "LUMEN", topic: "Male", hint: "The central space of the seminiferous tubule where mature sperm are released." },
+            { word: "GERMINAL", topic: "Gametogenesis", hint: "The ____ epithelium is the tissue layer that undergoes meiosis." },
+            { word: "PREGNANCY", topic: "Hormones", hint: "Maintained primarily by high levels of progesterone." },
+            { word: "TWENTY EIGHT", topic: "Cycle", hint: "The average length in days of the human menstrual cycle." },
+            { word: "FOURTEEN", topic: "Cycle", hint: "The day in a standard cycle when ovulation typically occurs." },
+            { word: "NEG反馈", topic: "Hormones", hint: "High progesterone inhibits FSH in a ____ loop." },
+            { word: "SPERMATOGONIUM", topic: "Male", hint: "The diploid precursor cell in the testes." },
+            { word: "SPERMATOZOON", topic: "Male", hint: "The scientific name for a single mature sperm cell." },
+            { word: "OVUM", topic: "Female", hint: "The scientific name for a mature egg cell." },
+            { word: "FALLOPIAN", topic: "Female", hint: "Oviduct is another name for the ____ tube." },
+            { word: "COWPER GLAND", topic: "Male", hint: "Produces clear lubricant to clear the urethra of urine before ejaculation." },
+            { word: "URETHRA", topic: "Male", hint: "Common duct for both urine and semen." },
+            { word: "PENIS", topic: "Male", hint: "The male organ used for copulation." },
+            { word: "CAPS", topic: "Intro", hint: "The South African curriculum framework for Life Sciences." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Reproductive Expert!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for Human Reproduction!";
+            document.getElementById('modalWord').innerText = "EMBRYOLOGY MASTER";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

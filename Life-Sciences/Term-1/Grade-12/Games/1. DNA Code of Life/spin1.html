@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 12 Life Sciences: DNA - The Code of Life</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Life Sciences Quiz: DNA - The Code of Life</h1>
+        <p class="game-subtitle">Master Matric DNA Concepts! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "DNA", a: "Deoxyribonucleic Acid; the molecule that carries genetic information for the development and functioning of an organism." },
+                { q: "Nucleotide", a: "The basic building block of nucleic acids (DNA and RNA), consisting of a sugar, a phosphate, and a nitrogenous base." },
+                { q: "Double Helix", a: "The twisted ladder-like structure of DNA, formed by two complementary strands." },
+                { q: "DNA Replication", a: "The process by which a cell makes an identical copy of its DNA before cell division." },
+                { q: "DNA Profiling", a: "A forensic technique used to identify individuals by analyzing specific patterns in their DNA." },
+                { q: "Nitrogenous Bases", a: "The chemical parts of a nucleotide that form the 'rungs' of the DNA ladder (Adenine, Thymine, Guanine, Cytosine)." },
+                { q: "Complementary Base Pairing", a: "The specific pairing of nitrogenous bases (A with T, and G with C) held together by hydrogen bonds." },
+                { q: "Hydrogen Bonds", a: "Weak chemical bonds that hold the two strands of the DNA double helix together between the nitrogenous bases." },
+                { q: "Nuclear DNA", a: "DNA found within the nucleus of a eukaryotic cell, carrying most of the genetic information." },
+                { q: "Mitochondrial DNA (mtDNA)", a: "DNA found in the mitochondria, inherited only from the mother." },
+                { q: "Chloroplastic DNA", a: "DNA found in the chloroplasts of plant cells." },
+                { q: "Extra-nuclear DNA", a: "DNA found outside the nucleus, specifically in the mitochondria and chloroplasts." },
+                { q: "Gene", a: "A segment of DNA on a chromosome that codes for a specific protein or trait." },
+                { q: "Chromatin", a: "A mass of thread-like DNA and proteins (histones) found in the nucleus when the cell is not dividing." },
+                { q: "Histones", a: "Proteins around which DNA is wrapped to form chromosomes." },
+                { q: "Monomer", a: "A small molecule that can join with others to form a larger polymer (e.g., a nucleotide is a monomer of DNA)." },
+                { q: "Template Strand", a: "The original DNA strand that provides the pattern for creating a new complementary strand during replication." },
+                { q: "Free Nucleotides", a: "Individual nucleotides floating in the nucleoplasm that are used to build new DNA strands during replication." },
+                { q: "DNA Fingerprinting", a: "Another term for DNA profiling, used to identify unique patterns in an individual's DNA." },
+                { q: "Nucleoplasm", a: "The jelly-like substance inside the nucleus where DNA is located." }
+            ],
+            'terms': [
+                { q: "The building blocks of nucleic acids.", a: "Nucleotides" },
+                { q: "The shape of a DNA molecule.", a: "Double helix" },
+                { q: "The sugar found in DNA.", a: "Deoxyribose" },
+                { q: "The base that always pairs with Adenine in DNA.", a: "Thymine" },
+                { q: "The base that always pairs with Guanine.", a: "Cytosine" },
+                { q: "The process of copying DNA before mitosis.", a: "Replication" },
+                { q: "DNA found in the powerhouse of the cell.", a: "Mitochondrial DNA (mtDNA)" },
+                { q: "DNA found only in plant cells outside the nucleus.", a: "Chloroplastic DNA" },
+                { q: "The technique used to solve paternity disputes.", a: "DNA profiling / fingerprinting" },
+                { q: "Proteins that DNA wraps around.", a: "Histones" },
+                { q: "The bond that joins nitrogenous bases together.", a: "Hydrogen bond" },
+                { q: "Weak threads of DNA seen in a non-dividing nucleus.", a: "Chromatin" },
+                { q: "Part of the nucleotide that forms the outer backbone along with sugar.", a: "Phosphate" },
+                { q: "DNA found outside the nucleus is called _____ DNA.", a: "Extra-nuclear" },
+                { q: "The only individuals who share identical DNA profiles.", a: "Identical twins" },
+                { q: "The phase of the cell cycle where DNA replication occurs.", a: "Interphase" },
+                { q: "Small openings in the nuclear membrane.", a: "Nuclear pores" },
+                { q: "The liquid part of the nucleus.", a: "Nucleoplasm" },
+                { q: "A segment of DNA that codes for a trait.", a: "Gene" },
+                { q: "The term for Adenine and Guanine (double-ring bases).", a: "Purines" }
+            ],
+            'multipleChoice': [
+                { q: "In which part of the cell is nuclear DNA found?", options: ["A) Cytoplasm", "B) Ribosome", "C) Nucleus", "D) Vacuole"], a: "C) Nucleus" },
+                { q: "Which of the following is a component of a DNA nucleotide?", options: ["A) Ribose sugar", "B) Uracil base", "C) Phosphate group", "D) Amino acid"], a: "C) Phosphate group" },
+                { q: "DNA replication is considered 'semi-conservative' because:", options: ["A) Both strands are new", "B) Both strands are original", "C) One strand is original and one is new", "D) It only copies half the gene"], a: "C) One strand is original and one is new" },
+                { q: "Which base is NOT found in DNA?", options: ["A) Adenine", "B) Guanine", "C) Uracil", "D) Thymine"], a: "C) Uracil" },
+                { q: "Mitochondrial DNA is inherited from:", options: ["A) Both parents", "B) Only the father", "C) Only the mother", "D) Neither parent"], a: "C) Only the mother" },
+                { q: "What holds the two strands of DNA together?", options: ["A) Covalent bonds", "B) Peptide bonds", "C) Hydrogen bonds", "D) Ionic bonds"], a: "C) Hydrogen bonds" },
+                { q: "DNA profiling can be used for:", options: ["A) Determining blood type", "B) Measuring height", "C) Paternity testing", "D) Curing cancer"], a: "C) Paternity testing" },
+                { q: "The sequence of nitrogenous bases in DNA determines the sequence of:", options: ["A) Sugars", "B) Phosphates", "C) Amino acids in proteins", "D) Nuclei"], a: "C) Amino acids in proteins" },
+                { q: "During replication, the DNA molecule 'unzips' because of:", options: ["A) High heat", "B) Acid", "C) Enzymes breaking hydrogen bonds", "D) Pressure"], a: "C) Enzymes breaking hydrogen bonds" },
+                { q: "Extra-nuclear DNA is found in:", options: ["A) Nucleus and Ribosomes", "B) Golgi and ER", "C) Mitochondria and Chloroplasts", "D) Vacuoles and Lysosomes"], a: "C) Mitochondria and Chloroplasts" },
+                { q: "Which pairing is correct according to the base-pairing rule?", options: ["A) A-G", "B) T-C", "C) A-T", "D) G-A"], a: "C) A-T" },
+                { q: "The 'twisted ladder' shape of DNA is called a:", options: ["A) Triple helix", "B) Circle", "C) Double helix", "D) Single strand"], a: "C) Double helix" },
+                { q: "Chromatin network is composed of DNA and:", options: ["A) Lipids", "B) Histone proteins", "C) RNA", "D) Starch"], a: "B) Histone proteins" },
+                { q: "DNA replication ensures that daughter cells:", options: ["A) Have no DNA", "B) Have half the DNA", "C) Have an identical copy of DNA", "D) Are different from the parent"], a: "C) Have an identical copy of DNA" },
+                { q: "A disadvantage of DNA profiling is that it:", options: ["A) Is very accurate", "B) Is an expensive process", "C) Can identify siblings", "D) Uses saliva"], a: "B) Is an expensive process" },
+                { q: "The sugar in DNA is a 5-carbon sugar called:", options: ["A) Glucose", "B) Ribose", "C) Deoxyribose", "D) Fructose"], a: "C) Deoxyribose" },
+                { q: "Which of the following is a pyrimidine (single-ring base)?", options: ["A) Adenine", "B) Guanine", "C) Cytosine", "D) Protein"], a: "C) Cytosine" },
+                { q: "DNA replication occurs during which phase of the cell cycle?", options: ["A) Prophase", "B) Metaphase", "C) Interphase", "D) Telophase"], a: "C) Interphase" },
+                { q: "The unique pattern of DNA bands on a gel is a:", options: ["A) DNA profile", "B) Gene map", "C) Nucleotide", "D) Chromosome"], a: "A) DNA profile" },
+                { q: "Nuclear pores allow for communication between the nucleus and the:", options: ["A) Cell wall", "B) Outside environment", "C) Cytoplasm", "D) Vacuole"], a: "C) Cytoplasm" }
+            ],
+            'trueFalse': [
+                { q: "DNA is a single-stranded molecule.", options: ["True", "False"], a: "False", exp: "DNA is double-stranded; RNA is single-stranded." },
+                { q: "Replication happens so that each new cell gets a full set of DNA.", options: ["True", "False"], a: "True", exp: "This maintains the genetic information across generations." },
+                { q: "Adenine always pairs with Cytosine.", options: ["True", "False"], a: "False", exp: "Adenine pairs with Thymine; Guanine pairs with Cytosine." },
+                { q: "Mitochondrial DNA can be used to trace maternal lineage.", options: ["True", "False"], a: "True", exp: "It is passed down unchanged from the mother." },
+                { q: "DNA profiling is 100% accepted in all courts without question.", options: ["True", "False"], a: "False", exp: "It can be contested due to human error or sample contamination." },
+                { q: "Identical twins have the same DNA profile.", options: ["True", "False"], a: "True", exp: "They originate from the same fertilized egg." },
+                { q: "DNA replication is a semi-conservative process.", options: ["True", "False"], a: "True", exp: "Each new molecule has one old strand and one new strand." },
+                { q: "RNA contains the sugar deoxyribose.", options: ["True", "False"], a: "False", exp: "RNA contains ribose; DNA contains deoxyribose." },
+                { q: "The phosphate and sugar form the 'sides' of the DNA ladder.", options: ["True", "False"], a: "True", exp: "They are linked together to form the sugar-phosphate backbone." },
+                { q: "Extra-nuclear DNA is found in the ribosomes.", options: ["True", "False"], a: "False", exp: "It is found in mitochondria and chloroplasts." },
+                { q: "A gene is a section of DNA that codes for a protein.", options: ["True", "False"], a: "True", exp: "Genes are the functional units of heredity." },
+                { q: "Hydrogen bonds between bases are very strong.", options: ["True", "False"], a: "False", exp: "They are weak bonds so they can be easily 'unzipped' for replication." },
+                { q: "DNA fingerprinting is only used for crime scenes.", options: ["True", "False"], a: "False", exp: "It is also used for paternity tests and identifying remains." },
+                { q: "The nucleus is surrounded by a single membrane.", options: ["True", "False"], a: "False", exp: "It has a double nuclear membrane." },
+                { q: "DNA stands for Deoxyribonucleic Acid.", options: ["True", "False"], a: "True", exp: "This is the full chemical name." },
+                { q: "Purines always pair with other purines.", options: ["True", "False"], a: "False", exp: "A purine (A, G) always pairs with a pyrimidine (T, C)." },
+                { q: "DNA replication requires free nucleotides.", options: ["True", "False"], a: "True", exp: "These are matched to the template strands to build new DNA." },
+                { q: "Mitochondria are found only in plant cells.", options: ["True", "False"], a: "False", exp: "Mitochondria are found in both plant and animal cells." },
+                { q: "Chloroplastic DNA is a type of extra-nuclear DNA.", options: ["True", "False"], a: "True", exp: "Because it is located outside the nucleus." },
+                { q: "The nuclear membrane disappears during Interphase.", options: ["True", "False"], a: "False", exp: "It is present during Interphase and disappears during Prophase of mitosis." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

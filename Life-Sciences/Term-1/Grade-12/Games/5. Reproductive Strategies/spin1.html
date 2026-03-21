@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 12 Life Sciences: Reproductive Strategies</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Life Sciences Quiz: Reproductive Strategies</h1>
+        <p class="game-subtitle">Vertebrate Survival & Development! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Fertilisation", a: "The fusion of a male gamete (sperm) with a female gamete (egg) to form a diploid zygote." },
+                { q: "External Fertilisation", a: "Fertilisation that occurs outside the female's body, typically in an aquatic environment." },
+                { q: "Internal Fertilisation", a: "Fertilisation that occurs inside the female's body, common in terrestrial animals." },
+                { q: "Ovipary", a: "A reproductive strategy where the female lays eggs that develop and hatch outside the body." },
+                { q: "Ovovivipary", a: "A strategy where embryos develop inside eggs that remain within the mother's body until they are ready to hatch." },
+                { q: "Vivipary", a: "A strategy where the embryo develops inside the mother's uterus and is nourished directly via a placenta." },
+                { q: "Amniotic Egg", a: "An egg with a shell and internal membranes that allow for development on land without drying out." },
+                { q: "Amnion", a: "The fluid-filled sac that surrounds and protects the developing embryo from shock and dehydration." },
+                { q: "Allantois", a: "The extra-embryonic membrane that stores nitrogenous waste and assists in gas exchange." },
+                { q: "Chorion", a: "The outermost membrane of the amniotic egg that allows for gas exchange between the embryo and the outside air." },
+                { q: "Yolk Sac", a: "The membrane that encloses the yolk, providing nutrients to the developing embryo." },
+                { q: "Precocial Development", a: "A type of development where young are born/hatched in an advanced state, able to move and feed themselves almost immediately." },
+                { q: "Altricial Development", a: "A type of development where young are born/hatched helpless, blind, and requiring intense parental care." },
+                { q: "Parental Care", a: "Behaviors by parents that increase the survival chances of their offspring." },
+                { q: "Zygote", a: "The diploid cell resulting from the fusion of an egg and sperm." },
+                { q: "Placenta", a: "An organ in viviparous mammals that provides oxygen and nutrients to the embryo and removes waste." },
+                { q: "Shell", a: "The hard or leathery outer covering of an amniotic egg that protects against mechanical damage." },
+                { q: "Incubation", a: "The process of keeping eggs warm (usually by sitting on them) to ensure proper development." },
+                { q: "Terrestrial", a: "Relating to life on land, as opposed to in water." },
+                { q: "Metamorphosis", a: "The process of transformation from an immature form to an adult form in two or more distinct stages (e.g. tadpole to frog)." }
+            ],
+            'terms': [
+                { q: "Fertilisation occurring outside the body.", a: "External fertilisation" },
+                { q: "Strategy where animals lay eggs (e.g. birds).", a: "Ovipary" },
+                { q: "The strategy used by humans and most mammals.", a: "Vivipary" },
+                { q: "The fluid that protects the embryo from shock.", a: "Amniotic fluid" },
+                { q: "Young that are born helpless and blind.", a: "Altricial" },
+                { q: "The membrane that stores metabolic waste in the egg.", a: "Allantois" },
+                { q: "The 'egg-shell' that protects terrestrial embryos.", a: "Amniotic egg" },
+                { q: "Strategy where eggs hatch inside the mother.", a: "Ovovivipary" },
+                { q: "Young that are born ready to follow their mother.", a: "Precocial" },
+                { q: "The process of keeping eggs warm by birds.", a: "Incubation" },
+                { q: "The outermost membrane for gas exchange in an egg.", a: "Chorion" },
+                { q: "A bird born with eyes open and feathers.", a: "Precocial hatchling" },
+                { q: "Glands that mammals use to feed their young.", a: "Mammary glands" },
+                { q: "An organ allowing nutrient exchange in the uterus.", a: "Placenta" },
+                { q: "Fertilisation suited for terrestrial life.", a: "Internal fertilisation" },
+                { q: "A vertebrate that typically uses external fertilisation.", a: "Frog / Fish" },
+                { q: "The part of the egg providing food for the embryo.", a: "Yolk" },
+                { q: "Sac that surrounds the embryo with fluid.", a: "Amnion" },
+                { q: "High degree of this is seen in mammals and birds.", a: "Parental care" },
+                { q: "Type of birds like eagles and doves.", a: "Altricial birds" }
+            ],
+            'multipleChoice': [
+                { q: "Which strategy involves internal fertilisation followed by laying eggs?", options: ["A) Vivipary", "B) Ovipary", "C) Ovovivipary", "D) External Fertilisation"], a: "B) Ovipary" },
+                { q: "The allantois in an amniotic egg is responsible for:", options: ["A) Protection", "B) Nutrient storage", "C) Waste storage", "D) Feeding the mother"], a: "C) Waste storage" },
+                { q: "Precocial young are usually found in species that:", options: ["A) Nest high in trees", "B) Have high predation risk on the ground", "C) Are mammals", "D) Are born blind"], a: "B) Have high predation risk on the ground" },
+                { q: "Which membrane provides the embryo with nutrients?", options: ["A) Amnion", "B) Chorion", "C) Yolk sac", "D) Allantois"], a: "C) Yolk sac" },
+                { q: "External fertilisation is most common in:", options: ["A) Birds", "B) Mammals", "C) Aquatic animals", "D) Reptiles"], a: "C) Aquatic animals" },
+                { q: "Vivipary is a characteristic of:", options: ["A) Most fish", "B) All reptiles", "C) Most mammals", "D) All birds"], a: "C) Most mammals" },
+                { q: "Altricial development is common in birds that:", options: ["A) Nest on the ground", "B) Nest high in trees", "C) Live in water", "D) Are very large"], a: "B) Nest high in trees" },
+                { q: "The amnion's primary function is:", options: ["A) Gas exchange", "B) Waste storage", "C) Protection from shock", "D) Providing yolk"], a: "C) Protection from shock" },
+                { q: "Which of these strategies provides the best protection for the embryo?", options: ["A) External Fertilisation", "B) Ovipary", "C) Vivipary", "D) Spawning"], a: "C) Vivipary" },
+                { q: "In ovovivipary, the embryo gets its food from:", options: ["A) The placenta", "B) The yolk in the egg", "C) The mother's blood", "D) Hunting"], a: "B) The yolk in the egg" },
+                { q: "Which animal group shows the highest degree of parental care?", options: ["A) Fish", "B) Amphibians", "C) Mammals", "D) Insects"], a: "C) Mammals" },
+                { q: "Amniotic eggs were a major evolutionary step because they allowed for:", options: ["A) Life in water", "B) Reproduction on land", "C) Faster swimming", "D) Larger size"], a: "B) Reproduction on land" },
+                { q: "Which structure allows for gas exchange in the amniotic egg?", options: ["A) Amnion", "B) Chorion", "C) Yolk sac", "D) Shell membrane"], a: "B) Chorion" },
+                { q: "Crocodiles show parental care by:", options: ["A) Feeding milk", "B) Carrying young in their mouths", "C) Teaching them to fly", "D) Leaving eggs in the sun"], a: "B) Carrying young in their mouths" },
+                { q: "Altricial hatchlings are typically born with:", options: ["A) Eyes open", "B) Feathers", "C) Eyes closed", "D) Strong legs"], a: "C) Eyes closed" },
+                { q: "Internal fertilisation is necessary for land animals because:", options: ["A) Gametes dry out quickly", "B) It is faster", "C) It produces more eggs", "D) It requires less energy"], a: "A) Gametes dry out quickly" },
+                { q: "A disadvantage of external fertilisation is:", options: ["A) High energy cost", "B) Many eggs are eaten by predators", "C) It requires a mate", "D) It only happens on land"], a: "B) Many eggs are eaten by predators" },
+                { q: "Mammals nourish their newborns using:", options: ["A) Yolk", "B) Mammary glands", "C) Allantois", "D) Placenta"], a: "B) Mammary glands" },
+                { q: "Precocial birds like chickens have eggs with:", options: ["A) No yolk", "B) Small amount of yolk", "C) Large amount of yolk", "D) No shell"], a: "C) Large amount of yolk" },
+                { q: "The shell of the amniotic egg is primarily for:", options: ["A) Breathing", "B) Waste storage", "C) Mechanical protection", "D) Nutrition"], a: "C) Mechanical protection" }
+            ],
+            'trueFalse': [
+                { q: "External fertilisation requires water.", options: ["True", "False"], a: "True", exp: "Sperm must swim to the egg." },
+                { q: "All mammals are viviparous.", options: ["True", "False"], a: "False", exp: "Monotremes like the platypus lay eggs (ovipary)." },
+                { q: "The amnion stores waste products.", options: ["True", "False"], a: "False", exp: "The allantois stores waste; the amnion provides fluid protection." },
+                { q: "Precocial young are born helpless.", options: ["True", "False"], a: "False", exp: "Precocial young are born advanced; altricial young are helpless." },
+                { q: "Internal fertilisation increases the chance of successful fertilisation.", options: ["True", "False"], a: "True", exp: "It protects gametes from the environment and predators." },
+                { q: "Birds show a high degree of parental care.", options: ["True", "False"], a: "True", exp: "They incubate eggs and feed their young." },
+                { q: "In vivipary, the embryo has no connection to the mother.", options: ["True", "False"], a: "False", exp: "The embryo is connected via a placenta." },
+                { q: "The yolk sac provides oxygen to the embryo.", options: ["True", "False"], a: "False", exp: "The yolk sac provides nutrients; the chorion helps with oxygen." },
+                { q: "Ovoviviparous animals do not have a placenta.", options: ["True", "False"], a: "True", exp: "They rely on the egg's yolk for nourishment." },
+                { q: "Reptiles lay amniotic eggs.", options: ["True", "False"], a: "True", exp: "This allows them to reproduce away from water." },
+                { q: "Altricial birds often nest on the ground.", options: ["True", "False"], a: "False", exp: "They usually nest high up for protection since they are helpless." },
+                { q: "Parental care reduces the number of offspring an animal can produce.", options: ["True", "False"], a: "True", exp: "Parents invest more energy into fewer young to ensure survival." },
+                { q: "Internal fertilisation is an adaptation to terrestrial life.", options: ["True", "False"], a: "True", exp: "It prevents gametes from dehydrating." },
+                { q: "Fish that use external fertilisation produce few eggs.", options: ["True", "False"], a: "False", exp: "They produce many eggs because survival rates are low." },
+                { q: "The chorion is the innermost membrane.", options: ["True", "False"], a: "False", exp: "The chorion is the outermost membrane." },
+                { q: "Zygotes are haploid.", options: ["True", "False"], a: "False", exp: "Zygotes are diploid (2n)." },
+                { q: "Amniotic fluid prevents the embryo from drying out.", options: ["True", "False"], a: "True", exp: "It provides a 'private pond' for the embryo." },
+                { q: "Ovipary means the eggs develop inside the mother.", options: ["True", "False"], a: "False", exp: "Ovipary means eggs are laid outside the body." },
+                { q: "Humans show altricial development.", options: ["True", "False"], a: "True", exp: "Human babies are born helpless and require long-term care." },
+                { q: "Placental mammals provide nutrients via the mother's blood.", options: ["True", "False"], a: "True", exp: "This is a feature of vivipary." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

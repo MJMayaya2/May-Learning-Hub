@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Life Sciences Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Life Sciences Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 12: Abnormal Meiosis (Chapter 4)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "NON DISJUNCTION", topic: "Basics", hint: "The failure of homologous chromosomes or sister chromatids to separate during meiosis." },
+            { word: "ANAPHASE ONE", topic: "Basics", hint: "Stage where non-disjunction can occur when homologous pairs fail to separate." },
+            { word: "ANAPHASE TWO", topic: "Basics", hint: "Stage where non-disjunction occurs if sister chromatids fail to separate." },
+            { word: "DOWN SYNDROME", topic: "Conditions", hint: "A genetic disorder caused by an extra copy of chromosome 21." },
+            { word: "TRISOMY TWENTY ONE", topic: "Conditions", hint: "The technical medical name for Down Syndrome." },
+            { word: "KARYOTYPE", topic: "Diagnosis", hint: "A diagrammatic representation of all chromosomes in a cell, used to spot abnormalities." },
+            { word: "GAMETE", topic: "Basics", hint: "A sex cell; non-disjunction leads to these having too many or too few chromosomes." },
+            { word: "FERTILIZATION", topic: "Basics", hint: "The fusion of an abnormal gamete with a normal one leads to genetic disorders." },
+            { word: "CHROMOSOME", topic: "Basics", hint: "Thread-like structure of DNA; humans normally have 46 in somatic cells." },
+            { word: "HAPLOID", topic: "Basics", hint: "A normal gamete should be ____, containing only 23 chromosomes." },
+            { word: "DIPLOID", topic: "Basics", hint: "A normal somatic cell is ____, containing 46 chromosomes." },
+            { word: "EXTRA COPY", topic: "Down Syndrome", hint: "People with Down Syndrome have an ____ of chromosome 21." },
+            { word: "MENTAL", topic: "Symptoms", hint: "Down Syndrome is associated with moderate to severe ____ retardation." },
+            { word: "EYES", topic: "Symptoms", hint: "Slanted ____ are a common physical characteristic of Down Syndrome." },
+            { word: "HEART DEFECTS", topic: "Symptoms", hint: "Internal health issues often associated with Down Syndrome." },
+            { word: "MITOSIS", topic: "Comparison", hint: "Cell division for growth and repair, where the nucleus divides only once." },
+            { word: "MEIOSIS", topic: "Comparison", hint: "Cell division for gamete formation, where the nucleus divides twice." },
+            { word: "SOMATIC", topic: "Mitosis", hint: "Another name for body cells where mitosis occurs." },
+            { word: "SEX ORGANS", topic: "Meiosis", hint: "Location where meiosis occurs to form gametes." },
+            { word: "IDENTICAL", topic: "Mitosis", hint: "Mitosis produces two cells that are genetically ____ to the parent." },
+            { word: "DIFFERENT", topic: "Meiosis", hint: "Meiosis produces four cells that are genetically ____ from the parent." },
+            { word: "HALVED", topic: "Meiosis", hint: "In meiosis, the chromosome number is ____ (46 to 23)." },
+            { word: "SAME", topic: "Mitosis", hint: "In mitosis, the chromosome number remains the ____." },
+            { word: "CROSSING OVER", topic: "Meiosis", hint: "Process in Prophase I that does NOT occur in mitosis." },
+            { word: "PAIRING", topic: "Meiosis", hint: "In meiosis, chromosomes arrange in homologous ____ during prophase." },
+            { word: "KARYOKINESIS", topic: "General", hint: "The technical term for the division of the nucleus." },
+            { word: "CYTOKINESIS", topic: "General", hint: "The technical term for the division of the cytoplasm." },
+            { word: "DNA REPLICATION", topic: "Comparison", hint: "Process that occurs before both mitosis and meiosis." },
+            { word: "SPINDLE FIBRES", topic: "General", hint: "Structures that form in both divisions to move chromosomes." },
+            { word: "DAUGHTER CELLS", topic: "General", hint: "The new cells formed at the end of cell division." },
+            { word: "BIVALENT", topic: "Meiosis", hint: "A pair of homologous chromosomes; their failure to separate is non-disjunction." },
+            { word: "CENTROMERE", topic: "Basics", hint: "The part of the chromosome that fails to split in Anaphase II non-disjunction." },
+            { word: "SISTER CHROMATIDS", topic: "Basics", hint: "Identical halves of a chromosome that fail to separate in Anaphase II." },
+            { word: "TWENTY THREE", topic: "Basics", hint: "The number of chromosomes in a normal human sperm or egg." },
+            { word: "FORTY SIX", topic: "Basics", hint: "The total number of chromosomes in a normal human zygote." },
+            { word: "FORTY SEVEN", topic: "Down Syndrome", hint: "The total number of chromosomes in a person with Down Syndrome." },
+            { word: "EIGHT HUNDRED", topic: "Down Syndrome", hint: "Down Syndrome affects roughly 1 out of every ____ babies." },
+            { word: "EMBRYO", topic: "Down Syndrome", hint: "The early stage of development where chromosome 21 errors are first present." },
+            { word: "DIAGNOSIS", topic: "General", hint: "Identifying a disorder; karyotyping is a tool for this." },
+            { word: "SIMILARITIES", topic: "Comparison", hint: "Forming spindle fibres and new cells are ____ between mitosis and meiosis." },
+            { word: "PROPHASE ONE", topic: "Meiosis", hint: "Phase where homologous pairs first arrange together." },
+            { word: "METAPHASE", topic: "Comparison", hint: "Phase in both divisions where chromosomes align at the equator." },
+            { word: "REDUCTION", topic: "Meiosis", hint: "Meiosis is a ____ division because it reduces chromosome count." },
+            { word: "GENETIC ERROR", topic: "Abnormalities", hint: "Non-disjunction is a type of ____ during division." },
+            { word: "AUTOSOMES", topic: "Basics", hint: "Chromosomes 1 to 22; non-disjunction of pair 21 involves these." },
+            { word: "GONOSOMES", topic: "Basics", hint: "Sex chromosomes (pair 23); non-disjunction can also occur here." },
+            { word: "TONUE", topic: "Symptoms", hint: "An enlarged ____ is a physical symptom of Down Syndrome." },
+            { word: "FLATTENED", topic: "Symptoms", hint: "A ____ nasal bridge is common in Down Syndrome." },
+            { word: "STUNTED", topic: "Symptoms", hint: "Down Syndrome often results in ____ growth." },
+            { word: "ZHYGOTE", topic: "General", hint: "The first cell formed after an abnormal gamete is fertilized." },
+            { word: "HOMOLOGOUS", topic: "Basics", hint: "Matching pairs of chromosomes." },
+            { word: "S PHASE", topic: "Interphase", hint: "When DNA replication occurs before division begins." },
+            { word: "NUCLEAR MEMBRANE", topic: "General", hint: "Structure that disappears in prophase of both divisions." },
+            { word: "POLES", topic: "Anaphase", hint: "Opposite ends of the cell that chromosomes move toward." },
+            { word: "EQUATOR", topic: "Metaphase", hint: "The center of the cell where chromosomes line up." },
+            { word: "CLINICAL", topic: "Diagnosis", hint: "Trisomy 21 is the ____ term for Down Syndrome." },
+            { word: "MISTAKES", topic: "Abnormalities", hint: "Non-disjunction is an example of ____ in meiosis." },
+            { word: "FAILURE", topic: "Non-disjunction", hint: "The ____ of separation defines non-disjunction." },
+            { word: "TWICE", topic: "Meiosis", hint: "The number of times the nucleus divides in meiosis." },
+            { word: "ONCE", topic: "Mitosis", hint: "The number of times the nucleus divides in mitosis." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Genetic Specialist!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for Abnormal Meiosis!";
+            document.getElementById('modalWord').innerText = "TRISOMY EXPERT";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

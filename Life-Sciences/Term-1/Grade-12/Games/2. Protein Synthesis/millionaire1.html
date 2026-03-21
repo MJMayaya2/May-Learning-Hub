@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Life Sciences: Protein Synthesis Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Life Sciences Challenge</h1>
+        <p class="game-subtitle">Protein Synthesis (Grade 12 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is the primary sugar found in an RNA nucleotide?", options: ["Deoxyribose", "Ribose", "Glucose", "Sucrose"], a: 1, hint: "The 'R' in RNA stands for this sugar." },
+            { q: "Which nitrogenous base is found in RNA but NOT in DNA?", options: ["Thymine", "Adenine", "Uracil", "Guanine"], a: 2, hint: "It pairs with Adenine in RNA." },
+            { q: "What is the physical structure of a typical RNA molecule?", options: ["Double-stranded helix", "Single-stranded and shorter than DNA", "Circular", "Triple-stranded"], a: 1, hint: "It consists of a single strand of nucleotides." },
+            { q: "Which type of RNA is formed in the nucleus and carries the genetic code to the ribosome?", options: ["rRNA", "tRNA", "mRNA", "mtDNA"], a: 2, hint: "The 'm' stands for Messenger." },
+            { q: "What is the function of Transfer RNA (tRNA)?", options: ["Forming the structure of the ribosome", "Carrying the genetic code from the nucleus", "Picking up and carrying specific amino acids to the ribosome", "Unzipping the DNA molecule"], a: 2, hint: "It has an 'anticodon' that matches the 'codon'." },
+            { q: "Which type of RNA combines with proteins to form the actual ribosome?", options: ["mRNA", "tRNA", "rRNA", "Extra-nuclear DNA"], a: 2, hint: "The 'r' stands for Ribosomal." },
+            { q: "The process of making mRNA from a DNA template is called...", options: ["Translation", "Replication", "Transcription", "Mutation"], a: 2, hint: "This process occurs strictly within the nucleus." },
+            { q: "Where does the process of Translation take place?", options: ["In the nucleus", "In the mitochondria", "On the ribosomes in the cytoplasm", "In the Golgi body"], a: 2, hint: "It is the second stage of protein synthesis." },
+            { q: "What is a 'codon'?", options: ["A sequence of two bases in DNA", "A triplet of three consecutive bases on mRNA", "A type of amino acid", "The bond between sugars"], a: 1, hint: "Each one codes for a specific amino acid." },
+            { q: "The triplet of bases found on tRNA is called the...", options: ["Codon", "Anticodon", "Nucleotide", "Template"], a: 1, hint: "It is complementary to the mRNA codon." },
+            { q: "During transcription, which enzyme (or process) unzips the DNA?", options: ["RNA Polymerase", "DNA Helicase", "Ribosome", "Ligase"], a: 0, hint: "It builds the mRNA strand by matching bases to the template." },
+            { q: "How many hydrogen bonds form between Adenine and Uracil in RNA pairing?", options: ["One", "Two", "Three", "Four"], a: 1, hint: "It is the same number as the A-T pair in DNA." },
+            { q: "The genetic code consists of how many possible codons?", options: ["4", "16", "64", "20"], a: 2, hint: "It's 4 raised to the power of 3." },
+            { q: "What is the total number of common amino acids used to build proteins?", options: ["64", "4", "20", "12"], a: 2, hint: "Multiple codons can code for the same one." },
+            { q: "What bond is formed between two adjacent amino acids during translation?", options: ["Hydrogen bond", "Covalent bond", "Peptide bond", "Ionic bond"], a: 2, hint: "A long chain of these is called a polypeptide." },
+            { q: "Which base on DNA would be the template for a 'G' base on mRNA?", options: ["Guanine", "Cytosine", "Adenine", "Thymine"], a: 1, hint: "G pairs with C." },
+            { q: "If a DNA triplet is 'TAC', what will the corresponding mRNA codon be?", options: ["ATG", "AUG", "GUA", "UAC"], a: 1, hint: "Remember that RNA has Uracil instead of Thymine." },
+            { q: "If an mRNA codon is 'CAG', what is the complementary tRNA anticodon?", options: ["GTC", "GUC", "GAC", "CTG"], a: 1, hint: "Anticodons are found on tRNA." },
+            { q: "What is the 'start codon' that usually initiates translation?", options: ["UAA", "UAG", "AUG", "UGA"], a: 2, hint: "It codes for the amino acid Methionine." },
+            { q: "What are the codons called that signal the end of a polypeptide chain?", options: ["Start codons", "Stop codons", "Anticodons", "Introns"], a: 1, hint: "UAA, UAG, and UGA are examples." },
+            { q: "During transcription, only _____ strand(s) of DNA is used as a template.", options: ["Both", "One", "Three", "Zero"], a: 1, hint: "The mRNA is a single-stranded copy of one side." },
+            { q: "The sequence of bases in DNA determines the sequence of _____ in a protein.", options: ["Sugars", "Phosphates", "Amino acids", "Nucleotides"], a: 2, hint: "This sequence determines the protein's shape and function." },
+            { q: "Where is the DNA template located during protein synthesis?", options: ["Ribosome", "Cytosol", "Nucleus", "Mitochondria"], a: 2, hint: "It never leaves this organelle to protect the code." },
+            { q: "What happens to mRNA after it has been transcribed?", options: ["It stays in the nucleus", "It is destroyed immediately", "It moves through nuclear pores to the ribosome", "It becomes DNA"], a: 2, hint: "It carries the message to the 'factory'." },
+            { q: "The triplet of bases on DNA that codes for an amino acid is called a...", options: ["Codon", "Anticodon", "Base triplet", "Gene"], a: 2, hint: "It is the original code on the DNA molecule." },
+            { q: "Which part of the cell provides the amino acids for translation?", options: ["The nucleus", "The cytosol / cytoplasm", "The cell wall", "The vacuole"], a: 1, hint: "tRNA molecules pick them up from this area." },
+            { q: "What is a 'Polypeptide'?", options: ["A type of sugar", "A chain of many amino acids", "A single nucleotide", "A part of the nucleus"], a: 1, hint: "Once folded, it becomes a functional protein." },
+            { q: "Which of these is a major difference between DNA and RNA?", options: ["DNA has a ribose sugar", "RNA is double-stranded", "DNA is helical, RNA is not", "RNA has Thymine"], a: 2, hint: "DNA is a twisted ladder; RNA is a single strand." },
+            { q: "The codon 'AUG' codes for which amino acid?", options: ["Valine", "Methionine", "Serine", "Alanine"], a: 1, hint: "It is the 'Start' amino acid." },
+            { q: "What determines the final 3D shape and function of a protein?", options: ["The number of sugars", "The sequence of amino acids", "The amount of water", "The size of the nucleus"], a: 1, hint: "The primary structure (sequence) dictates how it folds." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            let options = [...qData.options];
+            let correctText = options[qData.a];
+            options.sort(() => Math.random() - 0.5);
+            let correctIdx = options.indexOf(correctText);
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden', 'selected', 'correct', 'incorrect');
+                btn.setAttribute('data-correct', i === correctIdx);
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            const isCorrect = selectedBtn.getAttribute('data-correct') === 'true';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    for (let i = 0; i < 4; i++) {
+                        if (document.getElementById(`btn${i}`).getAttribute('data-correct') === 'true') {
+                            document.getElementById(`btn${i}`).classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            let hiddenCount = 0;
+            for(let i=0; i<4; i++){
+                let btn = document.getElementById(`btn${i}`);
+                if(btn.getAttribute('data-correct') === 'false' && hiddenCount < 2) {
+                    btn.classList.add('hidden');
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Life Sciences Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Science Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

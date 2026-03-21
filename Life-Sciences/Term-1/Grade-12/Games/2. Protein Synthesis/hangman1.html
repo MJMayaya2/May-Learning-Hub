@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Life Sciences Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Life Sciences Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 12: Protein Synthesis (Chapter 2)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "PROTEIN", topic: "Intro", hint: "Large organic molecules made of amino acids, essential for cell function." },
+            { word: "SYNTHESIS", topic: "Intro", hint: "The process of manufacturing or building complex molecules." },
+            { word: "RIBONUCLEIC", topic: "Structure", hint: "The 'R' in RNA stands for ____ acid." },
+            { word: "SINGLE STRANDED", topic: "Structure", hint: "Unlike DNA, RNA is typically ____." },
+            { word: "RIBOSE", topic: "Structure", hint: "The 5-carbon sugar found in RNA nucleotides." },
+            { word: "URACIL", topic: "Bases", hint: "The nitrogenous base found in RNA but NOT in DNA." },
+            { word: "THYMINE", topic: "Bases", hint: "The nitrogenous base found in DNA but NOT in RNA." },
+            { word: "TRANSCRIPTION", topic: "Stages", hint: "First stage of protein synthesis; occurs in the nucleus." },
+            { word: "TRANSLATION", topic: "Stages", hint: "Second stage of protein synthesis; occurs at the ribosome." },
+            { word: "MESSENGER RNA", topic: "Types", hint: "Carries the genetic code from DNA in the nucleus to the ribosome." },
+            { word: "TRANSFER RNA", topic: "Types", hint: "Picks up specific amino acids in the cytoplasm and brings them to mRNA." },
+            { word: "RIBOSOMAL RNA", topic: "Types", hint: "Form of RNA that makes up the physical structure of the ribosome." },
+            { word: "AMINO ACID", topic: "Proteins", hint: "The building block (monomer) of a protein." },
+            { word: "PEPTIDE BOND", topic: "Proteins", hint: "The chemical bond that joins two amino acids together." },
+            { word: "POLYPEPTIDE", topic: "Proteins", hint: "A long chain of amino acids linked by peptide bonds." },
+            { word: "CODON", topic: "Genetics", hint: "A sequence of three nitrogenous bases on a strand of mRNA." },
+            { word: "ANTICODON", topic: "Genetics", hint: "A sequence of three nitrogenous bases on a strand of tRNA." },
+            { word: "TRIPLET", topic: "Genetics", hint: "A sequence of three nitrogenous bases on a strand of DNA." },
+            { word: "NUCLEUS", topic: "Location", hint: "Where the DNA template is located and transcription begins." },
+            { word: "RIBOSOME", topic: "Location", hint: "The cellular 'factory' where proteins are assembled." },
+            { word: "CYTOPLASM", topic: "Location", hint: "The jelly-like fluid where tRNA finds amino acids." },
+            { word: "TEMPLATE", topic: "Transcription", hint: "One strand of DNA acts as a ____ to form mRNA." },
+            { word: "GENETIC CODE", hint: "The set of rules by which information encoded in DNA/RNA is translated into proteins." },
+            { word: "SIXTY FOUR", topic: "Genetics", hint: "Total number of possible codons in the genetic code." },
+            { word: "TWENTY", topic: "Genetics", hint: "Total number of common amino acids used to build proteins." },
+            { word: "STOP CODON", topic: "Genetics", hint: "A triplet that signals the end of the translation process." },
+            { word: "UNWIND", topic: "Transcription", hint: "The first step of transcription where the DNA double helix must ____." },
+            { word: "UNZIP", topic: "Transcription", hint: "Step where hydrogen bonds break to expose the DNA template." },
+            { word: "PORES", topic: "Nucleus", hint: "mRNA moves out of the nucleus through nuclear ____." },
+            { word: "SEQUENCE", topic: "Genetics", hint: "The ____ of bases in DNA determines the order of amino acids." },
+            { word: "ENZYME", topic: "Transcription", hint: "A catalyst like RNA Polymerase that builds the mRNA strand." },
+            { word: "COMPLEMENTARY", topic: "Bases", hint: "mRNA bases are ____ to the DNA template (e.g., A pairs with U)." },
+            { word: "ADENINE", topic: "Bases", hint: "Pairs with Thymine in DNA, but with Uracil in RNA." },
+            { word: "GUANINE", topic: "Bases", hint: "Always pairs with Cytosine in both DNA and RNA." },
+            { word: "CYTOSINE", topic: "Bases", hint: "Pairs with Guanine." },
+            { word: "HELICAL", topic: "Structure", hint: "Shape of DNA, which is usually absent in single-stranded RNA." },
+            { word: "HYDROGEN BOND", topic: "Structure", hint: "Weak bonds that hold anticodons to codons temporarily." },
+            { word: "REDUNDANT", topic: "Genetics", hint: "The code is ____ because multiple codons can code for the same amino acid." },
+            { word: "UNIVERSAL", topic: "Genetics", hint: "The genetic code is ____ because it is the same for nearly all organisms." },
+            { word: "DEOXYRIBOSE", topic: "Comparison", hint: "The sugar found in DNA nucleotides." },
+            { word: "NUCLEOTIDE", topic: "Comparison", hint: "The general term for the building block of all nucleic acids." },
+            { word: "CYTOSOL", topic: "Location", hint: "Another name for the fluid part of the cytoplasm." },
+            { word: "PROTEOME", topic: "Advanced", hint: "The entire set of proteins expressed by a genome." },
+            { word: "START CODON", topic: "Genetics", hint: "The first codon (AUG) of an mRNA transcript translated by a ribosome." },
+            { word: "METHIONINE", topic: "Genetics", hint: "The amino acid usually coded for by the start codon." },
+            { word: "CLOVER LEAF", topic: "Structure", hint: "The characteristic secondary shape of a tRNA molecule." },
+            { word: "FOLDING", topic: "Proteins", hint: "Process after translation where the polypeptide becomes a functional protein." },
+            { word: "DENATURE", topic: "Proteins", hint: "When a protein loses its shape and function due to heat or pH." },
+            { word: "PHOSPHATE", topic: "Structure", hint: "The part of the nucleotide that remains the same in DNA and RNA." },
+            { word: "MUTATION", topic: "Genetics", hint: "A change in the DNA base sequence that could change the protein formed." },
+            { word: "GENE", topic: "Genetics", hint: "A specific length of DNA that codes for one polypeptide." },
+            { word: "SPLICING", topic: "Advanced", hint: "Process of removing non-coding regions from mRNA before it leaves the nucleus." },
+            { word: "EXON", topic: "Advanced", hint: "The coding part of a gene/mRNA that remains after splicing." },
+            { word: "INTRON", topic: "Advanced", hint: "The non-coding part of a gene removed during splicing." },
+            { word: "RECOGNITION", topic: "Translation", hint: "The process where tRNA finds its matching codon on mRNA." },
+            { word: "TRANSFER", topic: "Types", hint: "What the 't' in tRNA stands for." },
+            { word: "MESSENGER", topic: "Types", hint: "What the 'm' in mRNA stands for." },
+            { word: "RIBOSOMAL", topic: "Types", hint: "What the 'r' in rRNA stands for." },
+            { word: "FUNCTION", topic: "Proteins", hint: "The specific shape of a protein determines its ____." },
+            { word: "CAPS", topic: "Intro", hint: "The South African curriculum framework for Life Sciences." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Protein Expert!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for Protein Synthesis!";
+            document.getElementById('modalWord').innerText = "MOLECULAR MASTER";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

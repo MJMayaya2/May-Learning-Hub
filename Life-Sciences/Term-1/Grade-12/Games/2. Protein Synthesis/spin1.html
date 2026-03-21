@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 12 Life Sciences: Protein Synthesis</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Life Sciences Quiz: Protein Synthesis</h1>
+        <p class="game-subtitle">Transcription to Translation! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Protein Synthesis", a: "The multi-step process by which living cells manufacture proteins using genetic information from DNA." },
+                { q: "RNA", a: "Ribonucleic Acid; a single-stranded nucleic acid that carries out instructions from DNA for protein synthesis." },
+                { q: "Transcription", a: "The first stage of protein synthesis where a segment of DNA is copied into a complementary strand of mRNA in the nucleus." },
+                { q: "Translation", a: "The second stage where ribosomes read the mRNA code and tRNA brings specific amino acids to build a protein." },
+                { q: "mRNA", a: "Messenger RNA; carries the genetic code from the DNA in the nucleus to the ribosomes in the cytoplasm." },
+                { q: "tRNA", a: "Transfer RNA; small RNA molecules that transport specific amino acids to the ribosome during translation." },
+                { q: "rRNA", a: "Ribosomal RNA; forms the structural part of the ribosome where proteins are assembled." },
+                { q: "Codon", a: "A sequence of three nitrogenous bases on mRNA that codes for a specific amino acid." },
+                { q: "Anticodon", a: "A sequence of three nitrogenous bases on tRNA that is complementary to a specific mRNA codon." },
+                { q: "Amino Acid", a: "The organic building blocks that join together to form a protein molecule." },
+                { q: "Peptide Bond", a: "The chemical bond that links amino acids together in a polypeptide chain." },
+                { q: "Ribose", a: "The five-carbon sugar found in RNA nucleotides." },
+                { q: "Uracil", a: "The nitrogenous base found in RNA that replaces Thymine." },
+                { q: "Nucleus", a: "The organelle where transcription takes place." },
+                { q: "Ribosome", a: "The organelle where translation and protein assembly take place." },
+                { q: "Template Strand", a: "The specific strand of DNA used as a pattern to create mRNA." },
+                { q: "Cytosol / Cytoplasm", a: "The jelly-like substance where the ribosomes are located and where translation occurs." },
+                { q: "Polypeptide Chain", a: "A long chain of amino acids linked by peptide bonds; a precursor to a functional protein." },
+                { q: "Nuclear Pore", a: "Small openings in the nuclear membrane through which mRNA exits to reach the cytoplasm." },
+                { q: "Stop Codon", a: "A specific mRNA codon that signals the end of protein synthesis." }
+            ],
+            'terms': [
+                { q: "The nucleic acid that is single-stranded and has Ribose sugar.", a: "RNA" },
+                { q: "The nitrogenous base found in RNA but not DNA.", a: "Uracil" },
+                { q: "The process of making mRNA from DNA.", a: "Transcription" },
+                { q: "The process of decoding mRNA into a protein.", a: "Translation" },
+                { q: "The triplet of bases on mRNA.", a: "Codon" },
+                { q: "The triplet of bases on tRNA.", a: "Anticodon" },
+                { q: "The organelle where protein synthesis is completed.", a: "Ribosome" },
+                { q: "The building blocks of proteins.", a: "Amino acids" },
+                { q: "The type of bond between amino acids.", a: "Peptide bond" },
+                { q: "The type of RNA that carries the genetic message.", a: "mRNA" },
+                { q: "The type of RNA that carries amino acids.", a: "tRNA" },
+                { q: "The sugar found in RNA nucleotides.", a: "Ribose" },
+                { q: "The part of the cell where transcription occurs.", a: "Nucleus" },
+                { q: "A chain of many amino acids is called a _____ chain.", a: "Polypeptide" },
+                { q: "The DNA base that pairs with Uracil during transcription.", a: "Adenine" },
+                { q: "RNA that forms the structure of the ribosome.", a: "rRNA" },
+                { q: "Number of bases in a single codon.", a: "Three" },
+                { q: "What mRNA must travel through to leave the nucleus.", a: "Nuclear pore" },
+                { q: "The codon that ends the translation process.", a: "Stop codon" },
+                { q: "The set of 64 triplets coding for 20 amino acids.", a: "Genetic code" }
+            ],
+            'multipleChoice': [
+                { q: "Which sugar is found in RNA?", options: ["A) Deoxyribose", "B) Glucose", "C) Ribose", "D) Fructose"], a: "C) Ribose" },
+                { q: "During transcription, Adenine in DNA pairs with _____ in mRNA.", options: ["A) Thymine", "B) Guanine", "C) Uracil", "D) Cytosine"], a: "C) Uracil" },
+                { q: "Where does the process of translation occur?", options: ["A) Nucleus", "B) Mitochondria", "C) Ribosome", "D) Golgi Body"], a: "C) Ribosome" },
+                { q: "What is the function of tRNA?", options: ["A) Carrying the code", "B) Forming the ribosome", "C) Transporting amino acids", "D) Unzipping DNA"], a: "C) Transporting amino acids" },
+                { q: "A sequence of three bases on mRNA is called a(n):", options: ["A) Gene", "B) Anticodon", "C) Codon", "D) Nucleotide"], a: "C) Codon" },
+                { q: "Transcription involves the synthesis of _____ from a DNA template.", options: ["A) tRNA", "B) Proteins", "C) mRNA", "D) Ribosomes"], a: "C) mRNA" },
+                { q: "How many amino acids are there in the standard genetic code?", options: ["A) 4", "B) 64", "C) 20", "D) 100"], a: "C) 20" },
+                { q: "Which RNA base is complementary to Guanine?", options: ["A) Adenine", "B) Uracil", "C) Cytosine", "D) Thymine"], a: "C) Cytosine" },
+                { q: "The bonds formed between amino acids are:", options: ["A) Hydrogen bonds", "B) Ionic bonds", "C) Peptide bonds", "D) Covalent sugar bonds"], a: "C) Peptide bonds" },
+                { q: "mRNA leaves the nucleus through the:", options: ["A) Cell membrane", "B) Nuclear pores", "C) Cytoplasm", "D) Vacuole"], a: "B) Nuclear pores" },
+                { q: "The anticodon is found on which molecule?", options: ["A) DNA", "B) mRNA", "C) tRNA", "D) rRNA"], a: "C) tRNA" },
+                { q: "Transcription occurs in the:", options: ["A) Cytosol", "B) Ribosome", "C) Nucleus", "D) Endoplasmic Reticulum"], a: "C) Nucleus" },
+                { q: "Which of these is NOT a type of RNA?", options: ["A) Messenger RNA", "B) Transfer RNA", "C) Deoxyribose RNA", "D) Ribosomal RNA"], a: "C) Deoxyribose RNA" },
+                { q: "A triplet of bases on DNA is often called a:", options: ["A) Codon", "B) Anticodon", "C) Code/Triplet", "D) Peptide"], a: "C) Code/Triplet" },
+                { q: "What determines the sequence of amino acids in a protein?", options: ["A) The number of ribosomes", "B) The sequence of bases in DNA", "C) The amount of ATP", "D) The size of the cell"], a: "B) The sequence of bases in DNA" },
+                { q: "Translation begins when mRNA attaches to a:", options: ["A) Gene", "B) Ribosome", "C) tRNA", "D) Nuclear pore"], a: "B) Ribosome" },
+                { q: "Which base replaces Thymine in RNA molecules?", options: ["A) Adenine", "B) Guanine", "C) Uracil", "D) Cytosine"], a: "C) Uracil" },
+                { q: "The final product of translation is a:", options: ["A) DNA strand", "B) mRNA strand", "C) Polypeptide/Protein", "D) Nucleotide"], a: "C) Polypeptide/Protein" },
+                { q: "RNA is generally _____ than DNA.", options: ["A) Longer", "B) Thicker", "C) Shorter", "D) More complex"], a: "C) Shorter" },
+                { q: "A 'Stop Codon' results in:", options: ["A) DNA replication", "B) The release of the polypeptide chain", "C) More transcription", "D) Cell death"], a: "B) The release of the polypeptide chain" }
+            ],
+            'trueFalse': [
+                { q: "Transcription takes place in the ribosome.", options: ["True", "False"], a: "False", exp: "Transcription takes place in the nucleus." },
+                { q: "RNA contains the nitrogenous base Uracil instead of Thymine.", options: ["True", "False"], a: "True", exp: "Uracil pairs with Adenine in RNA." },
+                { q: "tRNA molecules carry codons.", options: ["True", "False"], a: "False", exp: "mRNA carries codons; tRNA carries anticodons." },
+                { q: "Peptide bonds link amino acids together.", options: ["True", "False"], a: "True", exp: "This forms the polypeptide chain." },
+                { q: "Protein synthesis involves two main stages: transcription and translation.", options: ["True", "False"], a: "True", exp: "Transcription happens first, then translation." },
+                { q: "DNA is single-stranded.", options: ["True", "False"], a: "False", exp: "DNA is double-stranded; RNA is single-stranded." },
+                { q: "mRNA carries the genetic code from the nucleus to the ribosome.", options: ["True", "False"], a: "True", exp: "It acts as the messenger." },
+                { q: "There are 64 different amino acids used in proteins.", options: ["True", "False"], a: "False", exp: "There are 64 codons, but only 20 amino acids." },
+                { q: "Translation occurs in the nucleus.", options: ["True", "False"], a: "False", exp: "Translation occurs in the cytoplasm at the ribosomes." },
+                { q: "RNA nucleotides contain deoxyribose sugar.", options: ["True", "False"], a: "False", exp: "They contain ribose sugar." },
+                { q: "One mRNA codon codes for one specific amino acid.", options: ["True", "False"], a: "True", exp: "This is the basis of the genetic code." },
+                { q: "Anticodons and codons are complementary to each other.", options: ["True", "False"], a: "True", exp: "This ensures the correct amino acid is added." },
+                { q: "rRNA is found in the mitochondria.", options: ["True", "False"], a: "False", exp: "rRNA is the main component of ribosomes." },
+                { q: "DNA acts as the template for mRNA synthesis.", options: ["True", "False"], a: "True", exp: "This step is called transcription." },
+                { q: "A polypeptide is a long chain of glucose molecules.", options: ["True", "False"], a: "False", exp: "It is a long chain of amino acids." },
+                { q: "The nuclear membrane has pores to let mRNA out.", options: ["True", "False"], a: "True", exp: "These are called nuclear pores." },
+                { q: "Proteins are produced during DNA replication.", options: ["True", "False"], a: "False", exp: "Proteins are produced during protein synthesis." },
+                { q: "Uraci pairs with Adenine.", options: ["True", "False"], a: "True", exp: "In RNA, U replaces T." },
+                { q: "The ribosome moves along the mRNA during translation.", options: ["True", "False"], a: "True", exp: "It reads the codons one by one." },
+                { q: "All types of RNA are produced in the nucleus.", options: ["True", "False"], a: "True", exp: "They are all transcribed from DNA." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

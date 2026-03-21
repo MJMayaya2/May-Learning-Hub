@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 12 Life Sciences: Abnormal Meiosis</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Life Sciences Quiz: Abnormal Meiosis</h1>
+        <p class="game-subtitle">Chromosomal Errors & Comparisons! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Non-disjunction", a: "The failure of homologous chromosomes or sister chromatids to separate properly during meiosis, leading to abnormal gametes." },
+                { q: "Down Syndrome", a: "A genetic disorder caused by the presence of an extra copy of chromosome 21 (trisomy 21) due to non-disjunction." },
+                { q: "Trisomy", a: "A condition where there are three copies of a particular chromosome in a cell instead of the normal pair." },
+                { q: "Mitosis", a: "Cell division that results in two genetically identical daughter cells with the same number of chromosomes as the parent cell." },
+                { q: "Karyokinesis", a: "The process of division of the nucleus during a cell cycle." },
+                { q: "Cytokinesis", a: "The division of the cytoplasm following the division of the nucleus." },
+                { q: "Somatic Cells", a: "General body cells (like skin or muscle cells) that undergo mitosis and are diploid." },
+                { q: "Gametes", a: "Sex cells (sperm and egg) produced in the sex organs via meiosis; they are haploid." },
+                { q: "DNA Replication", a: "The process of copying the genetic material that occurs before both mitosis and meiosis begins." },
+                { q: "Spindle Fibres", a: "Protein structures that form during cell division to pull chromosomes or chromatids apart." },
+                { q: "Homologous Pairs", a: "Pairs of chromosomes (one maternal, one paternal) that align during Prophase I of meiosis." },
+                { q: "Reduction Division", a: "Another name for meiosis, because it reduces the chromosome number from diploid (2n) to haploid (n)." },
+                { q: "Crossing-over", a: "The exchange of genetic material between homologous chromosomes that occurs only in meiosis." },
+                { q: "Equatorial Plane", a: "The middle area of the cell where chromosomes align during Metaphase." },
+                { q: "Anaphase I", a: "The stage of meiosis where homologous chromosomes fail to separate if non-disjunction occurs." },
+                { q: "Anaphase II", a: "The stage of meiosis where sister chromatids fail to separate if non-disjunction occurs." },
+                { q: "Daughter Cells", a: "The new cells formed at the end of cell division." },
+                { q: "Mental Retardation", a: "A symptom often associated with Down Syndrome, ranging from moderate to severe." },
+                { q: "Karyotype", a: "A visual representation of all the chromosomes in a cell, used to identify chromosomal abnormalities." },
+                { q: "Centromere", a: "The part of a chromosome that joins two sister chromatids and attaches to spindle fibres." }
+            ],
+            'terms': [
+                { q: "The failure of chromosomes to separate during anaphase.", a: "Non-disjunction" },
+                { q: "The disorder also known as 'Trisomy 21'.", a: "Down Syndrome" },
+                { q: "The type of cell division that occurs in somatic cells.", a: "Mitosis" },
+                { q: "The type of cell division that produces 4 haploid cells.", a: "Meiosis" },
+                { q: "The stage of the cell cycle where DNA replication occurs.", a: "Interphase" },
+                { q: "Cells with half the number of chromosomes (n).", a: "Haploid" },
+                { q: "Cells with a full set of chromosomes (2n).", a: "Diploid" },
+                { q: "The division of the nucleus.", a: "Karyokinesis" },
+                { q: "The process where non-sister chromatids exchange DNA.", a: "Crossing-over" },
+                { q: "Common symptom of Down Syndrome involving slanted eyes.", a: "Slanted eyes / Epicanthic fold" },
+                { q: "The number of daughter cells produced in mitosis.", a: "Two" },
+                { q: "The number of daughter cells produced in meiosis.", a: "Four" },
+                { q: "Where homologous pairs line up during Metaphase I.", a: "Equator" },
+                { q: "Stage of meiosis where centromeres split.", a: "Anaphase II" },
+                { q: "The process that results in genetically different cells.", a: "Meiosis" },
+                { q: "The process that results in genetically identical cells.", a: "Mitosis" },
+                { q: "The specific chromosome pair involved in Down Syndrome.", a: "Pair 21" },
+                { q: "Structures that pull chromatids to opposite poles.", a: "Spindle fibres" },
+                { q: "The phase where the nuclear membrane disappears.", a: "Prophase" },
+                { q: "The phase where the cytoplasm finally divides.", a: "Cytokinesis" }
+            ],
+            'multipleChoice': [
+                { q: "Non-disjunction during Anaphase I involves the failure of _____ to separate.", options: ["A) Sister chromatids", "B) Homologous chromosomes", "C) Centromeres", "D) Ribosomes"], a: "B) Homologous chromosomes" },
+                { q: "How many copies of chromosome 21 does a person with Down Syndrome have?", options: ["A) 1", "B) 2", "C) 3", "D) 4"], a: "C) 3" },
+                { q: "Which of the following occurs in BOTH mitosis and meiosis?", options: ["A) Crossing-over", "B) DNA replication", "C) Production of 4 cells", "D) Halving of chromosome number"], a: "B) DNA replication" },
+                { q: "Down Syndrome affects approximately 1 out of every _____ babies.", options: ["A) 100", "B) 500", "C) 800", "D) 2000"], a: "C) 800" },
+                { q: "Mitosis results in cells that are genetically _____ to the parent cell.", options: ["A) Different", "B) Identical", "C) Half-similar", "D) Mutated"], a: "B) Identical" },
+                { q: "During meiosis, crossing-over occurs in:", options: ["A) Prophase I", "B) Prophase II", "C) Metaphase I", "D) Anaphase II"], a: "A) Prophase I" },
+                { q: "A characteristic symptom of Down Syndrome is:", options: ["A) Very tall stature", "B) Slanted eyes", "C) Excellent hearing", "D) Red hair"], a: "B) Slanted eyes" },
+                { q: "In mitosis, the nucleus divides _____ time(s).", options: ["A) 1", "B) 2", "C) 3", "D) 4"], a: "A) 1" },
+                { q: "Meiosis occurs specifically in the:", options: ["A) Skin", "B) Brain", "C) Sex organs (gonads)", "D) Blood"], a: "C) Sex organs (gonads)" },
+                { q: "Which division reduces the chromosome number to haploid (n)?", options: ["A) Mitosis", "B) Meiosis", "C) Binary fission", "D) Fertilization"], a: "B) Meiosis" },
+                { q: "Non-disjunction leads to the formation of _____ gametes.", options: ["A) Normal", "B) Abnormal", "C) Identical", "D) Somatic"], a: "B) Abnormal" },
+                { q: "Which phase follows the division of the nucleus?", options: ["A) Karyokinesis", "B) Cytokinesis", "C) Interphase", "D) Prophase"], a: "B) Cytokinesis" },
+                { q: "In Metaphase I of meiosis, chromosomes are arranged in:", options: ["A) Single file", "B) Homologous pairs", "C) Groups of four", "D) No specific order"], a: "B) Homologous pairs" },
+                { q: "A person with Down Syndrome has a total of _____ chromosomes.", options: ["A) 45", "B) 46", "C) 47", "D) 23"], a: "C) 47" },
+                { q: "Mitosis is essential for:", options: ["A) Producing gametes", "B) Genetic variation", "C) Growth and repair", "D) Evolution"], a: "C) Growth and repair" },
+                { q: "In which stage of meiosis do centromeres split?", options: ["A) Anaphase I", "B) Anaphase II", "C) Metaphase I", "D) Telophase II"], a: "B) Anaphase II" },
+                { q: "Which cells are produced by mitosis?", options: ["A) Sperm", "B) Eggs", "C) Somatic cells", "D) Gametes"], a: "C) Somatic cells" },
+                { q: "DNA replication happens during:", options: ["A) Prophase", "B) Interphase", "C) Metaphase", "D) Telophase"], a: "B) Interphase" },
+                { q: "Crossing-over is a mechanism for:", options: ["A) Growth", "B) Identical cloning", "C) Genetic variation", "D) Cell death"], a: "C) Genetic variation" },
+                { q: "Non-disjunction in Anaphase II involves the failure of _____ to separate.", options: ["A) Homologous pairs", "B) Sister chromatids", "C) Spindle fibres", "D) Nuclei"], a: "B) Sister chromatids" }
+            ],
+            'trueFalse': [
+                { q: "Non-disjunction can only happen during Anaphase I.", options: ["True", "False"], a: "False", exp: "It can happen in Anaphase I (homologous pairs) or Anaphase II (sister chromatids)." },
+                { q: "Down Syndrome is the most common genetic disorder caused by a chromosomal abnormality.", options: ["True", "False"], a: "True", exp: "It affects roughly 1 in 800 births." },
+                { q: "Mitosis produces four daughter cells.", options: ["True", "False"], a: "False", exp: "Mitosis produces two cells; Meiosis produces four." },
+                { q: "In meiosis, the nucleus divides twice.", options: ["True", "False"], a: "True", exp: "There is Meiosis I and Meiosis II." },
+                { q: "Somatic cells are also known as sex cells.", options: ["True", "False"], a: "False", exp: "Somatic cells are body cells; gametes are sex cells." },
+                { q: "Crossing-over occurs in both mitosis and meiosis.", options: ["True", "False"], a: "False", exp: "Crossing-over only occurs in Prophase I of meiosis." },
+                { q: "Spindle fibres are formed in both mitosis and meiosis.", options: ["True", "False"], a: "True", exp: "They are needed to move chromosomes in both types of division." },
+                { q: "Daughter cells in mitosis are haploid.", options: ["True", "False"], a: "False", exp: "They are diploid (2n), just like the parent cell." },
+                { q: "Down Syndrome embryo has three copies of chromosome 21.", options: ["True", "False"], a: "True", exp: "This extra genetic material causes the symptoms of the disorder." },
+                { q: "Cytokinesis is the division of the nucleus.", options: ["True", "False"], a: "False", exp: "Karyokinesis is nuclear division; cytokinesis is cytoplasmic division." },
+                { q: "Meiosis results in genetically different daughter cells.", options: ["True", "False"], a: "True", exp: "This is due to crossing-over and random assortment." },
+                { q: "Centromeres split during Anaphase I of meiosis.", options: ["True", "False"], a: "False", exp: "Whole chromosomes move in Anaphase I; centromeres split in Anaphase II." },
+                { q: "Mental retardation is a common symptom of Down Syndrome.", options: ["True", "False"], a: "True", exp: "The severity varies from person to person." },
+                { q: "DNA replication occurs before both mitosis and meiosis.", options: ["True", "False"], a: "True", exp: "It happens during Interphase." },
+                { q: "Meiosis happens in all body cells.", options: ["True", "False"], a: "False", exp: "It only happens in the sex organs to form gametes." },
+                { q: "In Metaphase of mitosis, chromosomes align in pairs.", options: ["True", "False"], a: "False", exp: "They align in single file; they only pair up in Meiosis I." },
+                { q: "Down Syndrome is also called Trisomy 21.", options: ["True", "False"], a: "True", exp: "Trisomy refers to the three copies of the chromosome." },
+                { q: "The chromosome number remains the same in mitosis.", options: ["True", "False"], a: "True", exp: "This is why it is used for growth and repair." },
+                { q: "Abnormal gametes are the result of non-disjunction.", options: ["True", "False"], a: "True", exp: "They have too many or too few chromosomes." },
+                { q: "New cells form at the end of both mitosis and meiosis.", options: ["True", "False"], a: "True", exp: "This is the outcome of cell division." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

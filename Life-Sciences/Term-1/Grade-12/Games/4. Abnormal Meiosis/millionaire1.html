@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Life Sciences: Abnormal Meiosis Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Life Sciences Challenge</h1>
+        <p class="game-subtitle">Abnormal Meiosis (Grade 12 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What term is used to describe when homologous chromosomes fail to separate during Anaphase 1?", options: ["Mutation", "Non-disjunction", "Replication", "Crossing-over"], a: 1, hint: "The name implies they do not 'dis-join'." },
+            { q: "Non-disjunction can also occur in Anaphase 2 when _____ fail to separate.", options: ["Homologous pairs", "Centrioles", "Sister chromatids", "Nucleoli"], a: 2, hint: "This involves the centromere failing to split." },
+            { q: "What is the specific chromosomal cause of Down Syndrome?", options: ["Extra copy of chromosome 23", "Missing chromosome 21", "Extra copy of chromosome 21", "Double chromosome 1"], a: 2, hint: "It is a trisomy at a specific pair." },
+            { q: "Down Syndrome is also referred to as...", options: ["Trisomy 18", "Trisomy 21", "Monosomy 21", "Polyploidy"], a: 1, hint: "The name indicates three copies of the 21st chromosome." },
+            { q: "What is a consequence of non-disjunction for the resulting gametes?", options: ["All gametes remain normal", "One gamete has an extra chromosome and another lacks one", "Four identical gametes form", "The gametes lose all DNA"], a: 1, hint: "The distribution becomes uneven." },
+            { q: "Approximately how many babies are affected by Down Syndrome?", options: ["1 in 100", "1 in 800", "1 in 5000", "1 in 10"], a: 1, hint: "It is the most common genetic chromosomal disorder." },
+            { q: "Non-disjunction in Anaphase 1 involves the failure of _____ to separate.", options: ["Bivalent chromosomes", "Individual chromatids", "Spindle fibers", "Nuclear membranes"], a: 0, hint: "This happens in the first meiotic division." },
+            { q: "If a normal sperm (n) fertilizes an egg with an extra chromosome 21 (n+1), the zygote has _____ chromosomes.", options: ["45", "46", "47", "23"], a: 2, hint: "One extra chromosome is added to the standard 46." },
+            { q: "Which of the following is a physical symptom of Down Syndrome mentioned in the text?", options: ["Above average height", "Downward slanting eyes", "Large, thin ears", "Flattened facial features"], a: 3, hint: "Common features involve the face and hands." },
+            { q: "What is a similarity between mitosis and meiosis?", options: ["Both produce four cells", "Both involve DNA replication", "Both involve crossing-over", "Both happen in sex organs only"], a: 1, hint: "This replication happens during Interphase for both." },
+            { q: "In both mitosis and meiosis, the nucleus divides first. This is called...", options: ["Cytokinesis", "Karyokinesis", "Meiosis", "Mitosis"], a: 1, hint: "It comes from the Greek word for 'nucleus' and 'movement'." },
+            { q: "Which process results in four separate haploid cells?", options: ["Mitosis", "Binary Fission", "Meiosis", "Fertilization"], a: 2, hint: "These cells have half the chromosome number of the parent." },
+            { q: "Mitosis occurs in which type of cells?", options: ["Sex cells", "Somatic (body) cells", "Only in the brain", "Only in heart tissue"], a: 1, hint: "Used for growth and repair throughout the body." },
+            { q: "In meiosis, the nucleus divides _____ time(s).", options: ["One", "Two", "Three", "Four"], a: 1, hint: "It consists of Meiosis I and Meiosis II." },
+            { q: "Does crossing-over occur during mitosis?", options: ["Yes, in prophase", "No, it only occurs in meiosis", "Only in plant mitosis", "Only during mutations"], a: 1, hint: "Mitosis aims for identical copies, not variation." },
+            { q: "How many cells are formed at the end of mitosis?", options: ["Two", "Four", "One", "Eight"], a: 0, hint: "The parent cell splits into two identical daughters." },
+            { q: "Chromosomes are arranged in homologous pairs during which process?", options: ["Mitosis", "Prophase 1 of Meiosis", "Anaphase 2 of Meiosis", "Interphase"], a: 1, hint: "This allows for crossing-over to take place." },
+            { q: "At the end of anaphase in mitosis, _____ are pulled to opposite poles.", options: ["Homologous pairs", "Whole chromosomes", "Chromatids", "The nucleolus"], a: 2, hint: "The centromere splits to separate them." },
+            { q: "What happens to the chromosome number in daughter cells produced by meiosis?", options: ["It stays the same", "It is doubled", "It is halved", "It becomes zero"], a: 2, hint: "This allows the count to reset during fertilization." },
+            { q: "A characteristic of Down Syndrome is a fold of skin over the inner corner of the eye, called an...", options: ["Eyelid", "Epicanthic fold", "Iris", "Orbital fold"], a: 1, hint: "It is a distinct medical term for this eye feature." },
+            { q: "Where does meiosis occur?", options: ["In all body cells", "In sex organs during gamete formation", "In the blood stream", "In the skin"], a: 1, hint: "Specifically in the testes and ovaries." },
+            { q: "Non-disjunction of sister chromatids occurs specifically during...", options: ["Anaphase 1", "Metaphase 1", "Anaphase 2", "Prophase 2"], a: 2, hint: "It is the second opportunity for a separation error." },
+            { q: "Which of these is a mental symptom associated with Down Syndrome?", options: ["Extreme intelligence", "Mental retardation (varying degrees)", "Photographic memory", "No mental effect"], a: 1, hint: "Cognitive development is typically affected." },
+            { q: "What structure forms in both mitosis and meiosis to pull chromosomes apart?", options: ["Cell wall", "Spindle fibers", "Vacuole", "Mitochondria"], a: 1, hint: "These are made of microtubules." },
+            { q: "The division of the cytoplasm is called...", options: ["Karyokinesis", "Cytokinesis", "Mitosis", "Osmosis"], a: 1, hint: "This is the final physical split of the cell." },
+            { q: "How are daughter cells in mitosis related to the parent cell?", options: ["They are half the size", "They are genetically different", "They are genetically identical", "They have different DNA"], a: 2, hint: "Mitosis is a 'cloning' process." },
+            { q: "In meiosis, crossing-over occurs during...", options: ["Prophase 1", "Prophase 2", "Metaphase 1", "Metaphase 2"], a: 0, hint: "This happens when homologous pairs are closely aligned." },
+            { q: "Which process is responsible for genetic variation in offspring?", options: ["Mitosis", "Meiosis", "Binary Fission", "DNA Repair"], a: 1, hint: "Through crossing-over and random arrangement." },
+            { q: "Down Syndrome results in _____ total chromosomes in every somatic cell.", options: ["45", "46", "47", "24"], a: 2, hint: "46 standard + 1 extra at pair 21." },
+            { q: "The failing of the splitting of the centromere leads to non-disjunction in...", options: ["Anaphase 1", "Anaphase 2", "Metaphase 1", "Telophase 2"], a: 1, hint: "Centromeres only split during the second meiotic division." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            let options = [...qData.options];
+            let correctText = options[qData.a];
+            options.sort(() => Math.random() - 0.5);
+            let correctIdx = options.indexOf(correctText);
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden', 'selected', 'correct', 'incorrect');
+                btn.setAttribute('data-correct', i === correctIdx);
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            const isCorrect = selectedBtn.getAttribute('data-correct') === 'true';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    for (let i = 0; i < 4; i++) {
+                        if (document.getElementById(`btn${i}`).getAttribute('data-correct') === 'true') {
+                            document.getElementById(`btn${i}`).classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            let hiddenCount = 0;
+            for(let i=0; i<4; i++){
+                let btn = document.getElementById(`btn${i}`);
+                if(btn.getAttribute('data-correct') === 'false' && hiddenCount < 2) {
+                    btn.classList.add('hidden');
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Life Sciences Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Science Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

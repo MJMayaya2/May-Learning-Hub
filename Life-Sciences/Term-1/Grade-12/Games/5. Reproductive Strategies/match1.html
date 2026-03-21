@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Life Sciences: Reproductive Strategies</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 0.9rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 12 Life Sciences: Reproductive Strategies</h1>
+        <p class="game-subtitle">Match the fertilisation methods, development types, and parental care strategies!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Fertilisation</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Development Types</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">The Amniotic Egg</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Parental Care</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Sperm fuses with an egg outside the female's body, usually in water." }, { id: 1, text: "External Fertilisation" },
+                { id: 2, text: "Sperm are released into the female's body where they swim toward the egg." }, { id: 2, text: "Internal Fertilisation" },
+                { id: 3, text: "Strategy used by aquatic animals producing large numbers of gametes." }, { id: 3, text: "External Fertilisation" },
+                { id: 4, text: "Method required for terrestrial animals to prevent gametes from drying out." }, { id: 4, text: "Internal Fertilisation" },
+                { id: 5, text: "Common in most invertebrates, fish, and amphibians." }, { id: 5, text: "External Fertilisation" },
+                { id: 6, text: "Found in all birds, mammals, and reptiles." }, { id: 6, text: "Internal Fertilisation" },
+                { id: 7, text: "Cell formed when a sperm fuses with an egg." }, { id: 7, text: "Zygote" },
+                { id: 8, text: "A disadvantage is that many eggs are eaten by predators." }, { id: 8, text: "External Fertilisation" },
+                { id: 9, text: "A benefit is a higher chance of successful fertilisation." }, { id: 9, text: "Internal Fertilisation" },
+                { id: 10, text: "Male and female gametes are released into water simultaneously." }, { id: 10, text: "External Fertilisation" }
+            ],
+            'topic2': [
+                { id: 1, text: "Eggs are laid and develop outside the mother's body." }, { id: 1, text: "Ovipary" },
+                { id: 2, text: "Young develop inside eggs that are kept in the mother's body until hatching." }, { id: 2, text: "Ovovivipary" },
+                { id: 3, text: "Young develop inside the mother's uterus and are nourished via a placenta." }, { id: 3, text: "Vivipary" },
+                { id: 4, text: "Examples: Birds, most reptiles, and many fish." }, { id: 4, text: "Ovipary" },
+                { id: 5, text: "Examples: Some sharks and certain snakes/geckos." }, { id: 5, text: "Ovovivipary" },
+                { id: 6, text: "Examples: Most mammals (including humans)." }, { id: 6, text: "Vivipary" },
+                { id: 7, text: "Development where the embryo depends entirely on the yolk." }, { id: 7, text: "Ovipary & Ovovivipary" },
+                { id: 8, text: "Highest protection for the developing embryo." }, { id: 8, text: "Vivipary" },
+                { id: 9, text: "Embryo gets nutrients and oxygen directly from the mother's blood." }, { id: 9, text: "Vivipary" },
+                { id: 10, text: "Internal fertilisation is required for these two types." }, { id: 10, text: "Ovovivipary & Vivipary" }
+            ],
+            'topic3': [
+                { id: 1, text: "The outer membrane that allows for gas exchange." }, { id: 1, text: "Chorion" },
+                { id: 2, text: "Fluid-filled sac that protects the embryo from shock and dehydration." }, { id: 2, text: "Amnion" },
+                { id: 3, text: "Stores the embryo's waste products." }, { id: 3, text: "Allantois" },
+                { id: 4, text: "Provides the main source of food for the developing embryo." }, { id: 4, text: "Yolk Sac" },
+                { id: 5, text: "Permeable structure that prevents the embryo from drying out." }, { id: 5, text: "Shell" },
+                { id: 6, text: "The egg type that allowed vertebrates to move onto land." }, { id: 6, text: "Amniotic Egg" },
+                { id: 7, text: "The amniotic fluid acts as a __________." }, { id: 7, text: "Shock Absorber" },
+                { id: 8, text: "Membrane that also assists in gas exchange alongside the chorion." }, { id: 8, text: "Allantois" },
+                { id: 9, text: "The clear liquid part of the egg providing extra protein." }, { id: 9, text: "Albumin" },
+                { id: 10, text: "Embryo is kept moist inside this specific sac." }, { id: 10, text: "Amniotic Sac" }
+            ],
+            'topic4': [
+                { id: 1, text: "Offspring are well-developed, mobile, and can feed themselves at birth." }, { id: 1, text: "Precocial" },
+                { id: 2, text: "Offspring are helpless, blind, and totally dependent on parents." }, { id: 2, text: "Altricial" },
+                { id: 3, text: "Examples: Chickens, ducks, and ostriches." }, { id: 3, text: "Precocial" },
+                { id: 4, text: "Examples: Eagles, swallows, and humans." }, { id: 4, text: "Altricial" },
+                { id: 5, text: "Highest degree of parental care found in this group." }, { id: 5, text: "Mammals" },
+                { id: 6, text: "Little or no parental care usually means producing __________ offspring." }, { id: 6, text: "Many" },
+                { id: 7, text: "High parental care usually means producing __________ offspring." }, { id: 7, text: "Few" },
+                { id: 8, text: "Crocodiles show this by carrying young to water in their __________." }, { id: 8, text: "Mouths" },
+                { id: 9, text: "Mammals nourish young using milk from __________ glands." }, { id: 9, text: "Mammary" },
+                { id: 10, text: "Strategy: Nest building, incubation, and feeding the young." }, { id: 10, text: "Parental Care" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Grade 12 Life Sciences Reproductive Strategies Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

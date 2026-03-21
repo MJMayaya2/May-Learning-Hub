@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Life Sciences: DNA - The Code of Life</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 0.95rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 12 Life Sciences: DNA</h1>
+        <p class="game-subtitle">Master the structure, replication, and profiling of the Code of Life!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">DNA Structure & Location</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">The Nucleotide</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">DNA Replication</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">DNA Profiling</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "DNA found inside the nucleus of eukaryotic cells." }, { id: 1, text: "Nuclear DNA" },
+                { id: 2, text: "Collective term for DNA found in mitochondria and chloroplasts." }, { id: 2, text: "Extra-nuclear DNA" },
+                { id: 3, text: "Thread-like structures made of DNA wrapped around histones." }, { id: 3, text: "Chromosomes" },
+                { id: 4, text: "The shape of the DNA molecule as described by Watson and Crick." }, { id: 4, text: "Double Helix" },
+                { id: 5, text: "DNA found specifically in the mitochondria." }, { id: 5, text: "mtDNA" },
+                { id: 6, text: "The functional units of heredity located on chromosomes." }, { id: 6, text: "Genes" },
+                { id: 7, text: "Proteins that DNA wraps around to form chromatin." }, { id: 7, text: "Histones" },
+                { id: 8, text: "Double membrane with pores that encloses nuclear DNA." }, { id: 8, text: "Nuclear Envelope" },
+                { id: 9, text: "Small round body suspended in the nucleoplasm." }, { id: 9, text: "Nucleolus" },
+                { id: 10, text: "The substance consisting of DNA and proteins in the nucleus." }, { id: 10, text: "Chromatin" }
+            ],
+            'topic2': [
+                { id: 1, text: "The basic building block (monomer) of DNA." }, { id: 1, text: "Nucleotide" },
+                { id: 2, text: "The 5-carbon sugar found in DNA nucleotides." }, { id: 2, text: "Deoxyribose" },
+                { id: 3, text: "Nitrogenous base that always pairs with Thymine." }, { id: 3, text: "Adenine" },
+                { id: 4, text: "Nitrogenous base that always pairs with Cytosine." }, { id: 4, text: "Guanine" },
+                { id: 5, text: "Nitrogenous base that always pairs with Adenine." }, { id: 5, text: "Thymine" },
+                { id: 6, text: "Nitrogenous base that always pairs with Guanine." }, { id: 6, text: "Cytosine" },
+                { id: 7, text: "The three components of a nucleotide." }, { id: 7, text: "Sugar, Phosphate, Base" },
+                { id: 8, text: "Weak bonds that hold the nitrogenous base pairs together." }, { id: 8, text: "Hydrogen Bonds" },
+                { id: 9, text: "The 'sides' of the DNA ladder are made of sugar and..." }, { id: 9, text: "Phosphate" },
+                { id: 10, text: "The rule stating that A-T and G-C always pair together." }, { id: 10, text: "Complementary Base Pairing" }
+            ],
+            'topic3': [
+                { id: 1, text: "Process of making an identical copy of DNA before cell division." }, { id: 1, text: "DNA Replication" },
+                { id: 2, text: "Enzyme that 'unzips' the DNA double helix." }, { id: 2, text: "DNA Helicase" },
+                { id: 3, text: "Stage of the cell cycle when DNA replication occurs." }, { id: 3, text: "Interphase" },
+                { id: 4, text: "Process where each new DNA molecule has one old and one new strand." }, { id: 4, text: "Semi-conservative" },
+                { id: 5, text: "Free-floating units used to build the new DNA strands." }, { id: 5, text: "DNA Nucleotides" },
+                { id: 6, text: "The original DNA strand that serves as a guide for replication." }, { id: 6, text: "Template Strand" },
+                { id: 7, text: "Replication ensures that daughter cells receive the correct..." }, { id: 7, text: "Genetic Information" },
+                { id: 8, text: "Point where the DNA molecule starts to unzip." }, { id: 8, text: "Replication Fork" },
+                { id: 9, text: "Replication is necessary for this type of nuclear division." }, { id: 9, text: "Mitosis" },
+                { id: 10, text: "DNA replication takes place within this organelle." }, { id: 10, text: "Nucleus" }
+            ],
+            'topic4': [
+                { id: 1, text: "Technique used to identify individuals based on their unique DNA." }, { id: 1, text: "DNA Profiling" },
+                { id: 2, text: "The unique pattern of bands produced during profiling." }, { id: 2, text: "DNA Fingerprint" },
+                { id: 3, text: "Application: Determining the biological father of a child." }, { id: 3, text: "Paternity Test" },
+                { id: 4, text: "Application: Comparing crime scene DNA to a suspect's DNA." }, { id: 4, text: "Forensics" },
+                { id: 5, text: "The only individuals who share the exact same DNA fingerprint." }, { id: 5, text: "Identical Twins" },
+                { id: 6, text: "Advantage: Diagnosis of inherited disorders in newborns." }, { id: 6, text: "Genetic Screening" },
+                { id: 7, text: "Disadvantage: DNA profiling can be a very..." }, { id: 7, text: "Expensive Process" },
+                { id: 8, text: "DNA profiling is useful for identifying unrecognizable..." }, { id: 8, text: "Human Remains" },
+                { id: 9, text: "A concern that profiling may infringe on an individual's..." }, { id: 9, text: "Rights/Privacy" },
+                { id: 10, text: "DNA for profiling can be extracted from blood, hair, or..." }, { id: 10, text: "Saliva/Semen" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Grade 12 Life Sciences: DNA Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>
