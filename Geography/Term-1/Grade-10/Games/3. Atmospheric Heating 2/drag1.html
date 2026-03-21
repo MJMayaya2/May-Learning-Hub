@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learning Hub | Drag and Drop</title>
+    <title>Learning Hub | Grade 10 Geography: Global Warming</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -158,7 +158,7 @@
             border: 2px solid #d6e8ff;
             border-radius: 12px;
             padding: 1.2rem;
-            min-height: 420px;
+            min-height: 520px;
             box-shadow: 0 6px 15px rgba(0,0,0,0.05);
         }
 
@@ -331,45 +331,45 @@
 <body>
 
     <nav>
-        <a href="https://mmayaya.github.io/mayhub" class="logo">May Learning Hub</a>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
         <div class="nav-links">
-            <a href="https://mmayaya.github.io/mayhub/">Home</a>
-            <a href="https://mmayaya.github.io/mayhub/about">About</a>
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
         </div>
     </nav>
 
     <main class="game-container">
-        <h1 class="game-title">Geography Drag & Drop Game</h1>
-        <p class="game-subtitle">Match each item to the correct description or category.</p>
+        <h1 class="game-title">Geography: Global Warming</h1>
+        <p class="game-subtitle">Understand the Greenhouse Effect and the consequences of Global Warming for our planet.</p>
 
         <div class="category-selection">
-            <h2>Step 1: Choose a Set</h2>
+            <h2>Step 1: Choose a Topic</h2>
             <div class="cat-buttons" id="catButtons">
-                <button class="cat-btn" onclick="selectCategory('layers', this)">Layers of the Atmosphere</button>
-                <button class="cat-btn" onclick="selectCategory('weatherTools', this)">Weather Instruments</button>
-                <button class="cat-btn" onclick="selectCategory('rainTypes', this)">Types of Rainfall</button>
-                <button class="cat-btn" onclick="selectCategory('climateFactors', this)">Climate Factors</button>
+                <button class="cat-btn" onclick="selectCategory('unit1', this)">1. Greenhouse Effect</button>
+                <button class="cat-btn" onclick="selectCategory('unit2', this)">2. Causes of Warming</button>
+                <button class="cat-btn" onclick="selectCategory('unit3', this)">3. Global Effects</button>
+                <button class="cat-btn" onclick="selectCategory('unit4', this)">4. Africa & Strategies</button>
             </div>
         </div>
 
         <div id="gameArea">
             <h2 id="activeCategoryTitle">Category: None</h2>
-            <p class="instructions">Drag each blue card on the left and drop it onto the correct box on the right.</p>
+            <p class="instructions">Drag each Geography term and drop it into its matching description. Answers are randomized!</p>
 
             <div class="top-bar">
                 <div class="info-box" id="scoreBox">Score: 0</div>
                 <div class="info-box" id="remainingBox">Remaining: 0</div>
-                <div class="info-box" id="setBox">Set: 0 / 4</div>
+                <div class="info-box" id="setBox">Topic: 0 / 4</div>
             </div>
 
             <div class="board">
                 <div class="panel">
-                    <h3>Drag These Items</h3>
+                    <h3>Geography Terms</h3>
                     <div class="draggable-list" id="draggableList"></div>
                 </div>
 
                 <div class="panel">
-                    <h3>Drop Into Correct Answers</h3>
+                    <h3>Descriptions (Shuffled)</h3>
                     <div class="drop-zones" id="dropZones"></div>
                 </div>
             </div>
@@ -380,8 +380,8 @@
             </div>
 
             <div class="action-buttons">
-                <button class="action-btn" onclick="resetCurrentCategory()">Restart This Set</button>
-                <button class="action-btn secondary" onclick="loadNextCategory()">Next Set</button>
+                <button class="action-btn" onclick="resetCurrentCategory()">Restart Topic</button>
+                <button class="action-btn secondary" onclick="loadNextCategory()">Next Topic</button>
             </div>
         </div>
     </main>
@@ -392,88 +392,104 @@
 
     <script>
         const gameData = {
-            layers: [
+            unit1: [
                 {
-                    item: "Troposphere",
-                    match: "Lowest layer where weather occurs"
+                    item: "Greenhouse Gases",
+                    match: "Atmospheric gases like water vapour and CO2 that trap heat [cite: 73]"
                 },
                 {
-                    item: "Stratosphere",
-                    match: "Layer containing the ozone layer"
+                    item: "Natural Process",
+                    match: "The effect that keeps the Earth warm enough to support life [cite: 75]"
                 },
                 {
-                    item: "Mesosphere",
-                    match: "Layer where meteors burn up"
+                    item: "Glass Analogy",
+                    match: "Allows sun's light/heat in but slows its escape from a shelter [cite: 70]"
                 },
                 {
-                    item: "Thermosphere",
-                    match: "Upper layer with very high temperatures"
+                    item: "Human Activity",
+                    match: "Increases the concentration of gases leading to higher temperatures [cite: 76]"
+                },
+                {
+                    item: "Global Warming",
+                    match: "The continued rise of average temperatures on Earth [cite: 83]"
                 }
             ],
-            weatherTools: [
+            unit2: [
                 {
-                    item: "Thermometer",
-                    match: "Measures temperature"
+                    item: "Industrial Activities",
+                    match: "Increased burning of fossil fuels for production and transport [cite: 87]"
                 },
                 {
-                    item: "Barometer",
-                    match: "Measures air pressure"
+                    item: "Deforestation",
+                    match: "Results in more carbon dioxide remaining in the atmosphere [cite: 88]"
                 },
                 {
-                    item: "Anemometer",
-                    match: "Measures wind speed"
+                    item: "Transportation",
+                    match: "The use of different vehicle types that release CO2 [cite: 89]"
                 },
                 {
-                    item: "Rain Gauge",
-                    match: "Measures rainfall"
+                    item: "Farming Methane",
+                    match: "Gas released from cows and other farmed herbivores [cite: 90]"
+                },
+                {
+                    item: "Industrial Emission",
+                    match: "A primary human-caused increase in greenhouse gases [cite: 86]"
                 }
             ],
-            rainTypes: [
+            unit3: [
                 {
-                    item: "Convectional Rain",
-                    match: "Caused by strong surface heating"
+                    item: "Droughts",
+                    match: "High evaporation rates resulting in less water from water bodies [cite: 93]"
                 },
                 {
-                    item: "Relief Rain",
-                    match: "Occurs when air rises over mountains"
+                    item: "Desertification",
+                    match: "Shortage of rainfall resulting in the formation of deserts [cite: 94]"
                 },
                 {
-                    item: "Frontal Rain",
-                    match: "Occurs when warm and cold air masses meet"
+                    item: "Biodiversity Loss",
+                    match: "Death of organisms due to extreme droughts or flooding [cite: 96]"
                 },
                 {
-                    item: "Drizzle",
-                    match: "Very light fine rain"
+                    item: "Contaminated Water",
+                    match: "Lead to an increase in waterborne diseases [cite: 97]"
+                },
+                {
+                    item: "Human Migration",
+                    match: "Movement of people from water-scarce areas to areas with water [cite: 98]"
                 }
             ],
-            climateFactors: [
+            unit4: [
                 {
-                    item: "Latitude",
-                    match: "Distance from the Equator"
+                    item: "Kyoto Protocol",
+                    match: "Agreement where countries discuss laws to limit carbon emissions [cite: 101]"
                 },
                 {
-                    item: "Altitude",
-                    match: "Height above sea level"
+                    item: "Afforestation",
+                    match: "Strategy involving the planting of trees to combat warming [cite: 103]"
                 },
                 {
-                    item: "Ocean Currents",
-                    match: "Warm or cold water affecting nearby climate"
+                    item: "Salination",
+                    match: "Saltwater leaking into fresh drinking water due to sea-level rise [cite: 129]"
                 },
                 {
-                    item: "Distance from the Sea",
-                    match: "How close a place is to the ocean"
+                    item: "Coastal Erosion",
+                    match: "Oceans destroying homes and infrastructure along the coast [cite: 127]"
+                },
+                {
+                    item: "Rural-Urban Migration",
+                    match: "Social cost when African farmers lose their livelihoods [cite: 112]"
                 }
             ]
         };
 
         const categoryTitles = {
-            layers: "Layers of the Atmosphere",
-            weatherTools: "Weather Instruments",
-            rainTypes: "Types of Rainfall",
-            climateFactors: "Climate Factors"
+            unit1: "The Greenhouse Effect",
+            unit2: "Causes of Global Warming",
+            unit3: "Global Effects & Changes",
+            unit4: "Strategies & African Context"
         };
 
-        const categoryOrder = ["layers", "weatherTools", "rainTypes", "climateFactors"];
+        const categoryOrder = ["unit1", "unit2", "unit3", "unit4"];
 
         let currentCategoryKey = null;
         let score = 0;
@@ -495,7 +511,7 @@
             score = 0;
 
             document.getElementById('gameArea').style.display = 'block';
-            document.getElementById('activeCategoryTitle').innerText = `Category: ${categoryTitles[categoryKey]}`;
+            document.getElementById('activeCategoryTitle').innerText = `Topic: ${categoryTitles[categoryKey]}`;
             document.getElementById('feedbackBox').style.display = 'none';
 
             document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
@@ -537,7 +553,7 @@
 
                 zone.innerHTML = `
                     <div class="drop-title">${matchText}</div>
-                    <div class="drop-desc">Drop the correct term here.</div>
+                    <div class="drop-desc">Drop the matching term here.</div>
                 `;
 
                 zone.addEventListener('dragover', handleDragOver);
@@ -616,7 +632,7 @@
         function updateInfoBoxes(total) {
             document.getElementById('scoreBox').innerText = `Score: ${score}`;
             document.getElementById('remainingBox').innerText = `Remaining: ${total - matchedCount}`;
-            document.getElementById('setBox').innerText = `Set: ${currentSetNumber} / ${categoryOrder.length}`;
+            document.getElementById('setBox').innerText = `Topic: ${currentSetNumber} / ${categoryOrder.length}`;
         }
 
         function showCompletionMessage() {
@@ -624,8 +640,8 @@
             const feedbackTitle = document.getElementById('feedbackTitle');
             const feedbackMessage = document.getElementById('feedbackMessage');
 
-            feedbackTitle.innerText = "Excellent!";
-            feedbackMessage.innerText = `You completed the "${categoryTitles[currentCategoryKey]}" set with a score of ${score}/${gameData[currentCategoryKey].length}.`;
+            feedbackTitle.innerText = "Geography Expert!";
+            feedbackMessage.innerText = `You correctly identified all terms for "${categoryTitles[currentCategoryKey]}"!`;
             feedbackBox.style.display = 'block';
         }
 
@@ -658,7 +674,7 @@
             matchedCount = 0;
             document.getElementById('feedbackBox').style.display = 'none';
             document.getElementById('gameArea').style.display = 'block';
-            document.getElementById('activeCategoryTitle').innerText = `Category: ${categoryTitles[nextKey]}`;
+            document.getElementById('activeCategoryTitle').innerText = `Topic: ${categoryTitles[nextKey]}`;
             renderGame();
         }
     </script>

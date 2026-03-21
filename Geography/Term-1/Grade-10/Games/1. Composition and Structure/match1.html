@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>May Learning Hub | Geography Memory Match</title>
+    <title>May Learning Hub | Grade 10 Geography: The Atmosphere</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
@@ -49,7 +49,7 @@
             justify-content: center; 
             padding: 15px; 
             text-align: center; 
-            font-size: 1.1rem; 
+            font-size: 1rem; 
             line-height: 1.4; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
@@ -64,23 +64,23 @@
 <body>
 
     <nav>
-        <a href="https://mmayaya.github.io/mayhub" class="logo">May Learning Hub</a>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
         <div class="nav-links">
-            <a href="https://mmayaya.github.io/mayhub/">Home</a>
-            <a href="https://mmayaya.github.io/mayhub/about">About</a>
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
         </div>
     </nav>
 
     <header class="game-header">
-        <h1 class="game-title">Grade 10 Geography Assessment Prep</h1>
-        <p class="game-subtitle">Match the geography concepts and definitions from your March Controlled Test!</p>
+        <h1 class="game-title">Grade 10 Geography: The Atmosphere</h1>
+        <p class="game-subtitle">Master the layers, gases, and environmental challenges of our atmosphere!</p>
         
         <div class="category-selection">
             <div class="cat-buttons">
-                <button class="cat-btn" onclick="selectCategory('topic1', this)">Climatology & Water Cycle</button>
-                <button class="cat-btn" onclick="selectCategory('topic2', this)">Structure of the Atmosphere</button>
-                <button class="cat-btn" onclick="selectCategory('topic3', this)">Ocean Currents & Climate</button>
-                <button class="cat-btn" onclick="selectCategory('topic4', this)">Synoptic Weather Maps</button>
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Atmospheric Layers</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Importance & Gases</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Ozone Depletion Causes</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Effects & Solutions</button>
             </div>
         </div>
 
@@ -99,52 +99,52 @@
     <script>
         const gameData = {
             'topic1': [
-                { id: 1, text: "A process whereby areas become more arid and drier like a desert." }, { id: 1, text: "Desertification" },
-                { id: 2, text: "The transfer of heat by vertically moving air." }, { id: 2, text: "Convection" },
-                { id: 3, text: "Gases in the atmosphere that absorb long-wave radiation and contribute to global warming." }, { id: 3, text: "Greenhouse gases" },
-                { id: 4, text: "Chemicals used in aerosol sprays and refrigerants that deplete the ozone layer." }, { id: 4, text: "Chlorofluorocarbons (CFCs)" },
-                { id: 5, text: "A map showing a summary of the weather conditions of a place." }, { id: 5, text: "Synoptic Weather Map" },
-                { id: 6, text: "The largest reservoir of water on Earth." }, { id: 6, text: "The Ocean" },
-                { id: 7, text: "The process whereby water changes from a liquid to a gas (water vapor)." }, { id: 7, text: "Evaporation" },
-                { id: 8, text: "The process whereby water vapor changes back to liquid water." }, { id: 8, text: "Condensation" },
-                { id: 9, text: "The process whereby moisture is released from plants into the atmosphere." }, { id: 9, text: "Transpiration" },
-                { id: 10, text: "Water that flows on the Earth's surface after it has rained." }, { id: 10, text: "Surface Run-off" }
+                { id: 1, text: "Layer where all weather occurs and life exists." }, { id: 1, text: "Troposphere" },
+                { id: 2, text: "Layer containing the ozone layer where planes fly." }, { id: 2, text: "Stratosphere" },
+                { id: 3, text: "Coldest layer where temperature decreases with altitude." }, { id: 3, text: "Mesosphere" },
+                { id: 4, text: "The outer limit of the troposphere." }, { id: 4, text: "Tropopause" },
+                { id: 5, text: "Layer that absorbs Sun's X-rays and UV rays; also called Ionosphere." }, { id: 5, text: "Thermosphere" },
+                { id: 6, text: "The boundary between the stratosphere and mesosphere." }, { id: 6, text: "Stratopause" },
+                { id: 7, text: "The uppermost layer of the atmosphere." }, { id: 7, text: "Exosphere" },
+                { id: 8, text: "Criteria used to divide the atmosphere into layers." }, { id: 8, text: "Temperature change" },
+                { id: 9, text: "The upper limit of the mesosphere." }, { id: 9, text: "Mesopause" },
+                { id: 10, text: "Phenomenon found in the thermosphere." }, { id: 10, text: "Aurora" }
             ],
             'topic2': [
-                { id: 1, text: "Define the term atmosphere." }, { id: 1, text: "The envelope of gases surrounding the Earth." },
-                { id: 2, text: "What is the lowest layer of the atmosphere where most weather occurs?" }, { id: 2, text: "Troposphere" },
-                { id: 3, text: "Which atmospheric layer contains the ozone layer?" }, { id: 3, text: "Stratosphere" },
-                { id: 4, text: "In which two atmospheric layers does temperature increase with altitude?" }, { id: 4, text: "Stratosphere and Thermosphere" },
-                { id: 5, text: "Why does temperature increase in the Stratosphere?" }, { id: 5, text: "The ozone layer absorbs ultraviolet (UV) radiation from the sun." },
-                { id: 6, text: "Why is the Troposphere such an important layer for life on Earth?" }, { id: 6, text: "It contains the oxygen we breathe and is where all weather processes happen." },
-                { id: 7, text: "Why do long-distance aircraft prefer to fly in the lower Stratosphere?" }, { id: 7, text: "To avoid weather disturbances and turbulence." },
-                { id: 8, text: "What human activities mostly deplete the ozone layer?" }, { id: 8, text: "Releasing CFCs from aerosols and industrial cooling systems." },
-                { id: 9, text: "What is the third layer of the atmosphere where temperatures drop significantly?" }, { id: 9, text: "Mesosphere" },
-                { id: 10, text: "What is the outermost layer of the atmosphere shown in standard profiles?" }, { id: 10, text: "Thermosphere" }
+                { id: 1, text: "Most abundant gas in the atmosphere (approx. 78%)." }, { id: 1, text: "Nitrogen" },
+                { id: 2, text: "Essential gas for life and respiration (approx. 21%)." }, { id: 2, text: "Oxygen" },
+                { id: 3, text: "Greenhouse gas that enables the atmosphere to retain heat." }, { id: 3, text: "Carbon Dioxide" },
+                { id: 4, text: "Essential for rain and moisture for life on Earth." }, { id: 4, text: "Water Vapour" },
+                { id: 5, text: "Harmful radiation shielded by the atmosphere." }, { id: 5, text: "Ultraviolet (UV) Rays" },
+                { id: 6, text: "Natural process of heat retention in the atmosphere." }, { id: 6, text: "Greenhouse Effect" },
+                { id: 7, text: "Function of the atmosphere regarding solar radiation." }, { id: 7, text: "Shielding/Protection" },
+                { id: 8, text: "The layer of air surrounding the Earth." }, { id: 8, text: "Atmosphere" },
+                { id: 9, text: "Height above sea level." }, { id: 9, text: "Altitude" },
+                { id: 10, text: "A gas made of three oxygen molecules (O3)." }, { id: 10, text: "Ozone" }
             ],
             'topic3': [
-                { id: 1, text: "What is the cold ocean current that flows along the west coast of South Africa?" }, { id: 1, text: "Benguela Current" },
-                { id: 2, text: "What is the warm ocean current that flows along the east coast of South Africa?" }, { id: 2, text: "Agulhas / Mozambique Current" },
-                { id: 3, text: "Describe the general temperature and moisture content of the Benguela current." }, { id: 3, text: "Cold and dry." },
-                { id: 4, text: "Describe the general temperature and moisture content of the Agulhas current." }, { id: 4, text: "Warm and moist." },
-                { id: 5, text: "How does the Agulhas current influence the weather on South Africa's east coast?" }, { id: 5, text: "It brings warm, moist air, resulting in higher rainfall and warmer temperatures." },
-                { id: 6, text: "What global factor influences climate based on how far a place is from the equator?" }, { id: 6, text: "Latitude" },
-                { id: 7, text: "Which region of the Earth is generally the warmest due to solar radiation angles?" }, { id: 7, text: "The Equatorial region" },
-                { id: 8, text: "Why is the equatorial region warmer than the poles?" }, { id: 8, text: "The sun's rays strike at a direct 90-degree angle, concentrating heat." },
-                { id: 9, text: "Which regions of the Earth are the coldest and frequently covered with ice?" }, { id: 9, text: "The Polar regions" },
-                { id: 10, text: "Why do the sun's rays heat the polar regions less effectively?" }, { id: 10, text: "The rays strike at an oblique angle and spread out over a larger area." }
+                { id: 1, text: "Chemicals used in aerosols and fridges that destroy ozone." }, { id: 1, text: "CFCs" },
+                { id: 2, text: "The specific element in CFCs that splits ozone molecules." }, { id: 2, text: "Chlorine" },
+                { id: 3, text: "Atmospheric layer where ozone depletion occurs." }, { id: 3, text: "Stratosphere" },
+                { id: 4, text: "A historical product using CFCs as propellants." }, { id: 4, text: "Aerosol Sprays" },
+                { id: 5, text: "Destruction of forests that worsens atmospheric heating." }, { id: 5, text: "Deforestation" },
+                { id: 6, text: "Action of CFCs on O3 molecules." }, { id: 6, text: "Splitting into O2 and O" },
+                { id: 7, text: "Common appliance that previously used CFCs." }, { id: 7, text: "Refrigerators" },
+                { id: 8, text: "International agreement to phase out CFC use." }, { id: 8, text: "Montreal Protocol" },
+                { id: 9, text: "Primary cause of the 'hole' in the ozone layer." }, { id: 9, text: "Human-made chemicals" },
+                { id: 10, text: "Source of chlorine in the stratosphere." }, { id: 10, text: "Chlorofluorocarbons" }
             ],
             'topic4': [
-                { id: 1, text: "What do we call lines drawn on synoptic weather maps showing places of equal atmospheric pressure?" }, { id: 1, text: "Isobars" },
-                { id: 2, text: "What type of pressure system is typically associated with clear skies and stable air?" }, { id: 2, text: "High-pressure system (Anticyclone)" },
-                { id: 3, text: "What type of pressure system is typically associated with cloudy skies and precipitation?" }, { id: 3, text: "Low-pressure system (Cyclone)" },
-                { id: 4, text: "How does air circulate around a high-pressure system in the Southern Hemisphere?" }, { id: 4, text: "Anticlockwise and outwards" },
-                { id: 5, text: "What seasonal condition in South Africa is indicated by a strong high-pressure system dominating the interior?" }, { id: 5, text: "Winter" },
-                { id: 6, text: "On a weather station model, what does the number placed in the top left corner usually indicate?" }, { id: 6, text: "Air Temperature" },
-                { id: 7, text: "How is wind speed typically indicated on a weather station model?" }, { id: 7, text: "By the number and length of feathers on the wind direction shaft." },
-                { id: 8, text: "How does air naturally move between different pressure systems?" }, { id: 8, text: "From an area of high pressure to an area of low pressure." },
-                { id: 9, text: "What weather condition is indicated by a completely shaded circle on a station model?" }, { id: 9, text: "Complete cloud cover (overcast skies)" },
-                { id: 10, text: "What is the standard unit of measurement for atmospheric pressure on a synoptic map?" }, { id: 10, text: "Hectopascals (hPa)" }
+                { id: 1, text: "Skin condition caused by excessive UV radiation." }, { id: 1, text: "Skin Cancer" },
+                { id: 2, text: "Eye condition in humans and animals linked to UV rays." }, { id: 2, text: "Cataracts" },
+                { id: 3, text: "Marine life form at the base of the food chain damaged by UV." }, { id: 3, text: "Phytoplankton" },
+                { id: 4, text: "Vital plant process disrupted by ozone depletion." }, { id: 4, text: "Photosynthesis" },
+                { id: 5, text: "A solution: To process old refrigerants safely." }, { id: 5, text: "Recycling" },
+                { id: 6, text: "Way to reduce industrial emissions by traveling together." }, { id: 6, text: "Public Transport" },
+                { id: 7, text: "Gradual elimination of harmful substances like CFCs." }, { id: 7, text: "Phasing out" },
+                { id: 8, text: "Global increase in Earth's temperature." }, { id: 8, text: "Global Warming" },
+                { id: 9, text: "Effect of ozone loss on the troposphere." }, { id: 9, text: "More UV radiation" },
+                { id: 10, text: "Collective goal of the Montreal Protocol." }, { id: 10, text: "Reducing ozone depletion" }
             ]
         };
 
@@ -224,7 +224,7 @@
             secondCard.removeEventListener('click', flipCard);
             matchedPairs++;
             if (matchedPairs === (gameData[currentCategory].length / 2)) {
-                setTimeout(() => alert(`Great job! Geography Prep Complete in ${moves} moves.`), 500);
+                setTimeout(() => alert(`Excellent work! Grade 10 Atmosphere Revision Complete in ${moves} moves.`), 500);
             }
             resetBoard();
         }

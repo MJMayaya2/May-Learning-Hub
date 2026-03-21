@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Geography Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input {
+            width: 100%;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 2px solid #cce0ff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .hint { color: #555; font-size: 0.95rem; }
+        .hidden { display: none !important; }
+
+        @media (max-width: 800px) { .name-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-correct:hover { background: #1e7e34; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect:hover { background: #bd2130; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; animation: fadeIn 0.4s; }
+        .steal-title { color: #856404; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-steal:hover { background: #e0a800; transform: translateY(-2px); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 10 Geography Jeopardy</h1>
+        <p class="game-subtitle">The Atmosphere: Structure, Heating & Moisture</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1 name" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2 name" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3 name" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4 name" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+            <p class="hint">Covering Composition, Heating, Moisture, and Synoptic Maps!</p>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" id="stealTitle">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const player1Cats = [
+            { name: "Atmosphere Structure", questions: [
+                { points: 10, q: "In which layer of the atmosphere does all weather occur?", a: "Troposphere" },
+                { points: 20, q: "Name the layer of the atmosphere where the ozone layer is found.", a: "Stratosphere" },
+                { points: 30, q: "What is the name of the boundary that separates the Troposphere and the Stratosphere?", a: "Tropopause" },
+                { points: 40, q: "Does the temperature increase or decrease with height in the Mesosphere?", a: "Decreases" },
+                { points: 50, q: "Which layer is responsible for absorbing the Sun's X-rays and ultraviolet rays?", a: "Thermosphere" }
+            ]},
+            { name: "Heating Processes", questions: [
+                { points: 10, q: "What is the process called where the Earth's surface absorbs solar energy and heats the air above it?", a: "Conduction" },
+                { points: 20, q: "What is the primary source of heat for the Earth's atmosphere?", a: "The Sun" },
+                { points: 30, q: "Which gas is the most abundant in our atmosphere?", a: "Nitrogen" },
+                { points: 40, q: "Define the 'Greenhouse Effect'.", a: "The process where certain gases trap heat in the atmosphere to keep Earth warm." },
+                { points: 50, q: "Name one factor that affects the amount of solar radiation received at the Earth's surface.", a: "Latitude (or Season/Cloud cover)" }
+            ]},
+            { name: "Ozone Layer", questions: [
+                { points: 10, q: "Ozone is a gas made up of how many molecules of oxygen?", a: "Three (O3)" },
+                { points: 20, q: "Why is the ozone layer important for life on Earth?", a: "It absorbs harmful ultraviolet (UV) radiation." },
+                { points: 30, q: "What chemicals are primarily responsible for destroying the ozone layer?", a: "Chlorofluorocarbons (CFCs)" },
+                { points: 40, q: "Name one household item that previously used CFCs.", a: "Aerosol sprays (or Refrigerants/Air cons)" },
+                { points: 50, q: "What international protocol was adopted to phase out the use of CFCs?", a: "Montreal Protocol" }
+            ]},
+            { name: "General Knowledge", questions: [
+                { points: 10, q: "True or False: The atmosphere consists only of Oxygen and Nitrogen.", a: "False (contains other gases like CO2, Argon, etc.)" },
+                { points: 20, q: "What do we call the layer of air surrounding the Earth?", a: "Atmosphere" },
+                { points: 30, q: "Name the highest layer of the atmosphere listed in the diagram.", a: "Exosphere (or Thermosphere)" },
+                { points: 40, q: "Which gas in the atmosphere is essential for human respiration?", a: "Oxygen" },
+                { points: 50, q: "At what height range is the Stratosphere found?", a: "10-12 km to 50 km" }
+            ]}
+        ];
+
+        const player2Cats = [
+            { name: "Ozone Depletion", questions: [
+                { points: 10, q: "When CFCs split ozone molecules, they break O3 into O2 and what?", a: "O (Single oxygen atom)" },
+                { points: 20, q: "Identify one medical effect of increased UV radiation on humans.", a: "Skin cancer (or Eye cataracts)" },
+                { points: 30, q: "How does ozone depletion affect the marine food chain?", a: "Reduces production of phytoplankton" },
+                { points: 40, q: "Which atmospheric layer receives more UV radiation due to ozone depletion?", a: "Troposphere" },
+                { points: 50, q: "Name one way individuals can help reduce ozone depletion.", a: "Recycle old refrigerants (or use public transport)" }
+            ]},
+            { name: "Global Warming", questions: [
+                { points: 10, q: "What is the term for the long-term increase in Earth's average temperature?", a: "Global Warming" },
+                { points: 20, q: "Name a human activity that contributes to the increase of greenhouse gases.", a: "Burning fossil fuels (or Deforestation/Industries)" },
+                { points: 30, q: "How does deforestation lead to an increase in Global Warming?", a: "Trees absorb CO2; fewer trees means more CO2 stays in the air." },
+                { points: 40, q: "Which gas is considered the main contributor to the enhanced greenhouse effect?", a: "Carbon Dioxide (CO2)" },
+                { points: 50, q: "What is the difference between the 'Natural' and 'Enhanced' Greenhouse Effect?", a: "Natural keeps Earth habitable; Enhanced is caused by human activity leading to overheating." }
+            ]},
+            { name: "Atmospheric Moisture", questions: [
+                { points: 10, q: "What is the name for water in its gaseous form in the atmosphere?", a: "Water vapour" },
+                { points: 20, q: "Which form of moisture is necessary for the production of rain?", a: "Water vapour" },
+                { points: 30, q: "Name one type of precipitation.", a: "Rain (or Snow/Hail/Sleet)" },
+                { points: 40, q: "What process turns water vapour into liquid water droplets to form clouds?", a: "Condensation" },
+                { points: 50, q: "Where does the energy come from to evaporate water into the atmosphere?", a: "The Sun" }
+            ]},
+            { name: "Synoptic Maps", questions: [
+                { points: 10, q: "What is the name of the map that shows weather conditions over a large area at a specific time?", a: "Synoptic Weather Map" },
+                { points: 20, q: "On a synoptic map, what do we call the lines that join places of equal atmospheric pressure?", a: "Isobars" },
+                { points: 30, q: "What does an 'H' symbol represent on a synoptic weather map?", a: "High-pressure system" },
+                { points: 40, q: "What does an 'L' symbol represent on a synoptic weather map?", a: "Low-pressure system" },
+                { points: 50, q: "If isobars are very close together on a map, what does this indicate about the wind speed?", a: "Wind speed is high/strong winds" }
+            ]}
+        ];
+
+        const player3Cats = [
+            { name: "Layers & Pauses", questions: [
+                { points: 10, q: "What is the upper limit of the Stratosphere called?", a: "Stratopause" },
+                { points: 20, q: "In which layer do commercial airplanes usually fly to avoid weather?", a: "Stratosphere" },
+                { points: 30, q: "What is the temperature change in the Troposphere as altitude increases?", a: "It decreases" },
+                { points: 40, q: "Which layer is the coldest part of the Earth's atmosphere?", a: "Mesosphere" },
+                { points: 50, q: "The 'Ionosphere' is found within which broader atmospheric layer?", a: "Thermosphere" }
+            ]},
+            { name: "Atmosphere Gases", questions: [
+                { points: 10, q: "What percentage of the atmosphere is made up of Nitrogen?", a: "78%" },
+                { points: 20, q: "What percentage of the atmosphere is made up of Oxygen?", a: "21%" },
+                { points: 30, q: "Which minor gas is vital for photosynthesis in plants?", a: "Carbon Dioxide" },
+                { points: 40, q: "Name a 'variable gas' whose concentration changes from place to place.", a: "Water vapour" },
+                { points: 50, q: "Why are aerosols (like dust and smoke) important in the atmosphere?", a: "They act as cooling agents or nuclei for condensation." }
+            ]},
+            { name: "Heating & Energy", questions: [
+                { points: 10, q: "What is 'Insolation'?", a: "Incoming Solar Radiation" },
+                { points: 20, q: "What do we call the heat energy that is radiated back from the Earth into the atmosphere?", a: "Terrestrial radiation" },
+                { points: 30, q: "Does land or water heat up faster during the day?", a: "Land" },
+                { points: 40, q: "How does cloud cover affect the temperature during the day?", a: "It lowers the temperature by reflecting sunlight." },
+                { points: 50, q: "What is the term for the percentage of solar radiation reflected back into space by a surface?", a: "Albedo" }
+            ]},
+            { name: "Weather Elements", questions: [
+                { points: 10, q: "Which instrument is used to measure air pressure?", a: "Barometer" },
+                { points: 20, q: "What unit is typically used to measure atmospheric pressure on a weather map?", a: "Hectopascals (hPa) or Millibars" },
+                { points: 30, q: "Which instrument is used to measure wind speed?", a: "Anemometer" },
+                { points: 40, q: "Name the instrument used to measure humidity.", a: "Hygrometer" },
+                { points: 50, q: "In which direction does air move: from High pressure to Low, or Low to High?", a: "High pressure to Low pressure" }
+            ]}
+        ];
+
+        const player4Cats = [
+            { name: "Environmental Issues", questions: [
+                { points: 10, q: "Name one strategy to reduce the impact of Global Warming.", a: "Use of renewable energy (or planting trees/reducing emissions)" },
+                { points: 20, q: "What is 'Ozone' chemically denoted as?", a: "O3" },
+                { points: 30, q: "Why is the troposphere's temperature decrease important for weather?", a: "It allows for convection and cloud formation." },
+                { points: 40, q: "How does industrialization lead to the destruction of the ozone layer?", a: "Release of harmful chemicals like CFCs and Halons." },
+                { points: 50, q: "What is the relationship between the Greenhouse Effect and Global Warming?", a: "The greenhouse effect is the process; global warming is the result of that process being too strong." }
+            ]},
+            { name: "Structure & Limits", questions: [
+                { points: 10, q: "What is the upper limit of the Mesosphere called?", a: "Mesopause" },
+                { points: 20, q: "Where is the 'Thermopause' located?", a: "At the top of the Thermosphere" },
+                { points: 30, q: "True or False: The Exosphere is the outermost layer of the atmosphere.", a: "True" },
+                { points: 40, q: "Which layer contains the most mass of the atmosphere?", a: "Troposphere" },
+                { points: 50, q: "Why does the temperature increase in the Stratosphere?", a: "Because the ozone layer absorbs UV radiation, which generates heat." }
+            ]},
+            { name: "Map Interpretation", questions: [
+                { points: 10, q: "What weather feature is shown by a line with blue triangles on a synoptic map?", a: "Cold front" },
+                { points: 20, q: "What weather feature is shown by a line with red semi-circles?", a: "Warm front" },
+                { points: 30, q: "If a station model on a map is completely shaded, what is the cloud cover?", a: "8/8 (Overcast)" },
+                { points: 40, q: "What do 'Wind Barbs' indicate on a synoptic map?", a: "Wind direction and speed" },
+                { points: 50, q: "South African synoptic maps often show a 'Coastal Low'. In which direction does it typically move?", a: "Eastwards/Along the coast" }
+            ]},
+            { name: "Earth's Shield", questions: [
+                { points: 10, q: "What would happen to Earth's temperature without the natural greenhouse effect?", a: "It would be too cold for life (approx -18°C)." },
+                { points: 20, q: "Which gas acts as a shield against UV rays in the Stratosphere?", a: "Ozone" },
+                { points: 30, q: "Name the process where plants use CO2 to make food, helping regulate the atmosphere.", a: "Photosynthesis" },
+                { points: 40, q: "Why is the atmosphere important for meteoroids?", a: "Most burn up in the atmosphere (specifically the Mesosphere) before hitting Earth." },
+                { points: 50, q: "How does the atmosphere enable sound to travel?", a: "It provides a medium (air molecules) for sound waves to move through." }
+            ]}
+        ];
+
+        const gameData = [player1Cats, player2Cats, player3Cats, player4Cats];
+
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalQuestion = document.getElementById('modalQuestion');
+        const modalAnswer = document.getElementById('modalAnswer');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+        const judgementArea = document.getElementById('judgementArea');
+        const activePlayerNameLabel = document.getElementById('activePlayerName');
+        const stealArea = document.getElementById('stealArea');
+        const stealButtonsContainer = document.getElementById('stealButtons');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() {
+            document.getElementById('nameSetupSection').classList.remove('hidden');
+        }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header';
+                    h.innerText = c.name;
+                    board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn';
+                        btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points;
+            activeTileButton = btn;
+            modalCategory.innerText = `${playerNames[pIdx]} | ${catName}`;
+            modalQuestion.innerText = qData.q;
+            modalAnswer.innerText = qData.a;
+            activePlayerNameLabel.innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block';
+            answerArea.style.display = 'none';
+            stealArea.style.display = 'none';
+            modal.style.display = 'flex';
+        }
+
+        function revealAnswer() {
+            btnReveal.style.display = 'none';
+            answerArea.style.display = 'block';
+            judgementArea.style.display = 'flex';
+        }
+
+        function judgeActivePlayer(correct) {
+            if (correct) {
+                scores[currentPlayerIndex] += activePointValue;
+                updateScore(currentPlayerIndex);
+                closeModal();
+            } else {
+                judgementArea.style.display = 'none';
+                showSteal();
+            }
+        }
+
+        function showSteal() {
+            stealArea.style.display = 'block';
+            stealButtonsContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button');
+                    b.className = 'btn-steal';
+                    b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    stealButtonsContainer.appendChild(b);
+                }
+            }
+            let none = document.createElement('button');
+            none.className = 'btn-incorrect';
+            none.innerText = "No one";
+            none.onclick = closeModal;
+            stealButtonsContainer.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { activeTileButton.innerText = ""; activeTileButton.disabled = true; modal.style.display = 'none'; }
+        
+        buildBoards();
+
+        function resetPlayerNames() {
+            playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`nameInput-${i}`).value = "";
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            showNameEditor();
+        }
+    </script>
+</body>
+</html>

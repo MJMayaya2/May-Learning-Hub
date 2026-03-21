@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Geography: Atmospheric Heating Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Atmospheric Heating (Grade 10 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is the primary source of heat for the Earth's atmosphere?", options: ["Volcanic activity", "The Sun", "Burning fossil fuels", "The Earth's core"], a: 1, hint: "It is the center of our solar system." },
+            { q: "In what form does energy from the Sun reach the Earth?", options: ["Short-wave radiation", "Long-wave radiation", "Sound waves", "Magnetic pulses"], a: 0, hint: "Think of the type of radiation the atmosphere is 'transparent' to." },
+            { q: "The atmosphere is only able to absorb the sun's heat when it radiates off what?", options: ["The moon's surface", "Clouds", "Earth's surface", "The ozone layer"], a: 2, hint: "The heat must first touch the ground before the air can truly warm up." },
+            { q: "What does the word 'Insolation' stand for?", options: ["Inside Solar Action", "Internal Solar Radiation", "Incoming Solar Radiation", "Instant Solar Location"], a: 2, hint: "It describes the incoming rays of the sun." },
+            { q: "Which process involves the transfer of heat through direct contact between the Earth and the air?", options: ["Convection", "Radiation", "Evaporation", "Conduction"], a: 3, hint: "Think of touching a hot stove; the air 'touches' the warm ground." },
+            { q: "What is the process where heat is transferred by the vertical movement of air currents?", options: ["Conduction", "Convection", "Insulation", "Insolation"], a: 1, hint: "Warm air rises and cold air sinks in this cycle." },
+            { q: "Why is the heating of the atmosphere essential for the Earth?", options: ["It drives the water cycle", "It stops the wind", "It makes the Earth solid", "It creates gravity"], a: 0, hint: "Without heat, water wouldn't evaporate." },
+            { q: "What happens to temperature as altitude increases in the troposphere?", options: ["It increases", "It stays the same", "It decreases", "It doubles"], a: 2, hint: "Think about why there is snow on top of high mountains." },
+            { q: "Which factor explains why the Equator is generally warmer than the Poles?", options: ["Altitude", "Longitude", "Latitude", "Ocean depth"], a: 2, hint: "This refers to your position north or south of the equator." },
+            { q: "Why do polar regions receive less intense heat than tropical regions?", options: ["They are further from the sun", "Sunlight hits at a slant and passes through more atmosphere", "There are more clouds at the poles", "The poles have no land"], a: 1, hint: "Consider the angle of the sun's rays." },
+            { q: "What term describes a climate with large temperature differences between summer and winter?", options: ["Maritime climate", "Continental climate", "Equatorial climate", "Tropical climate"], a: 1, hint: "This usually happens in places far away from the sea." },
+            { q: "Why do coastal areas have more moderate (mild) temperatures than inland areas?", options: ["The ocean heats and cools slower than land", "It never rains at the coast", "The coast is always at a high altitude", "Sand reflects all heat"], a: 0, hint: "Water has a 'moderating influence' because it holds onto heat longer." },
+            { q: "Which warm ocean current flows along the East Coast of South Africa?", options: ["Benguela Current", "California Current", "Agulhas Current", "Canary Current"], a: 2, hint: "This current brings warm water from the equator down our coast." },
+            { q: "What effect does a warm ocean current have on the air mass above it?", options: ["Decreases humidity", "Increases temperature and humidity", "Freezes the air", "Increases air pressure"], a: 1, hint: "Warm water causes more evaporation." },
+            { q: "How do cold ocean currents, like the Benguela, affect the rainfall of nearby land?", options: ["They cause heavy tropical rain", "They decrease humidity and rainfall", "They create thunderstorms", "They have no effect"], a: 1, hint: "Cold air holds less moisture, leading to drier conditions." },
+            { q: "Which process heats the air mass directly above a warm ocean current through touch?", options: ["Convection", "Conduction", "Radiation", "Sublimation"], a: 1, hint: "It's the same process that happens between the warm land and the air." },
+            { q: "At night or during winter, why is the sea often warmer than the land?", options: ["The moon heats the water", "Water retains heat for longer than land", "Fish generate heat", "Undersea volcanoes"], a: 1, hint: "Land loses its heat very quickly once the sun goes down." },
+            { q: "What do we call the natural process where certain gases trap heat in the atmosphere?", options: ["Global Cooling", "The Greenhouse Effect", "Ozone Depletion", "Solar Flare"], a: 1, hint: "It works like a glass house used for growing plants." },
+            { q: "What would happen to Earth if there was NO natural greenhouse effect?", options: ["It would be too hot for life", "It would be the perfect temperature", "It would be too cold for life", "Gravity would fail"], a: 2, hint: "The atmosphere acts like a blanket to keep us warm." },
+            { q: "Which of these is a major 'Greenhouse Gas' that contributes to global warming?", options: ["Oxygen", "Nitrogen", "Argon", "Carbon dioxide"], a: 3, hint: "Humans release large amounts of this by burning coal and oil." },
+            { q: "What is the primary cause of modern Global Warming?", options: ["Natural solar cycles", "Increased human emissions of greenhouse gases", "Changes in the Earth's orbit", "The moon moving closer"], a: 1, hint: "It is linked to the industrial revolution and pollution." },
+            { q: "How does distance from the sea affect summer temperatures in the interior of South Africa?", options: ["Makes them cooler", "Makes them much hotter", "No change", "Makes them stay at 0 degrees"], a: 1, hint: "Think about how hot it gets in the Northern Cape compared to Durban." },
+            { q: "The rate of evaporation is higher over which type of water?", options: ["Cold water", "Frozen water", "Warm water", "Fresh water"], a: 2, hint: "Heat provides the energy needed for water to turn into vapour." },
+            { q: "Which term refers to the radiation that the Earth sends back into space?", options: ["Insolation", "Terrestrial (long-wave) radiation", "Short-wave radiation", "Ultraviolet rays"], a: 1, hint: "'Terrestrial' refers to the Earth." },
+            { q: "In the context of heating, how does the texture of land affect it compared to water?", options: ["Land heats slowly", "Land is transparent", "Land heats and cools quickly", "Water is solid"], a: 2, hint: "Water is deep and moves, while land is a solid surface." },
+            { q: "What type of climate does Cape Town have because it is near the ocean?", options: ["Continental", "Maritime", "Arid", "Polar"], a: 1, hint: "This word relates to the sea." },
+            { q: "Why is the atmosphere described as 'transparent' to short-wave radiation?", options: ["It blocks all sunlight", "The rays pass through without heating the air much", "It turns the rays into oxygen", "It reflects the rays back to the sun"], a: 1, hint: "The air only gets warm after the rays hit the ground." },
+            { q: "What determines the amount of insolation a specific place receives throughout the year?", options: ["The number of trees", "The angle of the sun's rays", "The speed of the wind", "The distance to the moon"], a: 1, hint: "Think about summer vs. winter sun positions." },
+            { q: "Which factor is responsible for the 'moderating influence' on coastal temperatures?", options: ["High mountains", "The Ocean", "City buildings", "Dense forests"], a: 1, hint: "It's a very large body of water." },
+            { q: "In South Africa, which province would have the most 'Continental' climate?", options: ["KwaZulu-Natal", "Western Cape", "Gauteng", "Eastern Cape"], a: 2, hint: "Look for the province that is furthest from the ocean." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

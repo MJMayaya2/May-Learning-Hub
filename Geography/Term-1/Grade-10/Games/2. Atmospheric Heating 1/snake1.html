@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>May Learning Hub | Smart Snake</title>
+    <title>May Learning Hub | Smart Snake - Atmospheric Heating</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; touch-action: manipulation; }
@@ -71,24 +71,24 @@
 <body>
 
     <nav>
-        <a href="https://mmayaya.github.io/mayhub/" class="logo">May Learning Hub</a>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
         <div class="nav-links">
-            <a href="https://mmayaya.github.io/mayhub/">Home</a>
-            <a href="https://mmayaya.github.io/mayhub/about">About</a>
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
         </div>
     </nav>
 
     <header class="game-header">
-        <h1 class="game-title">Smart Snake</h1>
-        <p class="game-subtitle">Eat 10 red apples to win! Don't bite your own tail!</p>
+        <h1 class="game-title">Smart Snake: Atmospheric Heating</h1>
+        <p class="game-subtitle">Grade 10 Geography - CAPS Edition. Master the processes that heat our Earth!</p>
     </header>
 
     <div class="category-selection" id="categorySelection">
         <div class="cat-buttons">
-            <button class="cat-btn" onclick="startGame('game1')">Climate & Water Cycle</button>
-            <button class="cat-btn" onclick="startGame('game2')">The Atmosphere</button>
-            <button class="cat-btn" onclick="startGame('game3')">Ocean Currents</button>
-            <button class="cat-btn" onclick="startGame('game4')">Synoptic Weather</button>
+            <button class="cat-btn" onclick="startGame('game1')">Heating Processes</button>
+            <button class="cat-btn" onclick="startGame('game2')">Greenhouse & Warming</button>
+            <button class="cat-btn" onclick="startGame('game3')">Latitude & Altitude</button>
+            <button class="cat-btn" onclick="startGame('game4')">Oceans & Distance</button>
         </div>
     </div>
 
@@ -124,7 +124,7 @@
     </div>
 
     <div id="endScreen">
-        <h2 id="endTitle" style="color: #28a745;">Level Complete!</h2>
+        <h2 id="endTitle" style="color: #28a745;">Topic Mastered!</h2>
         <p id="endMessage">You successfully ate 10 apples.</p>
         <p style="font-size: 1.5rem; margin: 1rem 0; font-weight: bold;">Final Score: <span id="finalScoreText" style="color:#004080;">0</span> Points</p>
         <button class="cat-btn" onclick="location.reload()" style="background:#3385ff; color:#fff;">Play Again</button>
@@ -137,46 +137,40 @@
     <script>
         const questionDB = {
             'game1': [
-                { q: "A process whereby areas become more arid and drier like a desert is...", options: ["Drought", "Desertification", "Climate Change", "Ozone Depletion"], a: 1 },
-                { q: "The transfer of heat by vertically moving air is...", options: ["Convection", "Conduction", "Coriolis force", "Latent heat"], a: 0 },
-                { q: "Gases in the atmosphere that absorb long-wave radiation and contribute to global warming are known as...", options: ["Radiation gases", "Thermosphere", "Greenhouse effect", "Greenhouse gases"], a: 3 },
-                { q: "Chemicals used in some aerosol sprays, refrigerants, and air conditioners are known as...", options: ["Oxygen atoms", "Chlorine carbons", "Pollutants", "Chlorofluorocarbons"], a: 3 },
-                { q: "Moisture or any form of water which falls from the atmosphere onto the earth's surface is...", options: ["Thunderstorms", "Fog", "Precipitation", "Rainfalls"], a: 2 },
-                { q: "A map showing a summary of the weather conditions of a place is...", options: ["Meteorology", "Weather forecast", "A synoptic Weather Map", "Climatology"], a: 2 },
-                { q: "The main cause of global warming is...", options: ["Decrease in greenhouse gases", "Increase in greenhouse gases", "Increased rainfall", "Ocean currents"], a: 1 },
-                { q: "Which of the following is NOT evidence of global warming?", options: ["Droughts", "Increase in diseases", "Extinction of Plants", "Drop in sea level"], a: 3 },
-                { q: "What is the largest reservoir of water on Earth?", options: ["Rivers", "Lakes", "Ocean", "Glaciers"], a: 2 },
-                { q: "What is the process whereby water changes to water vapor?", options: ["Evaporation", "Condensation", "Infiltration", "Transpiration"], a: 0 },
-                { q: "What is the process whereby water vapor changes to liquid water?", options: ["Infiltration", "Condensation", "Surface-Run off", "Precipitation"], a: 1 },
-                { q: "What is water that flows on the Earth's surface after it has rained?", options: ["Groundwater", "Infiltration", "Transpiration", "Surface-Run off"], a: 3 },
-                { q: "What is the process whereby moisture is released from plants into the atmosphere?", options: ["Evaporation", "Condensation", "Transpiration", "Precipitation"], a: 2 },
-                { q: "What is the process whereby water reaches the groundwater?", options: ["Infiltration", "Surface-Run off", "Condensation", "Evaporation"], a: 0 }
+                { q: "What is the primary source of heat for the atmosphere?", options: ["Volcanoes", "The Sun", "The Earth's core", "Burning fuels"], a: 1 },
+                { q: "What is 'Insolation' short for?", options: ["Internal Solar Action", "Incoming Solar Radiation", "Inside Solar Rotation", "Instant Solar Ionization"], a: 1 },
+                { q: "The atmosphere is transparent to ____ radiation from the sun.", options: ["Short-wave", "Long-wave", "Terrestrial", "Magnetic"], a: 0 },
+                { q: "Which process involves the transfer of heat through direct contact?", options: ["Convection", "Radiation", "Conduction", "Insolation"], a: 2 },
+                { q: "What is the vertical movement of air that transfers heat upwards called?", options: ["Conduction", "Convection", "Latent heat", "Radiation"], a: 1 },
+                { q: "When the atmosphere absorbs heat radiating off Earth's surface, it is called...", options: ["Direct heating", "Terrestrial radiation", "Solar flaring", "Global cooling"], a: 1 },
+                { q: "Which process occurs when heat is released during the condensation of water vapour?", options: ["Sensible heat", "Latent heat", "Conduction", "Reflection"], a: 1 }
             ],
             'game2': [
-                { q: "What is the best definition of the atmosphere?", options: ["A layer of gases surrounding the earth", "The solid rock layer of the earth", "The water layer of the earth", "The magnetic field of the earth"], a: 0 },
-                { q: "Which layer of the atmosphere is closest to the Earth's surface?", options: ["Stratosphere", "Mesosphere", "Troposphere", "Thermosphere"], a: 2 },
-                { q: "In which two layers of the atmosphere does temperature increase with height?", options: ["Troposphere and Mesosphere", "Stratosphere and Thermosphere", "Troposphere and Stratosphere", "Mesosphere and Thermosphere"], a: 1 },
-                { q: "Why does the temperature increase in the Stratosphere?", options: ["Because of greenhouse gases", "Due to the presence of the ozone layer absorbing UV rays", "Because it is closer to the sun", "Due to friction from meteors"], a: 1 },
-                { q: "Why is the Troposphere such an important layer?", options: ["It contains the ozone layer", "It is where all weather processes occur and contains oxygen", "It protects us from meteors", "It is where satellites orbit"], a: 1 },
-                { q: "Why do long-distance aircraft often choose to fly in the lower part of the Stratosphere?", options: ["To get a better view", "To avoid turbulence and weather systems", "Because the air is warmer", "To use less fuel due to higher gravity"], a: 1 },
-                { q: "Which human activity is a major cause of ozone layer depletion?", options: ["Planting trees", "Using renewable energy", "The release of Chlorofluorocarbons (CFCs)", "Overfishing in the oceans"], a: 2 }
+                { q: "What is the trapping of heat by gases in the atmosphere called?", options: ["The Ozone Hole", "The Greenhouse Effect", "Atmospheric Pressure", "Solar Eclipse"], a: 1 },
+                { q: "Which of these is a major Greenhouse Gas mentioned in the text?", options: ["Argon", "Nitrogen", "Carbon Dioxide", "Hydrogen"], a: 2 },
+                { q: "What happens to the Earth's temperature during Global Warming?", options: ["It stays the same", "It decreases", "It increases", "It fluctuates wildly"], a: 2 },
+                { q: "What type of radiation do greenhouse gases trap?", options: ["Short-wave radiation", "Long-wave terrestrial radiation", "Gamma rays", "Ultraviolet rays"], a: 1 },
+                { q: "True or False: The natural greenhouse effect is necessary for life on Earth.", options: ["True", "False"], a: 0 },
+                { q: "Increased levels of CO2 from industries lead to an ____ greenhouse effect.", options: ["Weakened", "Enhanced", "Inverted", "Eliminated"], a: 1 },
+                { q: "Which heating process provides energy to drive the water cycle?", options: ["Conduction", "Atmospheric Heating", "Nuclear Fusion", "Radiation only"], a: 1 }
             ],
             'game3': [
-                { q: "What are the two major ocean currents that flow along the coasts of South Africa?", options: ["Gulf Stream and Labrador", "Benguela and Agulhas", "Kuroshio and Oyashio", "Canary and California"], a: 1 },
-                { q: "Describe the characteristics of the Benguela ocean current.", options: ["Warm and moist", "Warm and dry", "Cold and dry", "Cold and moist"], a: 2 },
-                { q: "Describe the characteristics of the Agulhas ocean current.", options: ["Warm and moist", "Cold and dry", "Warm and dry", "Cold and moist"], a: 0 },
-                { q: "How does the warm Agulhas current influence weather on the eastern part of South Africa?", options: ["It causes freezing temperatures", "It brings lower temperatures and dry air", "It increases temperatures and brings rainfall", "It prevents clouds from forming"], a: 2 },
-                { q: "Which factor primarily influences the warm climate around the equator?", options: ["Ocean currents", "Altitude", "Direct angle of the sun's rays (Latitude)", "Distance from the sea"], a: 2 },
-                { q: "Why are the polar regions covered with ice and extremely cold?", options: ["They are at a high altitude", "They receive indirect, slanted rays from the sun", "They are far from oceans", "They have too many clouds"], a: 1 },
-                { q: "Which coast of South Africa is washed by the cold Benguela current?", options: ["East coast", "West coast", "North coast", "South coast"], a: 1 }
+                { q: "How does temperature generally change as you move from the Equator to the Poles?", options: ["Increases", "Decreases", "Stays constant", "Becomes unpredictable"], a: 1 },
+                { q: "Why are regions near the equator hotter than the poles?", options: ["More volcanoes", "The sun's rays are more direct", "Closer to the moon", "Higher wind speeds"], a: 1 },
+                { q: "What happens to temperature as altitude (height above sea level) increases?", options: ["It increases", "It decreases", "It remains the same", "It only changes at night"], a: 1 },
+                { q: "What is the name for the rate at which temperature decreases with height?", options: ["Lapse Rate", "Gradient Scale", "Altitude Mark", "Heat Index"], a: 0 },
+                { q: "True or False: Low latitude areas receive more intense solar energy than high latitude areas.", options: ["True", "False"], a: 0 },
+                { q: "A mountain peak is usually ____ than the valley below.", options: ["Warmer", "Colder", "Drier", "More humid"], a: 1 },
+                { q: "Sunlight hitting the poles is spread over a ____ area compared to the equator.", options: ["Smaller", "Larger", "Vertical", "Pointed"], a: 1 }
             ],
             'game4': [
-                { q: "What do lines drawn on synoptic weather maps showing places of equal atmospheric pressure represent?", options: ["Isohyets", "Isotherms", "Isobars", "Contours"], a: 2 },
-                { q: "What does the letter 'H' represent on a synoptic weather map?", options: ["High humidity", "High temperature cell", "High pressure cell", "Heavy rainfall"], a: 2 },
-                { q: "What does the letter 'L' represent on a synoptic weather map?", options: ["Low temperature", "Low pressure cell", "Light winds", "Low humidity"], a: 1 },
-                { q: "What is generally indicated by closely spaced isobars on a weather map?", options: ["Calm winds", "Strong winds", "High temperatures", "Clear skies"], a: 1 },
-                { q: "What kind of weather is typically associated with a high-pressure system?", options: ["Heavy rainfall and storms", "Cloudy skies and snow", "Clear skies and stable conditions", "Tornadoes and strong winds"], a: 2 },
-                { q: "Synoptic weather maps are primarily used for what purpose?", options: ["Showing population density", "Displaying historical events", "Summarizing and forecasting weather conditions", "Mapping ocean currents"], a: 2 }
+                { q: "Ocean currents flowing from the equator toward the poles are ____.", options: ["Cold currents", "Warm currents", "Neutral currents", "Static currents"], a: 1 },
+                { q: "How does a cold ocean current affect the temperature of nearby land?", options: ["Increases it", "Decreases it", "No effect", "Makes it rain more"], a: 1 },
+                { q: "Places far from the sea experience ____ temperature differences than coastal places.", options: ["Smaller", "Greater", "Identical", "Minor"], a: 1 },
+                { q: "Why does the sea have a moderating influence on coastal temperatures?", options: ["It reflects all light", "It heats and cools slower than land", "It is always 0 degrees", "It blocks the wind"], a: 1 },
+                { q: "The warmer the water in an ocean current, the ____ the rate of evaporation.", options: ["Higher", "Lower", "Slower", "More stable"], a: 0 },
+                { q: "Coastal places have ____ summer temperatures compared to inland places.", options: ["Hotter", "Cooler", "Extreme", "Dry"], a: 1 },
+                { q: "In winter, the sea is generally ____ than the land.", options: ["Colder", "Warmer", "Frozen", "The same"], a: 1 }
             ]
         };
 
@@ -330,6 +324,10 @@
 
         let currentQuestionObj;
         function triggerQuestion(pointsValue) {
+            if (currentTopic.length === 0) {
+                endGame(true);
+                return;
+            }
             const qIndex = Math.floor(Math.random() * currentTopic.length);
             currentQuestionObj = currentTopic.splice(qIndex, 1)[0]; 
             document.getElementById('modalPoints').innerText = pointsValue === 3 ? "⭐ BONUS: 3 Points" : "🍎 Regular: 1 Point";
@@ -387,13 +385,13 @@
             const title = document.getElementById('endTitle');
             const msg = document.getElementById('endMessage');
             if (didWin) {
-                title.innerText = "Level Complete!";
+                title.innerText = "Topic Mastered!";
                 title.style.color = "#28a745";
-                msg.innerText = "You successfully ate 10 apples.";
+                msg.innerText = "Excellent! You have a deep understanding of atmospheric heating!";
             } else {
                 title.innerText = "Game Over!";
                 title.style.color = "#dc3545";
-                msg.innerText = "Ouch! You bit your own tail.";
+                msg.innerText = "The atmosphere can be tricky—try again to master the energy balance!";
             }
         }
     </script>
