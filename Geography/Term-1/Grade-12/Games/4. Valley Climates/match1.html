@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Geography: Valley Climates</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 12 Geography: Valley Climates</h1>
+        <p class="game-subtitle">Match the microclimate factors, winds, and human impacts!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Slope Aspect</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Valley Winds</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Inversions & Fog</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Settlement & Farming</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Orientation of a slope relative to the Sun." }, { id: 1, text: "Slope Aspect" },
+                { id: 2, text: "In SA, these slopes receive more direct sunlight." }, { id: 2, text: "North-facing Slopes" },
+                { id: 3, text: "In SA, these slopes are cooler and often in shadow." }, { id: 3, text: "South-facing Slopes" },
+                { id: 4, text: "Area on south-facing slopes receiving no sun in winter." }, { id: 4, text: "Shadow Zone" },
+                { id: 5, text: "Climate of a small area different from its surroundings." }, { id: 5, text: "Microclimate" },
+                { id: 6, text: "Reason north-facing slopes are warmer in SA." }, { id: 6, text: "Direct Sun Rays" },
+                { id: 7, text: "Impact of slope aspect on evaporation." }, { id: 7, text: "Higher on North-facing" },
+                { id: 8, text: "Northern Hemisphere equivalent to SA's north-facing slope." }, { id: 8, text: "South-facing Slope" },
+                { id: 9, text: "Season when shadow zones are most prominent." }, { id: 9, text: "Winter" },
+                { id: 10, text: "Factor making north slopes drier in SA." }, { id: 10, text: "Increased Insolation" }
+            ],
+            'topic2': [
+                { id: 1, text: "Winds that blow upslope during the day." }, { id: 1, text: "Anabatic Winds" },
+                { id: 2, text: "Winds that blow downslope at night." }, { id: 2, text: "Katabatic Winds" },
+                { id: 3, text: "Cause of anabatic winds." }, { id: 3, text: "Heating of Valley Slopes" },
+                { id: 4, text: "Cause of katabatic winds." }, { id: 4, text: "Terrestrial Radiation/Cooling" },
+                { id: 5, text: "Winds also known as 'gravity winds'." }, { id: 5, text: "Katabatic Winds" },
+                { id: 6, text: "Time when anabatic winds are strongest." }, { id: 6, text: "Afternoon" },
+                { id: 7, text: "Time when katabatic winds occur." }, { id: 7, text: "Night/Early Morning" },
+                { id: 8, text: "Valley bottom becomes colder than slopes due to these." }, { id: 8, text: "Katabatic Winds" },
+                { id: 9, text: "Force driving air down a slope at night." }, { id: 9, text: "Gravity" },
+                { id: 10, text: "Air pressure change on slopes during the day." }, { id: 10, text: "Low Pressure on Slopes" }
+            ],
+            'topic3': [
+                { id: 1, text: "Layer of warm air trapping cold air in a valley." }, { id: 1, text: "Temperature Inversion" },
+                { id: 2, text: "Condition where temperature increases with altitude." }, { id: 2, text: "Inversion" },
+                { id: 3, text: "Dense, cold air trapped at the valley floor." }, { id: 3, text: "Frost Pocket" },
+                { id: 4, text: "Fog formed by cooling of surface air at night." }, { id: 4, text: "Radiation Fog" },
+                { id: 5, text: "Combination of smoke and fog trapped by an inversion." }, { id: 5, text: "Smog" },
+                { id: 6, text: "Area on valley slopes above the inversion layer." }, { id: 6, text: "Thermal Belt" },
+                { id: 7, text: "Reason fog clears in the morning." }, { id: 7, text: "Sun Warms the Air" },
+                { id: 8, text: "Effect of inversions on air pollution." }, { id: 8, text: "Traps Pollutants" },
+                { id: 9, text: "Season when frost pockets are most dangerous." }, { id: 9, text: "Winter/Spring" },
+                { id: 10, text: "Temperature of the air inside a frost pocket." }, { id: 10, text: "Below Freezing" }
+            ],
+            'topic4': [
+                { id: 1, text: "Ideal slope for building a house in SA." }, { id: 1, text: "North-facing" },
+                { id: 2, text: "Ideal slope for sun-loving crops like grapevines." }, { id: 2, text: "North-facing" },
+                { id: 3, text: "Why farmers avoid valley floors at night." }, { id: 3, text: "Frost Risk" },
+                { id: 4, text: "Area where settlements stay warmer at night." }, { id: 4, text: "Thermal Belt" },
+                { id: 5, text: "Hazard caused by heavy fog in valleys." }, { id: 5, text: "Traffic Accidents" },
+                { id: 6, text: "Crops sensitive to cold should not be planted here." }, { id: 6, text: "Frost Pockets" },
+                { id: 7, text: "Effect of shadow zones on winter agriculture." }, { id: 7, text: "Lower Crop Yields" },
+                { id: 8, text: "Benefit of living on north-facing slopes." }, { id: 8, text: "Lower Heating Costs" },
+                { id: 9, text: "Problem for low-income settlements in valley floors." }, { id: 9, text: "Respiratory Diseases (Smog)" },
+                { id: 10, text: "Why fruit trees are often planted on mid-slopes." }, { id: 10, text: "Avoids Frost" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Grade 12 Valley Climates Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

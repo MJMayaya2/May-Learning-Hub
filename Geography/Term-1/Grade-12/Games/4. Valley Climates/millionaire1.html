@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Geography: Valley Climates Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Valley Climates & Microclimates (Grade 12 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is a microclimate?", options: ["The climate of an entire continent", "A small area with a climate different from its surroundings", "The average temperature of the ocean", "The climate during an ice age"], a: 1, hint: "Focus on the 'micro' prefix, meaning small-scale." },
+            { q: "Which factor refers to the orientation of a slope relative to the Sun?", options: ["Altitude", "Slope Aspect", "Latitude", "Wind Speed"], a: 1, hint: "It determines how much direct sunlight a hillside receives." },
+            { q: "In the Southern Hemisphere, which slopes are generally sunnier and warmer?", options: ["South-facing slopes", "North-facing slopes", "East-facing slopes", "West-facing slopes"], a: 1, hint: "Think about the direction of the sun in South Africa." },
+            { q: "Why are north-facing slopes warmer in South Africa?", options: ["The sun's rays are more direct", "They are closer to the equator", "They have more trees", "They are always at sea level"], a: 0, hint: "Direct rays deliver more concentrated heat energy." },
+            { q: "What is the 'Shadow Zone'?", options: ["A forest with thick canopy", "The dark side of the moon", "An area in a valley that receives no direct sunlight in winter", "The center of an eye of a storm"], a: 2, hint: "This occurs on south-facing slopes in winter when the sun is low." },
+            { q: "When are south-facing slopes in South Africa most likely to be in the shadow zone?", options: ["Mid-summer", "Equinox", "Winter", "Spring"], a: 2, hint: "The sun is at its lowest angle during this time." },
+            { q: "What is an 'Anabatic Wind'?", options: ["A wind blowing down a slope at night", "A wind blowing up a slope during the day", "A wind that brings snow", "A high-altitude jet stream"], a: 1, hint: "Ana- means 'up'. These are caused by daytime heating." },
+            { q: "What causes air to rise in an anabatic wind?", options: ["The weight of cold air above", "Pressure from the ocean", "The slopes being heated by the sun", "The rotation of the Earth"], a: 2, hint: "Warm air is lighter and less dense." },
+            { q: "When do 'Katabatic Winds' typically occur?", options: ["At noon", "During a storm", "At night", "Only in summer"], a: 2, hint: "Kata- means 'down'. These happen when slopes cool down." },
+            { q: "Which wind is also known as a 'Mountain Breeze'?", options: ["Anabatic wind", "Katabatic wind", "Trade wind", "Westerly"], a: 1, hint: "This wind flows from the heights down into the valley floor." },
+            { q: "What is a 'Temperature Inversion' in a valley?", options: ["When air gets colder as you go higher", "When warm air is trapped above cold air on the valley floor", "When the ground turns into ice", "When it rains in the morning"], a: 1, hint: "It 'inverts' the normal rule that higher equals colder." },
+            { q: "What causes a temperature inversion at night?", options: ["Cold air sinking from slopes into the valley floor", "Hot air blowing from the ocean", "Clouds blocking the sun", "The moon heating the air"], a: 0, hint: "Katabatic winds pull the coldest air to the bottom." },
+            { q: "What is the name for the layer of warm air that sits above the cold air in a valley?", options: ["Frost pocket", "Thermal belt", "Shadow zone", "Jet stream"], a: 1, hint: "This 'belt' is often the warmest part of the valley at night." },
+            { q: "Where in a valley would a farmer most likely build a house to keep it warm at night?", options: ["On the valley floor", "In the thermal belt on the slopes", "At the very peak of the mountain", "Near a river"], a: 1, hint: "Avoid the cold air that sinks to the bottom." },
+            { q: "What is a 'Frost Pocket'?", options: ["A bag used by explorers", "The cold valley floor where frost forms during an inversion", "A cloud filled with hail", "A type of winter crop"], a: 1, hint: "It is the lowest part of the valley where freezing air collects." },
+            { q: "Why do farmers avoid planting fruit trees in frost pockets?", options: ["The soil is too dry", "The trees will grow too fast", "Frost can easily damage new growth and blossoms", "There is too much sun"], a: 2, hint: "Extreme cold at night kills sensitive plants." },
+            { q: "Which type of fog forms at night as the surface cools the air above it to saturation?", options: ["Advection fog", "Radiation fog", "Steam fog", "Frontal fog"], a: 1, hint: "It is named after the process of heat leaving the Earth's surface." },
+            { q: "Why does radiation fog typically clear in the morning?", options: ["The wind blows it away", "The sun warms the air, increasing its capacity to hold moisture", "It turns into snow", "The moon pulls it up"], a: 1, hint: "Heat energy turns the liquid droplets back into invisible vapour." },
+            { q: "What pollution problem is often caused by a temperature inversion?", options: ["Acid rain", "Smog and trapped air pollution", "The greenhouse effect", "Ozone depletion"], a: 1, hint: "The warm air layer acts like a 'lid', trapping smoke and exhaust fumes." },
+            { q: "On which slope would a South African farmer plant sun-loving crops like grapevines?", options: ["South-facing", "North-facing", "Only in the shadow zone", "On the valley floor"], a: 1, hint: "These slopes receive the most solar radiation." },
+            { q: "Where does the 'Thermal Belt' usually form in a valley?", options: ["At the very bottom", "Along the mid-slopes", "Above the clouds", "Inside a frost pocket"], a: 1, hint: "It is above the cold pool of air on the floor." },
+            { q: "What is 'Adiabatic Cooling'?", options: ["Heating by compression", "Cooling of air as it rises and expands", "Heat transfer by touch", "The melting of ice"], a: 1, hint: "This happens to air as it moves up a mountain." },
+            { q: "In a cross-section of a valley at night, where is the temperature the lowest?", options: ["The mountain peaks", "The mid-slopes", "The valley floor", "Just below the clouds"], a: 2, hint: "Cold air is dense and heavy." },
+            { q: "Which wind is caused by 'Terrestrial Radiation' cooling the slopes at night?", options: ["Anabatic", "Katabatic", "Föhn", "Berg wind"], a: 1, hint: "The cooling makes the air heavy enough to flow downwards." },
+            { q: "In which season is the 'Slope Aspect' effect most noticeable in South Africa?", options: ["Summer", "Autumn", "Winter", "Spring"], a: 2, hint: "The low angle of the sun makes the difference between north and south slopes extreme." },
+            { q: "How does heavy fog in a valley floor affect human activity?", options: ["It helps crops grow", "It limits visibility and increases traffic accident risks", "It creates more electricity", "It makes the air cleaner"], a: 1, hint: "Think about driving in thick, white clouds." },
+            { q: "What happens to the inversion layer during a very cold winter night?", options: ["It disappears", "It moves higher", "It deepens and traps more cold air", "It turns into a tornado"], a: 2, hint: "More cold air sinking means a thicker layer of cold air at the bottom." },
+            { q: "Smog is a combination of which two things?", options: ["Salt and water", "Smoke and fog", "Oxygen and Nitrogen", "Sunlight and clouds"], a: 1, hint: "It is a common air quality issue in trapped valley air." },
+            { q: "Anabatic winds are also known as...", options: ["Valley breezes", "Mountain breezes", "Sea breezes", "Land breezes"], a: 0, hint: "They originate in the valley and move up." },
+            { q: "Why are south-facing slopes in SA often wetter/moister than north-facing ones?", options: ["It rains more there", "They have less evaporation because they are cooler", "They are closer to the ocean", "They have no soil"], a: 1, hint: "Less sun means the ground stays damp for longer." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            let options = [...qData.options];
+            let correctText = options[qData.a];
+            options.sort(() => Math.random() - 0.5);
+            let correctIdx = options.indexOf(correctText);
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden', 'selected', 'correct', 'incorrect');
+                btn.setAttribute('data-correct', i === correctIdx);
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            const isCorrect = selectedBtn.getAttribute('data-correct') === 'true';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    for (let i = 0; i < 4; i++) {
+                        if (document.getElementById(`btn${i}`).getAttribute('data-correct') === 'true') {
+                            document.getElementById(`btn${i}`).classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            let hiddenCount = 0;
+            for(let i=0; i<4; i++){
+                let btn = document.getElementById(`btn${i}`);
+                if(btn.getAttribute('data-correct') === 'false' && hiddenCount < 2) {
+                    btn.classList.add('hidden');
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

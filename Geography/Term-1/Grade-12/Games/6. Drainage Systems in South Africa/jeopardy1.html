@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Geography Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input { width: 100%; padding: 0.7rem 0.8rem; border-radius: 10px; border: 2px solid #cce0ff; font-size: 1rem; outline: none; }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 12 Geography Jeopardy</h1>
+        <p class="game-subtitle">Topic: Drainage Systems in South Africa (Chapter 6)</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" style="font-weight:bold; color:#856404; margin-bottom:10px;">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        // --- PLAYER 1 DATA ---
+        const p1Cats = [
+            { name: "Basin Basics", questions: [
+                { points: 10, q: "An area of land drained by a river system.", a: "Drainage basin (or catchment)" },
+                { points: 20, q: "The high land area separating one drainage basin from another.", a: "Watershed" },
+                { points: 30, q: "Place where a river flows into another body of water, like a lake or ocean.", a: "River mouth" },
+                { points: 40, q: "The starting point of a river, furthest from the mouth.", a: "Source" },
+                { points: 50, q: "High lying area separating two streams of the same river system.", a: "Interfluve" }
+            ]},
+            { name: "Stream Orders", questions: [
+                { points: 10, q: "A stream with no tributaries feeding into it.", a: "First order stream" },
+                { points: 20, q: "Formed when two first order streams join.", a: "Second order stream" },
+                { points: 30, q: "If a 1st order joins a 2nd order, what is the resulting order?", a: "Second order (stays the same)" },
+                { points: 40, q: "Term for the method of numbering stream segments in a basin.", a: "Stream ordering" },
+                { points: 50, q: "Formed when two second order streams join.", a: "Third order stream" }
+            ]},
+            { name: "River Flow", questions: [
+                { points: 10, q: "Smooth water flow where water moves in layers or sheets.", a: "Laminar flow" },
+                { points: 20, q: "Type of flow where water moves in bubbles and swirls (eddies).", a: "Turbulent flow" },
+                { points: 30, q: "The amount of water passing a point in a certain time.", a: "Discharge" },
+                { points: 40, q: "Unit used to measure river discharge.", a: "Cumecs (cubic metres per second)" },
+                { points: 50, q: "Factor that causes air friction on the top of laminar flow.", a: "Friction with air" }
+            ]},
+            { name: "Water Table", questions: [
+                { points: 10, q: "The top level of the groundwater.", a: "Water table" },
+                { points: 20, q: "Water that flows on the earth's surface.", a: "Surface runoff" },
+                { points: 30, q: "Water found under the earth's surface.", a: "Groundwater" },
+                { points: 40, q: "Does the water table rise or fall during a wet season?", a: "Rise" },
+                { points: 50, q: "Where any two or more rivers meet.", a: "Confluence" }
+            ]}
+        ];
+
+        // --- PLAYER 2 DATA ---
+        const p2Cats = [
+            { name: "The Network", questions: [
+                { points: 10, q: "Network of little streams and rivers funneling into a single main river.", a: "River system" },
+                { points: 20, q: "Smaller rivers that feed into a larger main river.", a: "Tributaries" },
+                { points: 30, q: "Area of high land separating drainage basins.", a: "Watershed" },
+                { points: 40, q: "Point where two streams converge.", a: "Confluence" },
+                { points: 50, q: "The 'catchment area' catches what?", a: "Rain that falls" }
+            ]},
+            { name: "Ordering Rules", questions: [
+                { points: 10, q: "Highest stream order segment in a simple basin with only two 1st order streams.", a: "Second order" },
+                { points: 20, q: "True or False: A 3rd order stream is always larger than a 1st order stream.", a: "True" },
+                { points: 30, q: "Does adding a 1st order tributary to a 3rd order stream change its order?", a: "No" },
+                { points: 40, q: "Joining two 3rd order streams creates a stream of this order.", a: "Fourth order" },
+                { points: 50, q: "Stream order is used to describe the _____ of a drainage basin.", a: "Complexity / Size" }
+            ]},
+            { name: "Discharge Stats", questions: [
+                { points: 10, q: "What does 1 cumec represent?", a: "1 cubic metre per second" },
+                { points: 20, q: "Formula: Discharge = (Cross-sectional area) x _____.", a: "Velocity" },
+                { points: 30, q: "Will a wider and deeper channel have greater or lesser discharge?", a: "Greater" },
+                { points: 40, q: "Two factors affecting cross-sectional area.", a: "Width and Depth" },
+                { points: 50, q: "If discharge is constant, and a river narrows, what happens to velocity?", a: "Increases" }
+            ]},
+            { name: "Friction & Speed", questions: [
+                { points: 10, q: "Where is velocity generally greatest in a laminar flow?", a: "In the middle, just below the surface" },
+                { points: 20, q: "Does a rough riverbed increase or decrease turbulent flow?", a: "Increase" },
+                { points: 30, q: "Type of flow common in high-gradient, rocky mountain streams.", a: "Turbulent" },
+                { points: 40, q: "Type of flow found in calm, deep, smooth-bedded rivers.", a: "Laminar" },
+                { points: 50, q: "Flow where water moves in 'layers'.", a: "Laminar" }
+            ]}
+        ];
+
+        // --- PLAYER 3 DATA ---
+        const p3Cats = [
+            { name: "Basin Features", questions: [
+                { points: 10, q: "The end point of a river system.", a: "Mouth" },
+                { points: 20, q: "Ridge of land separating two streams.", a: "Interfluve" },
+                { points: 30, q: "A 'river system' includes main rivers and _____.", a: "Tributaries" },
+                { points: 40, q: "Watersheds follow the lines of _____ land.", a: "High / Mountainous" },
+                { points: 50, q: "What is 'surface runoff' also called?", a: "Overland flow" }
+            ]},
+            { name: "Ranking Streams", questions: [
+                { points: 10, q: "What order is the main river if its highest tributaries are 2nd order?", a: "Third order" },
+                { points: 20, q: "What is required to increase a stream from 2nd to 3rd order?", a: "Joining another 2nd order stream" },
+                { points: 30, q: "Are most small mountain 'fingertip' streams 1st or 4th order?", a: "1st order" },
+                { points: 40, q: "Joining a 2nd order and 1st order stream results in a _____.", a: "Second order" },
+                { points: 50, q: "Why is stream ordering helpful for geographers?", a: "Helps classify and compare different river systems" }
+            ]},
+            { name: "Water Dynamics", questions: [
+                { points: 10, q: "Does discharge decrease or increase downstream in most permanent rivers?", a: "Increase" },
+                { points: 20, q: "Is laminar or turbulent flow more efficient for transporting fine silt?", a: "Laminar" },
+                { points: 30, q: "Eddies are characteristic of which flow type?", a: "Turbulent" },
+                { points: 40, q: "What happens to water velocity at the riverbed due to friction?", a: "Decreases" },
+                { points: 50, q: "What determines if flow is laminar or turbulent?", a: "Velocity, gradient, and channel surface" }
+            ]},
+            { name: "Catchment Info", questions: [
+                { points: 10, q: "Groundwater is found in the _____ zone below the water table.", a: "Saturated" },
+                { points: 20, q: "Watershed is the _____ of a drainage basin.", a: "Boundary" },
+                { points: 30, q: "South Africa's largest drainage basin belongs to this river.", a: "The Orange River" },
+                { points: 40, q: "What does 'discharge' measure?", a: "Volume of water moving past a point" },
+                { points: 50, q: "The place where a river system starts.", a: "Source" }
+            ]}
+        ];
+
+        // --- PLAYER 4 DATA ---
+        const p4Cats = [
+            { name: "River Terminology", questions: [
+                { points: 10, q: "Where a river meets the sea.", a: "Mouth" },
+                { points: 20, q: "High ground between two river basins.", a: "Watershed" },
+                { points: 30, q: "The meeting point of two tributaries.", a: "Confluence" },
+                { points: 40, q: "The name for water held in soil and rocks.", a: "Groundwater" },
+                { points: 50, q: "Space between two streams of the same system.", a: "Interfluve" }
+            ]},
+            { name: "Basin Math", questions: [
+                { points: 10, q: "Start of the stream numbering system.", a: "First order" },
+                { points: 20, q: "Result of 3rd order + 3rd order.", a: "Fourth order" },
+                { points: 30, q: "Result of 3rd order + 1st order.", a: "Third order" },
+                { points: 40, q: "Total number of segments in a system with three 1st order streams and one confluence.", a: "Varies (minimum 4 segments)" },
+                { points: 50, q: "Highest stream order listed in the provided images.", a: "Fourth order" }
+            ]},
+            { name: "Velocity & Flow", questions: [
+                { points: 10, q: "Type of flow seen in a plumbing pipe (ideal).", a: "Laminar" },
+                { points: 20, q: "Type of flow that looks like it is 'boiling' or white water.", a: "Turbulent" },
+                { points: 30, q: "Does friction increase or decrease velocity?", a: "Decrease" },
+                { points: 40, q: "Cross-sectional area x velocity = _____.", a: "Discharge" },
+                { points: 50, q: "Why is water slower near the banks of a river?", a: "Friction with the channel sides" }
+            ]},
+            { name: "SA Systems", questions: [
+                { points: 10, q: "Can we find watersheds on flat plains or high mountains?", a: "High mountains (usually)" },
+                { points: 20, q: "Does SA's runoff increase in the east or west?", a: "East (higher rainfall)" },
+                { points: 30, q: "Source of a river is found at the _____ altitude.", a: "Highest" },
+                { points: 40, q: "Unit: cubic meters per second.", a: "Cumecs" },
+                { points: 50, q: "True or False: The mouth of a river is its highest point.", a: "False" }
+            ]}
+        ];
+
+        const gameData = [p1Cats, p2Cats, p3Cats, p4Cats];
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() { document.getElementById('nameSetupSection').classList.remove('hidden'); }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header'; h.innerText = c.name; board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn'; btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points; activeTileButton = btn;
+            document.getElementById('modalCategory').innerText = `${playerNames[pIdx]} | ${catName}`;
+            document.getElementById('modalQuestion').innerText = qData.q;
+            document.getElementById('modalAnswer').innerText = qData.a;
+            document.getElementById('activePlayerName').innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block'; answerArea.style.display = 'none'; modal.style.display = 'flex';
+        }
+
+        function revealAnswer() { btnReveal.style.display = 'none'; answerArea.style.display = 'block'; }
+
+        function judgeActivePlayer(correct) {
+            if (correct) { scores[currentPlayerIndex] += activePointValue; updateScore(currentPlayerIndex); closeModal(); } 
+            else { showSteal(); }
+        }
+
+        function showSteal() {
+            const stealArea = document.querySelector('.steal-area'); stealArea.style.display = 'block';
+            const container = document.getElementById('stealButtons'); container.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button'); b.className = 'btn-steal'; b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    container.appendChild(b);
+                }
+            }
+            let none = document.createElement('button'); none.className = 'btn-incorrect'; none.innerText = "No one"; none.onclick = closeModal; container.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { 
+            activeTileButton.innerText = ""; activeTileButton.disabled = true; 
+            modal.style.display = 'none'; document.querySelector('.steal-area').style.display = 'none';
+        }
+        function resetPlayerNames() { location.reload(); }
+        buildBoards();
+    </script>
+</body>
+</html>

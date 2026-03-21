@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 12 Geography: Tropical Cyclones</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Tropical Cyclones</h1>
+        <p class="game-subtitle">Test your Grade 12 Matric Knowledge! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Tropical Cyclone", a: "A powerful spiraling storm system characterized by heavy rain, strong winds, and an intense low-pressure center." },
+                { q: "The Eye", a: "The calm, cloudless, and low-pressure center of a tropical cyclone." },
+                { q: "The Eyewall", a: "A towering wall of cumulonimbus clouds surrounding the eye where the heaviest rain and strongest winds occur." },
+                { q: "Spiral Rain Bands", a: "Swirling bands of rain-filled clouds that wrap around the eyewall of a cyclone." },
+                { q: "Coriolis Force", a: "The force resulting from Earth's rotation that causes winds to spiral clockwise in the Southern Hemisphere." },
+                { q: "Latent Heat", a: "The energy released into the atmosphere during condensation, which fuels the intensification of a cyclone." },
+                { q: "Storm Surge", a: "A sudden rise in sea level caused by the strong winds and low pressure of a cyclone, leading to coastal flooding." },
+                { q: "Formative Stage", a: "The initial stage where pressure drops and a vortex begins to form over warm tropical waters." },
+                { q: "Immature Stage", a: "The stage where winds reach hurricane strength and an eye begins to develop." },
+                { q: "Mature Stage", a: "The stage where the cyclone reaches its peak intensity and lowest pressure." },
+                { q: "Dissipating Stage", a: "The final stage where the cyclone weakens after crossing land or moving into cooler latitudes." },
+                { q: "Synoptic Map", a: "A weather map showing atmospheric conditions over a wide area at a specific time." },
+                { q: "Tropical Easterlies", a: "The global winds that drive tropical cyclones from east to west." },
+                { q: "Pre-condition: Sea Temperature", a: "The ocean surface must be at least 26.5°C to provide enough energy for a cyclone." },
+                { q: "Management Strategy", a: "Plans implemented to reduce the impact of cyclones, such as tracking and early warnings." },
+                { q: "Social Impact", a: "The effects on people, such as loss of lives, homelessness, and waterborne disease outbreaks." },
+                { q: "Economic Impact", a: "The financial loss resulting from damage to trade, agriculture, and infrastructure." },
+                { q: "Environmental Impact", a: "Damage to ecosystems, such as soil erosion or coastal destruction." },
+                { q: "Dissipation", a: "The process of a cyclone dying out due to increased friction or loss of its warm water energy source." },
+                { q: "Hurricane / Typhoon", a: "Regional names for tropical cyclones in the Atlantic and Pacific oceans, respectively." }
+            ],
+            'terms': [
+                { q: "The calm center of a tropical cyclone.", a: "The Eye" },
+                { q: "The area of a cyclone where the heaviest rain falls.", a: "The Eyewall" },
+                { q: "The global wind belt that moves cyclones from east to west.", a: "Tropical Easterlies" },
+                { q: "The force necessary to create the spiraling movement of a cyclone.", a: "Coriolis Force" },
+                { q: "The minimum sea surface temperature required for cyclone formation.", a: "26.5°C" },
+                { q: "The name for cyclones in the Pacific Ocean.", a: "Typhoons" },
+                { q: "The name for cyclones in the Atlantic Ocean.", a: "Hurricanes" },
+                { q: "The stage where the eye is first clearly visible.", a: "Immature Stage" },
+                { q: "The direction cyclones rotate in the Southern Hemisphere.", a: "Clockwise" },
+                { q: "A waterborne disease often following cyclone-related flooding.", a: "Cholera" },
+                { q: "The term for a cyclone losing power after hitting land.", a: "Dissipation" },
+                { q: "The specific low-pressure system associated with tropical storms.", a: "Tropical Cyclone" },
+                { q: "The latitude range where these storms usually form (avoiding the equator).", a: "5° to 30°" },
+                { q: "The unit of wind speed used in cyclone measurement.", a: "km/h" },
+                { q: "The rising of sea levels that causes coastal flooding.", a: "Storm Surge" },
+                { q: "A case study cyclone that affected Mozambique and Malawi in 2012.", a: "Cyclone Funso" },
+                { q: "Energy source derived from evaporating ocean water.", a: "Latent Heat" },
+                { q: "The cloud type that makes up the eyewall.", a: "Cumulonimbus" },
+                { q: "A preventative strategy involving early warnings.", a: "Tracking" },
+                { q: "The term for the path a cyclone follows.", a: "Track" }
+            ],
+            'multipleChoice': [
+                { q: "Tropical cyclones travel westwards driven by which winds?", options: ["A) Westerlies", "B) Monsoons", "C) Tropical Easterlies", "D) Trade Winds"], a: "C) Tropical Easterlies" },
+                { q: "In the Mature stage, the pressure at the center is:", options: ["A) Rising", "B) At its lowest", "C) 1013 hPa", "D) Staying constant"], a: "B) At its lowest" },
+                { q: "Which part of the cyclone has the highest wind speeds?", options: ["A) The Eye", "B) The Eyewall", "C) The Outer Bands", "D) The Warm Sector"], a: "B) The Eyewall" },
+                { q: "What is the minimum temperature required for a tropical cyclone to form?", options: ["A) 20°C", "B) 25°C", "C) 26.5°C", "D) 30°C"], a: "C) 26.5°C" },
+                { q: "In the Southern Hemisphere, tropical cyclones spiral:", options: ["A) Anti-clockwise", "B) Clockwise", "C) Vertically", "D) They do not spiral"], a: "B) Clockwise" },
+                { q: "Tropical cyclones dissipate when they:", options: ["A) Cross warm water", "B) Reach the equator", "C) Cross land", "D) Enter the tropics"], a: "C) Cross land" },
+                { q: "What is the lifespan of a typical tropical cyclone?", options: ["A) 1 day", "B) 4 to 7 days", "C) 1 month", "D) 1 season"], a: "B) 4 to 7 days" },
+                { q: "Which stage is characterized by the storm reaching its maximum intensity?", options: ["A) Formative", "B) Immature", "C) Mature", "D) Dissipating"], a: "C) Mature" },
+                { q: "The sudden rise in sea level during a cyclone is called a:", options: ["A) Tsunami", "B) Tide", "C) Storm Surge", "D) Current"], a: "C) Storm Surge" },
+                { q: "Cyclones are named alphabetically. If the first was 'Alberto', the third would start with:", options: ["A) B", "B) C", "C) D", "D) E"], a: "B) C" },
+                { q: "Which of these is a social impact of a tropical cyclone?", options: ["A) Destruction of crops", "B) Loss of income", "C) Outbreak of Cholera", "D) Damage to trade"], a: "C) Outbreak of Cholera" },
+                { q: "Why don't tropical cyclones form on the equator (0°)?", options: ["A) Too hot", "B) No Coriolis force", "C) Too much rain", "D) Water is too deep"], a: "B) No Coriolis force" },
+                { q: "Which winds are responsible for steering a cyclone towards South Africa from the east?", options: ["A) Westerlies", "B) Easterlies", "C) Polar winds", "D) Berg winds"], a: "B) Easterlies" },
+                { q: "Cyclone Funso (2012) primarily affected which country?", options: ["A) South Africa", "B) Namibia", "C) Mozambique", "D) Australia"], a: "C) Mozambique" },
+                { q: "What happens to air in the Eye of the cyclone?", options: ["A) It rises rapidly", "B) It sinks slowly", "C) It remains static", "D) It turns into ice"], a: "B) It sinks slowly" },
+                { q: "A management strategy to reduce the impact of cyclones is:", options: ["A) Deforestation", "B) Building more houses on the coast", "C) Early warning systems", "D) Increasing trade"], a: "C) Early warning systems" },
+                { q: "Which ocean is the primary area of formation for cyclones hitting Southern Africa?", options: ["A) Atlantic", "B) Arctic", "C) Indian", "D) Pacific"], a: "C) Indian" },
+                { q: "The diameter of a tropical cyclone is usually:", options: ["A) 10km", "B) 100-500km", "C) 3000km", "D) 10,000km"], a: "B) 100-500km" },
+                { q: "In which latitude range do tropical cyclones form?", options: ["A) 0° - 5°", "B) 5° - 30°", "C) 30° - 60°", "D) 60° - 90°"], a: "B) 5° - 30°" },
+                { q: "What fuels a tropical cyclone?", options: ["A) High pressure", "B) Latent heat of condensation", "C) Cold air masses", "D) Wind shear"], a: "B) Latent heat of condensation" }
+            ],
+            'trueFalse': [
+                { q: "Tropical cyclones move from West to East.", options: ["True", "False"], a: "False", exp: "They move from East to West with the tropical easterly winds." },
+                { q: "The Eye of the cyclone is an area of high pressure.", options: ["True", "False"], a: "False", exp: "The eye is the center of intense low pressure." },
+                { q: "The eyewall contains the most violent weather conditions.", options: ["True", "False"], a: "True", exp: "This is where the strongest winds and rain occur." },
+                { q: "A sea temperature of 26.5°C is required for formation.", options: ["True", "False"], a: "True", exp: "Warm water provides the necessary latent heat energy." },
+                { q: "Tropical cyclones can form on the equator.", options: ["True", "False"], a: "False", exp: "There is no Coriolis force at the equator to start the rotation." },
+                { q: "Dissipation occurs when the cyclone crosses onto land.", options: ["True", "False"], a: "True", exp: "Friction increases and the moisture energy source is cut off." },
+                { q: "Cyclones in the Atlantic Ocean are called Typhoons.", options: ["True", "False"], a: "False", exp: "In the Atlantic, they are called Hurricanes." },
+                { q: "A storm surge can cause massive coastal flooding.", options: ["True", "False"], a: "True", exp: "Low pressure and high winds push sea water onto the land." },
+                { q: "Tropical cyclones only occur in winter.", options: ["True", "False"], a: "False", exp: "They occur in late summer/early autumn when oceans are warmest." },
+                { q: "Coriolis force causes cyclones to spiral.", options: ["True", "False"], a: "True", exp: "It creates the rotation necessary for a cyclone." },
+                { q: "Early warning systems are part of preventative management.", options: ["True", "False"], a: "True", exp: "Tracking allows people to evacuate before the storm hits." },
+                { q: "Cyclone Funso reached its peak intensity in January 2012.", options: ["True", "False"], a: "True", exp: "It hit peak intensity on 24 January 2012." },
+                { q: "A cyclone can last for several weeks.", options: ["True", "False"], a: "False", exp: "Most have a lifespan of about one week (4-7 days)." },
+                { q: "The eyewall is made of cumulonimbus clouds.", options: ["True", "False"], a: "True", exp: "These towering clouds produce intense rain." },
+                { q: "The South-West Indian Ocean cyclone season is when Southern Africa is at risk.", options: ["True", "False"], a: "True", exp: "Most cyclones hitting the region form in this area." },
+                { q: "Loss of trade and agriculture are social impacts.", options: ["True", "False"], a: "False", exp: "These are economic impacts." },
+                { q: "Outbreaks of waterborne diseases like Cholera are common after cyclones.", options: ["True", "False"], a: "True", exp: "Flooding contaminates water supplies." },
+                { q: "In the Northern Hemisphere, cyclones rotate clockwise.", options: ["True", "False"], a: "False", exp: "They rotate anti-clockwise in the Northern Hemisphere." },
+                { q: "Friction decreases when a cyclone moves over land.", options: ["True", "False"], a: "False", exp: "Friction increases significantly over land, weakening the storm." },
+                { q: "The mature stage is the first stage of development.", options: ["True", "False"], a: "False", exp: "The formative stage is the first stage." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

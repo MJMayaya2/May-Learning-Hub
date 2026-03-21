@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Geography Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input { width: 100%; padding: 0.7rem 0.8rem; border-radius: 10px; border: 2px solid #cce0ff; font-size: 1rem; outline: none; }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 12 Geography Jeopardy</h1>
+        <p class="game-subtitle">Topic: Fluvial Processes (Chapter 7)</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        // --- PLAYER 1 DATA ---
+        const p1Cats = [
+            { name: "River Profiles", questions: [
+                { points: 10, q: "Shows a river's length and its descent from source to mouth.", a: "Longitudinal profile" },
+                { points: 20, q: "Lowest level to which a river can flow (usually sea level).", a: "Base level" },
+                { points: 30, q: "A longitudinal profile that is smooth and concave.", a: "Graded profile" },
+                { points: 40, q: "A longitudinal profile with obstructions like waterfalls or lakes.", a: "Ungraded profile" },
+                { points: 50, q: "Obstructions on a longitudinal profile are also called _____.", a: "Temporary base levels (or knickpoints)" }
+            ]},
+            { name: "The Stages", questions: [
+                { points: 10, q: "Stage where vertical erosion dominates and valleys are V-shaped.", a: "Upper course (Source zone)" },
+                { points: 20, q: "Stage characterized by lateral erosion and meanders starting to form.", a: "Middle course (Transition zone)" },
+                { points: 30, q: "Stage where the gradient flattens out and deposition is common.", a: "Lower course (Floodplain zone)" },
+                { points: 40, q: "Course where you would typically find rapids and waterfalls.", a: "Upper course" },
+                { points: 50, q: "Course where you find oxbow lakes and deltas.", a: "Lower course" }
+            ]},
+            { name: "Superimposed", questions: [
+                { points: 10, q: "A river that develops on sediment and then erodes into older rock beneath.", a: "Superimposed drainage" },
+                { points: 20, q: "Is a superimposed river younger or older than the landscape it erodes into?", a: "Younger" },
+                { points: 30, q: "Feature created when a superimposed river cuts through a hard rock ridge.", a: "Poort (or Water gap)" },
+                { points: 40, q: "Sequence: What must happen before the older rock is exposed?", a: "The top layers of sediment must be eroded away" },
+                { points: 50, q: "True or False: A superimposed river changes its course to flow around hills.", a: "False (it maintains its course)" }
+            ]},
+            { name: "Transverse Profiles", questions: [
+                { points: 10, q: "Shows the shape of a river channel, including its width and depth.", a: "Transverse profile" },
+                { points: 20, q: "Common nickname for the transverse profile in the upper course.", a: "V-shaped valley" },
+                { points: 30, q: "Type of erosion that makes a river channel wider.", a: "Lateral erosion" },
+                { points: 40, q: "Type of erosion that makes a river channel deeper.", a: "Vertical erosion" },
+                { points: 50, q: "Reason why the lower course transverse profile has no steep sides.", a: "The valley flattens out into a floodplain" }
+            ]}
+        ];
+
+        // --- PLAYER 2 DATA ---
+        const p2Cats = [
+            { name: "Longitudinal Stats", questions: [
+                { points: 10, q: "General shape of a graded longitudinal profile.", a: "Concave" },
+                { points: 20, q: "Common start point (source) of many longitudinal profiles.", a: "High ground / Mountains" },
+                { points: 30, q: "The end point of a longitudinal profile.", a: "Mouth" },
+                { points: 40, q: "Why is a graded profile called 'concave'?", a: "Because it is steep at the top and flat at the bottom" },
+                { points: 50, q: "Two examples of knickpoints on an ungraded profile.", a: "Waterfalls and Rapids" }
+            ]},
+            { name: "Antecedent Pattern", questions: [
+                { points: 10, q: "A river that maintains its course while land is being uplifted.", a: "Antecedent drainage" },
+                { points: 20, q: "Is an antecedent river younger or older than the structures it flows over?", a: "Older" },
+                { points: 30, q: "What tectonic movement causes land to rise beneath the river?", a: "Folding, faulting, or warping (Uplift)" },
+                { points: 40, q: "The river must erode _____ than the rate of uplift to keep its course.", a: "Faster" },
+                { points: 50, q: "Feature formed when an antecedent river cuts through a rising mountain.", a: "Gorge or Canyon" }
+            ]},
+            { name: "Upper Course", questions: [
+                { points: 10, q: "Primary direction of erosion in the upper course.", a: "Vertical (downwards)" },
+                { points: 20, q: "Amount of discharge (low or high) typically found at the source.", a: "Low" },
+                { points: 30, q: "Flow type common in the rocky upper course.", a: "Turbulent flow" },
+                { points: 40, q: "Channel width in the upper course (narrow or wide)?", a: "Narrow" },
+                { points: 50, q: "Velocity in the upper course is high due to the steep _____.", a: "Gradient" }
+            ]},
+            { name: "Lower Course", questions: [
+                { points: 10, q: "Primary fluvial process occurring in the lower course.", a: "Deposition" },
+                { points: 20, q: "Wide, flat area of land on either side of a lower course river.", a: "Floodplain" },
+                { points: 30, q: "Curved lake formed when a meander is cut off.", a: "Oxbow lake" },
+                { points: 40, q: "Triangular deposit at the mouth of some rivers.", a: "Delta" },
+                { points: 50, q: "Why does deposition happen in the lower course?", a: "The river loses energy/velocity due to a flat gradient" }
+            ]}
+        ];
+
+        // --- PLAYER 3 DATA ---
+        const p3Cats = [
+            { name: "River Terminology", questions: [
+                { points: 10, q: "Force that causes a river to flow from high to low ground.", a: "Gravity" },
+                { points: 20, q: "Level representing the ultimate base level.", a: "Sea level" },
+                { points: 30, q: "A permanent lake acts as a _____ base level.", a: "Temporary" },
+                { points: 40, q: "The 'graded' state is a balance between erosion and _____.", a: "Deposition" },
+                { points: 50, q: "Nickname for a knickpoint where a river's gradient changes sharply.", a: "Waterfall" }
+            ]},
+            { name: "Drainage Logic", questions: [
+                { points: 10, q: "Does a superimposed river flow over a previously formed landscape?", a: "Yes (hidden by sediment)" },
+                { points: 20, q: "Does an antecedent river exist before the uplift happens?", a: "Yes" },
+                { points: 30, q: "Common feature shared by both superimposed and antecedent patterns.", a: "Gaps or Poorts" },
+                { points: 40, q: "Reason why superimposed rivers don't follow the 'easiest' path.", a: "They inherit their course from the sediment layer above" },
+                { points: 50, q: "Which pattern is linked specifically to active tectonic uplift?", a: "Antecedent" }
+            ]},
+            { name: "Middle Course", questions: [
+                { points: 10, q: "Main direction of erosion in the middle course.", a: "Lateral (sideways)" },
+                { points: 20, q: "Large bends or curves in a river.", a: "Meanders" },
+                { points: 30, q: "What happens to the discharge compared to the upper course?", a: "Increases (due to tributaries)" },
+                { points: 40, q: "The valley sides in the middle course are _____ compared to the source.", a: "Gentler" },
+                { points: 50, q: "Process where a river starts to form a small floodplain.", a: "Lateral planation (Lateral erosion)" }
+            ]},
+            { name: "Channel Shapes", questions: [
+                { points: 10, q: "Is the transverse profile in the lower course wide or narrow?", a: "Wide" },
+                { points: 20, q: "Where is the transverse profile deepest: Upper or Lower course?", a: "Lower (carries more discharge)" },
+                { points: 30, q: "Type of profile that shows cross-sectional shape.", a: "Transverse" },
+                { points: 40, q: "Why are upper course channels narrow?", a: "Vertical erosion cuts a narrow slot; lateral erosion is weak" },
+                { points: 50, q: "Physical form of sediment found deposited in the lower course.", a: "Alluvium / Silt" }
+            ]}
+        ];
+
+        // --- PLAYER 4 DATA ---
+        const p4Cats = [
+            { name: "Base Levels", questions: [
+                { points: 10, q: "Ultimate base level for most rivers.", a: "The Ocean / Sea level" },
+                { points: 20, q: "What is a dam considered in terms of base levels?", a: "Temporary base level" },
+                { points: 30, q: "Effect of a waterfall on a river's longitudinal profile.", a: "Makes it ungraded / uneven" },
+                { points: 40, q: "How a river 'grades' its profile over time.", a: "Erodes high points and fills in low points" },
+                { points: 50, q: "Point on a longitudinal profile where a waterfall occurs.", a: "Knickpoint" }
+            ]},
+            { name: "River Evolution", questions: [
+                { points: 10, q: "Term for a river 'starting again' due to sea level fall (not in snippet, but relevant context for profiles).", a: "Rejuvenation (often inferred by knickpoints)" },
+                { points: 20, q: "Contrast: Is superimposed or antecedent older than the structures?", a: "Antecedent" },
+                { points: 30, q: "Contrast: Is superimposed or antecedent younger than the structures?", a: "Superimposed" },
+                { points: 40, q: "The 'buried' landscape is exposed by which process?", a: "Superimposed drainage" },
+                { points: 50, q: "The 'uplifted' landscape is cut through by which process?", a: "Antecedent drainage" }
+            ]},
+            { name: "Stage Summary", questions: [
+                { points: 10, q: "The 'Transition zone' is another name for which course?", a: "Middle course" },
+                { points: 20, q: "The 'Source zone' is another name for which course?", a: "Upper course" },
+                { points: 30, q: "The 'Floodplain zone' is another name for which course?", a: "Lower course" },
+                { points: 40, q: "Course with the highest total volume of water.", a: "Lower course" },
+                { points: 50, q: "Course where the river is most likely to flood.", a: "Lower course" }
+            ]},
+            { name: "Profile Review", questions: [
+                { points: 10, q: "Which profile looks like a graph from source to mouth?", a: "Longitudinal" },
+                { points: 20, q: "Which profile looks like a cross-section of the valley?", a: "Transverse" },
+                { points: 30, q: "Is the longitudinal profile of a young river smooth?", a: "No (it is ungraded)" },
+                { points: 40, q: "What happens to the V-shape in the middle course?", a: "It opens out / becomes U-shaped or gentle" },
+                { points: 50, q: "Why does the longitudinal profile flatten near the mouth?", a: "The river reaches base level" }
+            ]}
+        ];
+
+        const gameData = [p1Cats, p2Cats, p3Cats, p4Cats];
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() { document.getElementById('nameSetupSection').classList.remove('hidden'); }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header'; h.innerText = c.name; board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn'; btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points; activeTileButton = btn;
+            document.getElementById('modalCategory').innerText = `${playerNames[pIdx]} | ${catName}`;
+            document.getElementById('modalQuestion').innerText = qData.q;
+            document.getElementById('modalAnswer').innerText = qData.a;
+            document.getElementById('activePlayerName').innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block'; answerArea.style.display = 'none'; modal.style.display = 'flex';
+        }
+
+        function revealAnswer() { btnReveal.style.display = 'none'; answerArea.style.display = 'block'; }
+
+        function judgeActivePlayer(correct) {
+            if (correct) { scores[currentPlayerIndex] += activePointValue; updateScore(currentPlayerIndex); closeModal(); } 
+            else { showSteal(); }
+        }
+
+        function showSteal() {
+            const stealArea = document.querySelector('.steal-area'); stealArea.style.display = 'block';
+            const container = document.getElementById('stealButtons'); container.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button'); b.className = 'btn-steal'; b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    container.appendChild(b);
+                }
+            }
+            let none = document.createElement('button'); none.className = 'btn-incorrect'; none.innerText = "No one"; none.onclick = closeModal; container.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { 
+            activeTileButton.innerText = ""; activeTileButton.disabled = true; 
+            modal.style.display = 'none'; document.querySelector('.steal-area').style.display = 'none';
+        }
+        function resetPlayerNames() { location.reload(); }
+        buildBoards();
+    </script>
+</body>
+</html>

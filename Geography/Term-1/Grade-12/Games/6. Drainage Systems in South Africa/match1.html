@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Geography: Drainage Systems</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 12 Geography: Drainage Systems</h1>
+        <p class="game-subtitle">Match the catchment concepts, stream orders, and river dynamics!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Basin Concepts</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Water Movement</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Stream Ordering</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">River Discharge</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Area of land drained by a river system; also called a catchment." }, { id: 1, text: "Drainage Basin" },
+                { id: 2, text: "High land separating one drainage basin from another." }, { id: 2, text: "Watershed" },
+                { id: 3, text: "Smaller rivers that feed into the main river." }, { id: 3, text: "Tributaries" },
+                { id: 4, text: "Place where two or more rivers meet." }, { id: 4, text: "Confluence" },
+                { id: 5, text: "High lying area separating two streams of the same system." }, { id: 5, text: "Interfluve" },
+                { id: 6, text: "The point where a river begins." }, { id: 6, text: "Source" },
+                { id: 7, text: "The place where a river flows into the ocean or a lake." }, { id: 7, text: "River Mouth" },
+                { id: 8, text: "The top level of the groundwater underground." }, { id: 8, text: "Water Table" },
+                { id: 9, text: "Water that flows on the Earth's surface after rain." }, { id: 9, text: "Surface Runoff" },
+                { id: 10, text: "Network of streams funneling into a single main river." }, { id: 10, text: "River System" }
+            ],
+            'topic2': [
+                { id: 1, text: "Smooth water flow where water moves in layers or sheets." }, { id: 1, text: "Laminar Flow" },
+                { id: 2, text: "Rough, swirling water flow caused by an uneven riverbed." }, { id: 2, text: "Turbulent Flow" },
+                { id: 3, text: "Flow type common in the upper course with steep gradients." }, { id: 3, text: "Turbulent Flow" },
+                { id: 4, text: "Flow type common in the lower course with even beds." }, { id: 4, text: "Laminar Flow" },
+                { id: 5, text: "The speed at which water travels in a channel." }, { id: 5, text: "Velocity" },
+                { id: 6, text: "Force that slows down water at the bed and sides." }, { id: 6, text: "Friction" },
+                { id: 7, text: "Factor causing high velocity in the upper course." }, { id: 7, text: "Steep Gradient" },
+                { id: 8, text: "Swirling motions in turbulent flow." }, { id: 8, text: "Eddies" },
+                { id: 9, text: "Flowing water found deep underground." }, { id: 9, text: "Groundwater" },
+                { id: 10, text: "Part of the river where velocity is usually greatest." }, { id: 10, text: "Middle of Surface" }
+            ],
+            'topic3': [
+                { id: 1, text: "A stream with no tributaries feeding into it." }, { id: 1, text: "1st Order Stream" },
+                { id: 2, text: "Formed when two 1st order streams meet." }, { id: 2, text: "2nd Order Stream" },
+                { id: 3, text: "Formed when two 2nd order streams meet." }, { id: 3, text: "3rd Order Stream" },
+                { id: 4, text: "If a 1st order meets a 2nd order, the order stays..." }, { id: 4, text: "2nd Order" },
+                { id: 5, text: "Method used to classify the hierarchy of streams." }, { id: 5, text: "Stream Ordering" },
+                { id: 6, text: "Stream order increases only when two streams of the..." }, { id: 6, text: "Same order meet" },
+                { id: 7, text: "The main river usually has the..." }, { id: 7, text: "Highest Order" },
+                { id: 8, text: "A 4th order stream is formed by two..." }, { id: 8, text: "3rd Order Streams" },
+                { id: 9, text: "Total number of 1st order streams in a basin is the..." }, { id: 9, text: "Stream Frequency" },
+                { id: 10, text: "Concept used to analyze the density of a river system." }, { id: 10, text: "Drainage Density" }
+            ],
+            'topic4': [
+                { id: 1, text: "Amount of water passing a point in a certain time." }, { id: 1, text: "Discharge" },
+                { id: 2, text: "Unit used to measure river discharge." }, { id: 2, text: "Cumecs" },
+                { id: 3, text: "Formula: Cross-sectional area multiplied by velocity." }, { id: 3, text: "Discharge Calculation" },
+                { id: 4, text: "Cubic metres per..." }, { id: 4, text: "Second" },
+                { id: 5, text: "Discharge increases if the channel is wider and..." }, { id: 5, text: "Deeper" },
+                { id: 6, text: "Width multiplied by average depth." }, { id: 6, text: "Cross-sectional Area" },
+                { id: 7, text: "Discharge is usually highest in this part of the river." }, { id: 7, text: "Lower Course" },
+                { id: 8, text: "Discharge is usually lowest at the..." }, { id: 8, text: "Source" },
+                { id: 9, text: "A graph showing discharge over time." }, { id: 9, text: "Hydrograph" },
+                { id: 10, text: "Water level in the river channel." }, { id: 10, text: "Stage" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Grade 12 Geography: Drainage Systems Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

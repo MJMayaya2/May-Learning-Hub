@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Geography: Drainage Systems Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Drainage Systems in SA (Grade 12 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is an area of land drained by a river system called?", options: ["Interfluve", "Drainage Basin", "Confluence", "Water Table"], a: 1, hint: "It is the entire 'catchment' area for the river." },
+            { q: "What term describes the high land that separates one drainage basin from another?", options: ["Watershed", "Tributary", "River Mouth", "Source"], a: 0, hint: "It acts like a dividing ridge for rainfall." },
+            { q: "What is a confluence?", options: ["The start of a river", "Where a river meets the sea", "Where two or more rivers meet", "An underground river"], a: 2, hint: "Think of two streams joining to become one." },
+            { q: "What do we call the high lying area separating two streams of the same river system?", options: ["Watershed", "Interfluve", "Basin", "Tableland"], a: 1, hint: "It is the land between the fingers of a single river network." },
+            { q: "Which term refers to the water that flows on the Earth's surface after rain?", options: ["Groundwater", "Infiltration", "Surface Runoff", "Water Table"], a: 2, hint: "This water hasn't soaked into the ground yet." },
+            { q: "A river pattern that looks like the branches of a tree is called...", options: ["Trellis", "Rectangular", "Radial", "Dendritic"], a: 3, hint: "The name comes from the Greek word for tree." },
+            { q: "Which drainage pattern forms on rocks with uniform resistance to erosion?", options: ["Dendritic", "Trellis", "Parallel", "Centripetal"], a: 0, hint: "This pattern shows no structural control by the rocks." },
+            { q: "What pattern forms in areas with parallel folded mountains (ridges and valleys)?", options: ["Rectangular", "Radial", "Trellis", "Deranged"], a: 2, hint: "Short tributaries join the main river at right angles." },
+            { q: "A radial drainage pattern is most likely to form on which feature?", options: ["A flat plain", "A dome or volcanic cone", "A deep canyon", "A coastal beach"], a: 1, hint: "Rivers flow outwards from a high central point." },
+            { q: "Which drainage pattern is characterized by 90-degree bends caused by joints and faults in the rock?", options: ["Dendritic", "Rectangular", "Parallel", "Centripetal"], a: 1, hint: "The name describes the shape of the angles." },
+            { q: "In a centripetal drainage pattern, where do the rivers flow?", options: ["Inwards toward a central basin or lake", "Outwards from a mountain", "Parallel to the coast", "Randomly across a swamp"], a: 0, hint: "Think of the opposite of radial flow." },
+            { q: "What does 'Drainage Density' measure?", options: ["The depth of the river", "The speed of the water", "The total length of streams per unit area", "The number of fish in the water"], a: 2, hint: "It tells us how 'crowded' the landscape is with streams." },
+            { q: "Which factor leads to HIGH drainage density?", options: ["Permeable rocks", "Dense vegetation", "High rainfall and impermeable rocks", "Flat slopes"], a: 2, hint: "Less water soaks in, so more flows on the surface to create streams." },
+            { q: "How does dense vegetation affect drainage density?", options: ["It increases it", "It decreases it", "It has no effect", "It makes it zero"], a: 1, hint: "Plants encourage water to soak into the ground rather than run off." },
+            { q: "What is the stream order of a river formed by the confluence of two 1st-order streams?", options: ["1st Order", "2nd Order", "3rd Order", "4th Order"], a: 1, hint: "When two identical orders meet, the number increases by one." },
+            { q: "If a 1st-order stream joins a 2nd-order stream, what is the resulting order?", options: ["1st Order", "2nd Order", "3rd Order", "Unchanged"], a: 1, hint: "The order only increases if the joining streams are the same rank." },
+            { q: "What does 'River Discharge' refer to?", options: ["Pollution in the water", "The amount of water passing a point in a certain time", "The slope of the riverbed", "The total length of the river"], a: 1, hint: "It is measured in cubic metres per second." },
+            { q: "What unit is used to measure river discharge?", options: ["Metres per second", "Hectopascals", "Cumecs", "Kilometres"], a: 2, hint: "It stands for Cubic Metres per Second." },
+            { q: "Which type of flow is smooth, with water moving in layers or sheets?", options: ["Turbulent flow", "Laminar flow", "Stationary flow", "Rapid flow"], a: 1, hint: "This occurs over very even, smooth riverbeds." },
+            { q: "What causes 'Turbulent Flow' in a river?", options: ["A very smooth bed", "High viscosity", "Rocks and an uneven riverbed", "Cold temperatures"], a: 2, hint: "The water bubbles and swirls around obstacles." },
+            { q: "Which part of a river's cross-section usually has the greatest speed?", options: ["The very bottom", "The sides near the banks", "The center, away from friction", "The surface near the air"], a: 2, hint: "Velocity is highest where there is the least friction." },
+            { q: "A river that only flows during the rainy season is called a...", options: ["Permanent river", "Periodic river", "Episodic river", "Exotic river"], a: 1, hint: "It flows 'periodically' when there is rain." },
+            { q: "What is an 'Episodic River'?", options: ["A river that flows all year", "A river that only flows after heavy, rare storms in dry areas", "A river that flows into the sea", "A man-made canal"], a: 1, hint: "These are common in desert regions like the Karoo." },
+            { q: "Which river type always flows, even in the dry season?", options: ["Periodic", "Permanent", "Episodic", "Misfit"], a: 1, hint: "Its bed is always below the water table." },
+            { q: "What is a 'Permanent' river's relationship with the water table?", options: ["Its bed is always below the water table", "Its bed is always above the water table", "It is unrelated", "It only touches the table in summer"], a: 0, hint: "Groundwater constantly feeds these rivers." },
+            { q: "The 'Parallel' drainage pattern is most likely found on...", options: ["Steep, uniform slopes", "Cracked granite", "Volcanic peaks", "Flat marshes"], a: 0, hint: "Steepness forces the rivers to flow straight down side-by-side." },
+            { q: "Which pattern looks like a maze of disconnected streams and marshes?", options: ["Radial", "Trellis", "Deranged", "Dendritic"], a: 2, hint: "This happens in areas where the original drainage was disrupted." },
+            { q: "What is the formula for calculating Discharge?", options: ["Width x Depth", "Cross-sectional area x Velocity", "Length / Time", "Mass x Acceleration"], a: 1, hint: "The size of the 'pipe' times how fast the water moves." },
+            { q: "Why is laminar flow rare in natural river channels?", options: ["Water is too heavy", "Natural riverbeds are usually too rough and uneven", "Rivers are too deep", "Gravity is too strong"], a: 1, hint: "Nature is rarely perfectly smooth." },
+            { q: "A river system is defined as...", options: ["A single long river", "A main river and all its tributaries", "The place where a river meets the sea", "An underground aquifer"], a: 1, hint: "It includes the entire network of flowing water." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            let options = [...qData.options];
+            let correctText = options[qData.a];
+            options.sort(() => Math.random() - 0.5);
+            let correctIdx = options.indexOf(correctText);
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden', 'selected', 'correct', 'incorrect');
+                btn.setAttribute('data-correct', i === correctIdx);
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            const isCorrect = selectedBtn.getAttribute('data-correct') === 'true';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    for (let i = 0; i < 4; i++) {
+                        if (document.getElementById(`btn${i}`).getAttribute('data-correct') === 'true') {
+                            document.getElementById(`btn${i}`).classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            let hiddenCount = 0;
+            for(let i=0; i<4; i++){
+                let btn = document.getElementById(`btn${i}`);
+                if(btn.getAttribute('data-correct') === 'false' && hiddenCount < 2) {
+                    btn.classList.add('hidden');
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

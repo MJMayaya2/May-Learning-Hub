@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 12 Geography: Subtropical Anticyclones</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Subtropical Anticyclones</h1>
+        <p class="game-subtitle">Test your Grade 12 Matric Knowledge! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Anticyclone", a: "A high-pressure weather system characterized by sinking (subsiding) air and clear, dry weather." },
+                { q: "Subsidence", a: "The downward movement of air that causes high pressure and suppresses cloud formation." },
+                { q: "Divergence", a: "The movement of air away from a center of high pressure at the Earth's surface." },
+                { q: "South Atlantic High", a: "The high-pressure cell located off the west coast of South Africa that sometimes pushes cold fronts inland." },
+                { q: "South Indian High", a: "The high-pressure cell off the east coast of South Africa that brings moisture to the interior." },
+                { q: "Kalahari High", a: "The interior high-pressure cell that produces clear skies and dry conditions in winter." },
+                { q: "Moisture Front", a: "The boundary where warm, moist air from the NE meets cold, dry air from the SW over the SA interior." },
+                { q: "Line Thunderstorms", a: "A band of intense thunderstorms that forms along the moisture front in summer." },
+                { q: "Coastal Low", a: "A small low-pressure cell that travels along the coast ahead of a cold front." },
+                { q: "Berg Wind", a: "A hot, dry wind that descends from the plateau to the coast, warmed by adiabatic compression." },
+                { q: "Adiabatic Heating", a: "The process where air temperature increases as it sinks and is compressed under pressure." },
+                { q: "Inversion Layer", a: "A layer of warm air that acts as a 'lid,' preventing air from rising and forming clouds." },
+                { q: "Escarpment", a: "The steep slope separating the high interior plateau of South Africa from the coastal regions." },
+                { q: "Kalahari Desert", a: "An example of an area affected by constant high-pressure subsidence and dry conditions." },
+                { q: "Isobars", a: "Lines on a weather map connecting points of equal atmospheric pressure." },
+                { q: "Synoptic Chart", a: "A map showing weather conditions (isobars, fronts, pressure cells) over a wide area." },
+                { q: "Onshore Wind", a: "Wind blowing from the sea towards the land, often bringing moisture or fog." },
+                { q: "Offshore Wind", a: "Wind blowing from the land towards the sea, typically dry and clear." },
+                { q: "Ridging", a: "When a high-pressure system extends an arm or 'ridge' into a low-pressure area." },
+                { q: "Trough", a: "An elongated area of low pressure, often shown as a 'V' shape in isobars." }
+            ],
+            'terms': [
+                { q: "The high-pressure cell responsible for South Africa's summer rain in the eastern half.", a: "South Indian High" },
+                { q: "The interior high-pressure cell that is most dominant in winter.", a: "Kalahari High" },
+                { q: "The type of air movement associated with all high-pressure systems.", a: "Subsiding air" },
+                { q: "The global pressure belt where South Africa is located.", a: "Subtropical High Pressure Belt" },
+                { q: "The hot, dry winter wind associated with adiabatic descent from the plateau.", a: "Berg Wind" },
+                { q: "The boundary formed when warm, moist air meets cold, dry air over the interior.", a: "Moisture Front" },
+                { q: "The specific weather event that occurs along the moisture front in summer.", a: "Line Thunderstorms" },
+                { q: "Small low-pressure cells that travel ahead of cold fronts along the coastline.", a: "Coastal Lows" },
+                { q: "The specific ocean current that contributes to the dry air of the South Atlantic High.", a: "Benguela Current" },
+                { q: "The specific ocean current that provides moisture to the South Indian High.", a: "Mozambique Current" },
+                { q: "The term for air sinking and warming up due to compression.", a: "Adiabatic heating" },
+                { q: "The layer that prevents moisture from reaching the plateau in winter.", a: "Inversion Layer" },
+                { q: "The direction of air movement around a High Pressure cell in the Southern Hemisphere.", a: "Anti-clockwise" },
+                { q: "The season in which the Kalahari High sits lowest, below the escarpment.", a: "Winter" },
+                { q: "The symbol 'H' on a synoptic chart represents this.", a: "High Pressure (Anticyclone)" },
+                { q: "The province where Berg winds are most common before a cold front.", a: "KwaZulu-Natal (or Western/Eastern Cape)" },
+                { q: "The name of the plateau from which Berg winds descend.", a: "The Great Escarpment / Interior Plateau" },
+                { q: "The effect that causes high-pressure cells to shift North or South throughout the year.", a: "The tilt of Earth's axis (Seasons)" },
+                { q: "The state of the sky when a high-pressure cell is present over an area.", a: "Clear / Cloudless" },
+                { q: "The type of rainfall (mechanic) produced at the moisture front.", a: "Frontal / Convectional lifting" }
+            ],
+            'multipleChoice': [
+                { q: "Which high-pressure cell is located over the interior in winter?", options: ["A) South Atlantic High", "B) South Indian High", "C) Kalahari High", "D) Thermal Low"], a: "C) Kalahari High" },
+                { q: "What happens to air in an anticyclone?", options: ["A) It rises and cools", "B) It sinks and warms", "C) It moves toward the center", "D) It forms cumulonimbus clouds"], a: "B) It sinks and warms" },
+                { q: "The moisture front forms when warm, moist air from the _____ meets cold, dry air from the _____.", options: ["A) NW; SE", "B) NE; SW", "C) SW; NE", "D) SE; NW"], a: "B) NE; SW" },
+                { q: "Line thunderstorms are most common during which season?", options: ["A) Winter", "B) Spring", "C) Summer", "D) Autumn"], a: "C) Summer" },
+                { q: "Berg winds are hot and dry because of:", options: ["A) Direct sunlight", "B) Adiabatic heating", "C) Warm ocean currents", "D) Bushfires"], a: "B) Adiabatic heating" },
+                { q: "Which high-pressure cell pushes cold fronts across the country?", options: ["A) South Atlantic High", "B) South Indian High", "C) Kalahari High", "D) Coastal Low"], a: "A) South Atlantic High" },
+                { q: "In winter, the inversion layer over South Africa is:", options: ["A) Above the escarpment", "B) Below the escarpment", "C) Non-existent", "D) Over the ocean only"], a: "B) Below the escarpment" },
+                { q: "The direction of wind around a South Indian High is:", options: ["A) Clockwise", "B) Anti-clockwise", "C) Inward", "D) Upward"], a: "B) Anti-clockwise" },
+                { q: "A coastal low moving eastwards brings _____ weather first, and then _____ weather.", options: ["A) Rain; Clear", "B) Clear/Dry; Fog/Drizzle", "C) Snow; Heat", "D) Storms; Calm"], a: "B) Clear/Dry; Fog/Drizzle" },
+                { q: "Which current provides moisture for the South Indian High?", options: ["A) Benguela", "B) California", "C) Mozambique", "D) Peru"], a: "C) Mozambique" },
+                { q: "What is the primary characteristic of weather under a high-pressure cell?", options: ["A) Thunderstorms", "B) Constant snow", "C) Clear skies and no rain", "D) High humidity"], a: "C) Clear skies and no rain" },
+                { q: "The 'ridging' of the South Indian High brings _____ to the east coast.", options: ["A) Drought", "B) Rain", "C) Berg Winds", "D) Snow"], a: "B) Rain" },
+                { q: "At the moisture front, which air mass is forced to rise?", options: ["A) Cold, dry air", "B) Warm, moist air", "C) Both air masses", "D) Neither air mass"], a: "B) Warm, moist air" },
+                { q: "Coastal lows travel _____ ahead of a cold front.", options: ["A) North", "B) South", "C) East", "D) West"], a: "C) East" },
+                { q: "What causes the high-pressure cells to shift south in summer?", options: ["A) Ocean currents", "B) The apparent movement of the sun", "C) Mid-latitude cyclones", "D) Global warming"], a: "B) The apparent movement of the sun" },
+                { q: "Which province is most likely to experience fog from a coastal low?", options: ["A) Limpopo", "B) Gauteng", "C) KwaZulu-Natal", "D) Free State"], a: "C) KwaZulu-Natal" },
+                { q: "The Kalahari High prevents summer rain in winter by _____ the inversion layer.", options: ["A) Lifting", "B) Lowering", "C) Destroying", "D) Cooling"], a: "B) Lowering" },
+                { q: "High pressure cells form at the boundary of which two circulation cells?", options: ["A) Hadley and Ferrel", "B) Ferrel and Polar", "C) Hadley and Polar", "D) ITCZ and Hadley"], a: "A) Hadley and Ferrel" },
+                { q: "Berg winds are most common in which season?", options: ["A) Summer", "B) Autumn", "C) Winter", "D) Spring"], a: "C) Winter" },
+                { q: "The South Atlantic High is associated with _____ air because of the cold Benguela current.", options: ["A) Moist", "B) Dry", "C) Warm", "D) Rising"], a: "B) Dry" }
+            ],
+            'trueFalse': [
+                { q: "Anticyclones are areas of low pressure.", options: ["True", "False"], a: "False", exp: "Anticyclones are areas of high pressure." },
+                { q: "The Kalahari High is responsible for clear winter skies over the plateau.", options: ["True", "False"], a: "True", exp: "Subsiding air prevents cloud formation." },
+                { q: "Berg winds bring moist, cool air to the coast.", options: ["True", "False"], a: "False", exp: "They bring hot, dry air due to adiabatic heating." },
+                { q: "The moisture front is a summer phenomenon in South Africa.", options: ["True", "False"], a: "True", exp: "It results in line thunderstorms over the interior." },
+                { q: "Air moves clockwise around high-pressure cells in the Southern Hemisphere.", options: ["True", "False"], a: "False", exp: "It moves anti-clockwise; Low pressure moves clockwise." },
+                { q: "In summer, the inversion layer is lifted above the escarpment.", options: ["True", "False"], a: "True", exp: "This allows moist air to reach the interior and form rain." },
+                { q: "The South Indian High is located off the west coast.", options: ["True", "False"], a: "False", exp: "It is off the east coast; the South Atlantic is off the west coast." },
+                { q: "Coastal lows move slowly eastwards along the coast.", options: ["True", "False"], a: "True", exp: "They typically travel ahead of mid-latitude cyclones." },
+                { q: "High pressure cells are associated with diverging air at the surface.", options: ["True", "False"], a: "True", exp: "Air moves outward from the center." },
+                { q: "Ridging of high-pressure cells can bring rain to the coastal areas.", options: ["True", "False"], a: "True", exp: "It pushes moist maritime air onto the land." },
+                { q: "Adiabatic heating happens as air rises.", options: ["True", "False"], a: "False", exp: "Adiabatic heating happens as air sinks and is compressed." },
+                { q: "The South Atlantic High is the main source of moisture for SA.", options: ["True", "False"], a: "False", exp: "The South Indian High is the main source." },
+                { q: "The Kalahari High 'lid' (inversion) prevents thunderstorms in winter.", options: ["True", "False"], a: "True", exp: "Sinking air stops the moist air from rising high enough." },
+                { q: "Berg winds move from the coast up towards the mountains.", options: ["True", "False"], a: "False", exp: "They move from the interior plateau down to the coast." },
+                { q: "The moisture front boundary occurs where air masses of different temperatures and moisture meet.", options: ["True", "False"], a: "True", exp: "NE moist air meets SW dry air." },
+                { q: "All three high-pressure cells shift south in winter.", options: ["True", "False"], a: "False", exp: "They shift north in winter and south in summer." },
+                { q: "Coastal lows bring clear skies once they have passed.", options: ["True", "False"], a: "False", exp: "They bring fog and drizzle after the initial clear offshore winds." },
+                { q: "The Benguela current makes the South Atlantic High's air relatively dry.", options: ["True", "False"], a: "True", exp: "Cold water leads to less evaporation and stable air." },
+                { q: "Subsiding air always results in the formation of clouds.", options: ["True", "False"], a: "False", exp: "Subsiding air suppresses cloud formation." },
+                { q: "The Subtropical High Pressure belt is located at roughly 30° latitude.", options: ["True", "False"], a: "True", exp: "This is where SA is situated." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

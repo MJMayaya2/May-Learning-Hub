@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 12 Geography: Mid-Latitude Cyclones</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Mid-Latitude Cyclones</h1>
+        <p class="game-subtitle">Test your Grade 12 Matric Knowledge! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Mid-Latitude Cyclone", a: "A spiraling low-pressure system that brings rain to temperate parts of the world, consisting of a pair of cold and warm fronts." },
+                { q: "Isobars", a: "Lines on a weather map that connect points of equal atmospheric pressure." },
+                { q: "Cold Front", a: "The boundary of an advancing mass of cold air that displaces warmer air." },
+                { q: "Warm Front", a: "The boundary of an advancing mass of warm air that rises over cooler air." },
+                { q: "Occluded Front", a: "A front formed when a cold front overtakes a warm front, lifting the warm sector off the ground." },
+                { q: "Warm Sector", a: "The region of warm air between the cold and warm fronts of a cyclone." },
+                { q: "Pressure Gradient", a: "The rate of change in air pressure over a horizontal distance." },
+                { q: "Jet Stream", a: "A fast-flowing, high-altitude wind that drives mid-latitude cyclones from west to east." },
+                { q: "Initial Stage", a: "The first stage of development where two air masses meet along a polar front but do not yet mix." },
+                { q: "Mature Stage", a: "The stage where the cyclone reaches its maximum intensity with well-defined cold and warm fronts." },
+                { q: "Polar Front", a: "The boundary where cold polar air meets warm subtropical air." },
+                { q: "Condensation", a: "The process of water vapor turning into liquid, forming clouds and releasing latent heat." },
+                { q: "Cyclogenesis", a: "The process of the development and intensification of a cyclone." },
+                { q: "Cold Occlusion", a: "A type of occluded front where the overtaking cold air is colder than the air ahead of the warm front." },
+                { q: "Warm Occlusion", a: "A type of occluded front where the overtaking cold air is warmer than the retreating air ahead." },
+                { q: "Dissipating Stage", a: "The final stage where the cyclone weakens as the warm air is completely lifted off the surface." },
+                { q: "Cumulonimbus", a: "Towering clouds associated with a cold front that produce heavy rain and thunderstorms." },
+                { q: "Nimbostratus", a: "Low, thick clouds associated with a warm front that produce gentle, steady rain." },
+                { q: "Backing Wind", a: "A change in wind direction in an anti-clockwise direction (e.g., North to North-West)." },
+                { q: "Veering Wind", a: "A change in wind direction in a clockwise direction." }
+            ],
+            'terms': [
+                { q: "The direction in which Mid-latitude Cyclones travel in the Southern Hemisphere.", a: "West to East" },
+                { q: "The general name for the boundary where warm and cold air masses meet.", a: "Front" },
+                { q: "The type of cloud associated with heavy showers and cold fronts.", a: "Cumulonimbus" },
+                { q: "The specific stage where the cold front catches up to the warm front.", a: "Occlusion Stage" },
+                { q: "The type of air pressure found at the center of a mid-latitude cyclone.", a: "Low Pressure" },
+                { q: "The winds that steer these cyclones towards South Africa.", a: "Westerlies" },
+                { q: "The name for the region of air between the fronts.", a: "Warm Sector" },
+                { q: "The clouds that first appear as wispy 'horse tails' ahead of a warm front.", a: "Cirrus" },
+                { q: "The form of energy released during cloud formation that fuels the cyclone.", a: "Latent Heat" },
+                { q: "The month in South Africa when these cyclones are most likely to influence the weather.", a: "Winter months (June/July/August)" },
+                { q: "The boundary where cold air is 'dense' and 'heavy'.", a: "Cold Front" },
+                { q: "The specific shape of the isobars in a mature cyclone.", a: "Oval or V-shaped" },
+                { q: "The term used when cold air lifts the warm front entirely off the ground.", a: "Cold Front Occlusion" },
+                { q: "The speed at which cold fronts move compared to warm fronts.", a: "Faster" },
+                { q: "The name for a 'family' of 3 to 5 cyclones following one another.", a: "Cyclone family" },
+                { q: "The type of rain associated with a warm front.", a: "Gentle / Steady rain" },
+                { q: "The specific change in air pressure as a cold front arrives.", a: "Increases (Pressure rises)" },
+                { q: "The temperature change experienced as a warm front passes.", a: "Increases (Becomes warmer)" },
+                { q: "The weather system also known as an 'Extra-tropical' cyclone.", a: "Mid-latitude Cyclone" },
+                { q: "The latitude range where these cyclones typically form.", a: "30 to 60 degrees" }
+            ],
+            'multipleChoice': [
+                { q: "Mid-latitude cyclones travel eastwards driven by the:", options: ["A) Trade Winds", "B) Jet Stream", "C) Berg Winds", "D) Monsoons"], a: "B) Jet Stream" },
+                { q: "In the Mature stage, the pressure at the center is:", options: ["A) Increasing", "B) At its lowest", "C) At its highest", "D) 1013 hPa"], a: "B) At its lowest" },
+                { q: "Which front moves faster?", options: ["A) Warm Front", "B) Cold Front", "C) Stationary Front", "D) They move at the same speed"], a: "B) Cold Front" },
+                { q: "What happens to humidity when a cold front passes?", options: ["A) Increases", "B) Decreases", "C) Stays the same", "D) Reaches 100%"], a: "B) Decreases" },
+                { q: "Which clouds produce gentle rain ahead of a warm front?", options: ["A) Cumulonimbus", "B) Nimbostratus", "C) Cirrus", "D) Cumulus"], a: "B) Nimbostratus" },
+                { q: "Mid-latitude cyclones occur in families of:", options: ["A) 1-2", "B) 3-5", "C) 10-12", "D) 20+"], a: "B) 3-5" },
+                { q: "The diameter of a mid-latitude cyclone can reach up to:", options: ["A) 100 km", "B) 500 km", "C) 3000 km", "D) 10,000 km"], a: "C) 3000 km" },
+                { q: "During which stage does the warm air mass get lifted off the ground?", options: ["A) Initial", "B) Wave", "C) Occluded", "D) Dissipating"], a: "C) Occluded" },
+                { q: "A 'Cold Front Occlusion' is characterized by:", options: ["A) Warm air at the surface", "B) Overtaking air being colder than air ahead", "C) Cirrus clouds only", "D) Rising temperatures"], a: "B) Overtaking air being colder than air ahead" },
+                { q: "Which province in South Africa receives the most winter rain from these systems?", options: ["A) Gauteng", "B) Western Cape", "C) Limpopo", "D) Mpumalanga"], a: "B) Western Cape" },
+                { q: "As a warm front arrives, air pressure:", options: ["A) Increases", "B) Drops", "C) Stays constant", "D) Reaches 1050 hPa"], a: "B) Drops" },
+                { q: "What happens to the temperature as a cold front passes?", options: ["A) Increases", "B) Decreases", "C) Stays the same", "D) Rises to 30°C"], a: "B) Decreases" },
+                { q: "A 'family' of cyclones usually follows each other every:", options: ["A) 1 day", "B) 2-8 days", "C) 1 month", "D) 6 months"], a: "B) 2-8 days" },
+                { q: "Which cloud type is a sign that a warm front is far off?", options: ["A) Cumulonimbus", "B) Cirrus", "C) Stratus", "D) Fog"], a: "B) Cirrus" },
+                { q: "The V-shape of isobars in a mature cyclone points:", options: ["A) Towards the equator", "B) Away from the center", "C) Towards the pole", "D) Westward"], a: "B) Away from the center" },
+                { q: "In the Southern Hemisphere, the wind direction in the warm sector is typically:", options: ["A) SE", "B) NW", "C) SW", "D) NE"], a: "B) NW" },
+                { q: "What follows a cold front once the sky clears?", options: ["A) Tropical Storms", "B) A high-pressure cell (cold air)", "C) Constant snow", "D) Summer heatwaves"], a: "B) A high-pressure cell (cold air)" },
+                { q: "The boundary where cold and warm air masses meet without mixing is the:", options: ["A) Warm sector", "B) Polar front", "C) Eye of the storm", "D) ITCZ"], a: "B) Polar front" },
+                { q: "Which front is represented by a line with triangles?", options: ["A) Warm Front", "B) Cold Front", "C) Occluded Front", "D) Trough"], a: "B) Cold Front" },
+                { q: "Mid-latitude cyclones rotate _______ in the Southern Hemisphere.", options: ["A) Anti-clockwise", "B) Clockwise", "C) Up and Down", "D) They don't rotate"], a: "B) Clockwise" }
+            ],
+            'trueFalse': [
+                { q: "Mid-latitude cyclones move from East to West.", options: ["True", "False"], a: "False", exp: "They move from West to East with the Westerlies." },
+                { q: "Cold fronts move faster than warm fronts.", options: ["True", "False"], a: "True", exp: "This is why the occlusion stage occurs." },
+                { q: "Cumulonimbus clouds are associated with gentle rain.", options: ["True", "False"], a: "False", exp: "They produce heavy showers and thunderstorms." },
+                { q: "Pressure drops as a mid-latitude cyclone approaches.", options: ["True", "False"], a: "True", exp: "It is a low-pressure system." },
+                { q: "The mature stage is when the cyclone is at its strongest.", options: ["True", "False"], a: "True", exp: "Fronts are well-developed and pressure is lowest." },
+                { q: "Mid-latitude cyclones only occur in summer in South Africa.", options: ["True", "False"], a: "False", exp: "They primarily influence SA in winter." },
+                { q: "The warm sector contains warm, moist air.", options: ["True", "False"], a: "True", exp: "It is the region between the two fronts." },
+                { q: "Occluded fronts occur when the warm front catches the cold front.", options: ["True", "False"], a: "False", exp: "It happens when the cold front catches the warm front." },
+                { q: "Temperature increases after a cold front has passed.", options: ["True", "False"], a: "False", exp: "Temperature decreases as cold polar air moves in." },
+                { q: "Isobars in a cyclone are generally circular.", options: ["True", "False"], a: "False", exp: "They are typically oval or V-shaped." },
+                { q: "Mid-latitude cyclones are also called 'extra-tropical' cyclones.", options: ["True", "False"], a: "True", exp: "Because they occur outside the tropics." },
+                { q: "Latent heat fuels the development of a cyclone.", options: ["True", "False"], a: "True", exp: "Energy is released as water vapor condenses." },
+                { q: "A backing wind changes direction in a clockwise manner.", options: ["True", "False"], a: "False", exp: "A backing wind is anti-clockwise; veering is clockwise." },
+                { q: "Frontal rain occurs when air masses of different temperatures meet.", options: ["True", "False"], a: "True", exp: "This is the core mechanic of a cyclone." },
+                { q: "Nimbostratus clouds are associated with cold fronts.", options: ["True", "False"], a: "False", exp: "They are associated with warm fronts." },
+                { q: "Mid-latitude cyclones form at the ITCZ.", options: ["True", "False"], a: "False", exp: "They form at the Polar Front (approx 60° latitude)." },
+                { q: "Air pressure increases once a cold front arrives.", options: ["True", "False"], a: "True", exp: "Dense, cold air is heavier than warm air." },
+                { q: "Snow is possible with a cold front in winter.", options: ["True", "False"], a: "True", exp: "Especially over high-lying areas of South Africa." },
+                { q: "Mid-latitude cyclones typically occur in groups called 'families'.", options: ["True", "False"], a: "True", exp: "They follow one after the other along the jet stream." },
+                { q: "Warm fronts are represented by a line with semi-circles.", options: ["True", "False"], a: "True", exp: "Triangles for cold, semi-circles for warm." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

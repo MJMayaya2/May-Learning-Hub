@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Geography Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Geography Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 12: Fluvial Processes (Chapter 7)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "LONGITUDINAL", topic: "River Profiles", hint: "Side view of a river from its source to its mouth." },
+            { word: "TRANSVERSE", topic: "River Profiles", hint: "Cross-section view showing the width and depth of a river channel." },
+            { word: "BASE LEVEL", topic: "River Profiles", hint: "The lowest level to which a river can erode; usually sea level." },
+            { word: "GRADED", topic: "River Profiles", hint: "A river with a smooth, concave longitudinal profile in equilibrium." },
+            { word: "UNGRADED", topic: "River Profiles", hint: "A profile with irregularities like waterfalls and rapids (knickpoints)." },
+            { word: "KNICKPOINT", topic: "River Profiles", hint: "A sharp change in the river's gradient, such as a waterfall." },
+            { word: "VERTICAL", topic: "Erosion", hint: "Downward erosion that deepens the river valley, dominant in the upper course." },
+            { word: "LATERAL", topic: "Erosion", hint: "Sideways erosion that widens the river valley, dominant in the middle/lower course." },
+            { word: "V SHAPED", topic: "Valley Shapes", hint: "The cross-section shape of a river valley in its upper course." },
+            { word: "U SHAPED", topic: "Valley Shapes", hint: "The cross-section shape of a river valley in its lower course." },
+            { word: "REJUVENATION", topic: "River Evolution", hint: "When a river gains new energy and starts eroding vertically again." },
+            { word: "STREAM PIRACY", topic: "River Evolution", hint: "When a more energetic river 'captures' the water of another river." },
+            { word: "ABSTRACTION", topic: "River Evolution", hint: "Another term for stream piracy or river capture." },
+            { word: "PIRATE STREAM", topic: "River Evolution", hint: "The energetic river that captures another stream's water." },
+            { word: "CAPTURED STREAM", topic: "River Evolution", hint: "The river that loses its water during stream piracy." },
+            { word: "MISFIT STREAM", topic: "River Evolution", hint: "A stream that is too small for the valley it flows in after piracy." },
+            { word: "ELBOW", topic: "River Evolution", hint: "The sharp bend where a stream was captured (____ of capture)." },
+            { word: "WIND GAP", topic: "River Evolution", hint: "The dry valley left behind below the point of capture." },
+            { word: "SUPERIMPOSED", topic: "Drainage Patterns", hint: "A river that keeps its course after eroding through surface layers into older rocks." },
+            { word: "ANTECEDENT", topic: "Drainage Patterns", hint: "A river that existed before mountain building and eroded as fast as the land rose." },
+            { word: "GORGE", topic: "Landforms", hint: "A deep, narrow valley often formed by a rejuvenated river." },
+            { word: "INCISED MEANDER", topic: "Landforms", hint: "A deep, steep-sided meander caused by rejuvenation." },
+            { word: "TERRACE", topic: "Landforms", hint: "Old floodplains left high above the current river level after rejuvenation." },
+            { word: "CONCAVE", topic: "River Profiles", hint: "The ideal 'graded' shape of a river's longitudinal profile." },
+            { word: "GRAVITY", topic: "River Profiles", hint: "The force that pulls river water from high ground to low ground." },
+            { word: "HEADWARD", topic: "Erosion", hint: "Erosion that makes a river longer at its source." },
+            { word: "UPPER COURSE", topic: "River Stages", hint: "Stage where the gradient is steepest and vertical erosion dominates." },
+            { word: "LOWER COURSE", topic: "River Stages", hint: "Stage where the gradient is flattest and deposition dominates." },
+            { word: "MEANDER", topic: "River Stages", hint: "A large loop-like bend in a river's course." },
+            { word: "FLOODPLAIN", topic: "River Stages", hint: "The flat land next to a river that gets covered during a flood." },
+            { word: "OXBOW LAKE", topic: "River Stages", hint: "A U-shaped lake formed when a meander loop is cut off." },
+            { word: "DELTA", topic: "River Stages", hint: "Deposited sediment at a river's mouth forming a fan shape." },
+            { word: "LEVEES", topic: "River Stages", hint: "Natural banks of sediment built up during floods." },
+            { word: "BRAIDED", topic: "River Stages", hint: "A river with multiple small channels separated by islands of sand." },
+            { word: "POORT", topic: "Drainage Patterns", hint: "A narrow gap in a mountain range through which a river flows." },
+            { word: "TECTONIC", topic: "River Evolution", hint: "Movements (faulting/folding) that can cause river rejuvenation." },
+            { word: "ISOSTATIC", topic: "River Evolution", hint: "Change in land level relative to sea level, a cause of rejuvenation." },
+            { word: "GRADIENT", topic: "River Profiles", hint: "The steepness of the slope of the riverbed." },
+            { word: "SOURCE", topic: "River Stages", hint: "The starting point of a river." },
+            { word: "MOUTH", topic: "River Stages", hint: "The end point of a river where it enters the sea or a lake." },
+            { word: "SEDIMENT", topic: "Processes", hint: "Rocks, sand, and silt carried and deposited by a river." },
+            { word: "DEPOSITION", topic: "Processes", hint: "The process of a river dropping its load as it slows down." },
+            { word: "EROSION", topic: "Processes", hint: "The wearing away of the river channel." },
+            { word: "VERTICAL EROSION", topic: "Upper Course", hint: "Deepening of the river channel." },
+            { word: "LATERAL EROSION", topic: "Lower Course", hint: "Widening of the river valley." },
+            { word: "OVERTAKING", topic: "River Evolution", hint: "How a pirate stream reaches the captured stream." },
+            { word: "ENTRENCHED", topic: "Landforms", hint: "A type of incised meander that is very deep and symmetrical." },
+            { word: "ABANDONED", topic: "River Stages", hint: "The state of the old meander loop once an oxbow lake forms." },
+            { word: "TEMPORARY", topic: "River Profiles", hint: "A dam or lake acts as a ____ base level." },
+            { word: "PERMANENT", topic: "River Profiles", hint: "The sea is considered the ____ base level." },
+            { word: "EQUILIBRIUM", topic: "River Profiles", hint: "State where a river's erosion and deposition are balanced." },
+            { word: "TRANSITION", topic: "River Stages", hint: "The middle zone between the source and the floodplain." },
+            { word: "TURBULENT", topic: "Upper Course", hint: "Rough, swirling water flow common in the upper course." },
+            { word: "LAMINAR", topic: "Lower Course", hint: "Smooth, sheet-like water flow common in the lower course." },
+            { word: "SALT MARSH", topic: "River Stages", hint: "Wetland area often found near a river's mouth." },
+            { word: "CANYON", topic: "Landforms", hint: "A very deep valley with vertical sides, like the Fish River ____." },
+            { word: "UPLIFT", topic: "River Evolution", hint: "Raising of the land that causes a river to erode faster." },
+            { word: "GEOMORPHOLOGY", topic: "Terminology", hint: "Scientific study of landforms and their development." },
+            { word: "CROSS SECTION", topic: "River Profiles", hint: "Another name for the transverse profile." },
+            { word: "FLUVIAL", topic: "Terminology", hint: "Term relating to rivers and the action of running water." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Fluvial Process Expert!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for River Profiles and Stages!";
+            document.getElementById('modalWord').innerText = "RIVER MASTER";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

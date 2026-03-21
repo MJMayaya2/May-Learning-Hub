@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 12 Geography: Urban Climates</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Urban Climates</h1>
+        <p class="game-subtitle">Test your Grade 12 Environmental Knowledge! Select a category and spin.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Urban Heat Island", a: "An urban area that is significantly warmer than its surrounding rural areas due to human activities and building materials." },
+                { q: "Pollution Dome", a: "A trapped mass of polluted air over a city or industrial area, prevented from rising by an inversion layer." },
+                { q: "Albedo", a: "The ability of a surface to reflect solar radiation; urban materials like tar have low albedo as they absorb heat." },
+                { q: "Devegetation", a: "The removal of plants and trees in cities, which reduces natural cooling through evaporation." },
+                { q: "Inversion Layer", a: "A layer of warm air above a city that acts as a 'lid,' trapping cooler, polluted air near the ground." },
+                { q: "Condensation Nuclei", a: "Solid particles like smoke and dust that provide a surface for water vapour to join, increasing urban precipitation." },
+                { q: "Urban Heat Dome", a: "The localized heating over a CBD shown as a 'dome' shape on temperature graphs." },
+                { q: "Reforestation / Revegetation", a: "The strategy of planting trees and creating green spaces in cities to reduce the Heat Island effect." },
+                { q: "Friction", a: "The force caused by tall buildings that slows down wind speeds in urban areas." },
+                { q: "Isotherms", a: "Lines on a map that connect points of equal temperature, used to show heat islands." },
+                { q: "Urban Morphology", a: "The physical form and structure of a city, including tall buildings that trap heat." },
+                { q: "Artificial Surfaces", a: "Materials like concrete and brick that absorb and retain heat better than soil." },
+                { q: "Anthropogenic Heat", a: "Heat generated by human activities, such as domestic fires, car exhausts, and industrial processes." },
+                { q: "Evapotranspiration", a: "The combined process of water evaporating from the ground and transpiring from plants, which cools rural air." },
+                { q: "Albedo Effect", a: "Using light-coloured materials for paving so they reflect more heat and stay cooler." },
+                { q: "Microclimate", a: "The climate of a specific, small area, such as a city, that differs from the surrounding regional climate." },
+                { q: "Urban Canyon", a: "The space between tall buildings where heat is trapped and wind is redirected." },
+                { q: "Stormwater Runoff", a: "Rainwater that flows quickly over hard urban surfaces instead of soaking into the ground." },
+                { q: "Health Fatigue", a: "A condition caused by excessive heat in cities, affecting the elderly and vulnerable." },
+                { q: "Tax Rebate", a: "A financial incentive given to businesses that include plants and green roofs on their property." }
+            ],
+            'terms': [
+                { q: "The term for a city being hotter than the surrounding countryside.", a: "Urban Heat Island" },
+                { q: "The 'lid' of warm air that traps pollution over a city.", a: "Inversion Layer" },
+                { q: "The property of materials like tar that makes them absorb sunlight easily.", a: "Low Albedo" },
+                { q: "The trapped mass of polluted air over an industrial area.", a: "Pollution Dome" },
+                { q: "Particles like smoke that trigger more rain in cities.", a: "Condensation Nuclei" },
+                { q: "The main reason wind speeds are lower in cities.", a: "Friction from buildings" },
+                { q: "Heat created specifically by human activities like driving cars.", a: "Anthropogenic heat" },
+                { q: "The strategy of using lighter-coloured materials for paving.", a: "Increasing Albedo" },
+                { q: "The specific part of the city (acronym) that is usually the hottest.", a: "CBD" },
+                { q: "A respiratory condition triggered by urban pollution domes.", a: "Asthma" },
+                { q: "The cooling process missing in cities due to devegetation.", a: "Evapotranspiration" },
+                { q: "A common construction material that retains heat in cities.", a: "Concrete / Brick / Tar" },
+                { q: "The time of day when the Urban Heat Island is most noticeable.", a: "Night" },
+                { q: "The effect of tall buildings on solar radiation absorption.", a: "Increased surface area" },
+                { q: "What happens to energy demand in cities during a heat island effect?", a: "Increases (for AC)" },
+                { q: "Financial incentive for planting trees on commercial property.", a: "Tax rebate" },
+                { q: "The shape shown on a temperature profile over a city center.", a: "A dome / peak" },
+                { q: "Solid pollutant that acts as a condensation surface.", a: "Smoke / Dust" },
+                { q: "The general trend of urban precipitation compared to rural areas.", a: "Wetter / Higher" },
+                { q: "What happens to healthcare costs due to urban pollution domes?", a: "They rise" }
+            ],
+            'multipleChoice': [
+                { q: "Why are cities generally hotter than rural areas?", options: ["A) More trees", "B) Low albedo materials", "C) Higher wind speeds", "D) More natural soil"], a: "B) Low albedo materials" },
+                { q: "A pollution dome cannot rise because of the:", options: ["A) Low pressure", "B) Inversion layer", "C) Wind shear", "D) High humidity"], a: "B) Inversion layer" },
+                { q: "Urban wind speeds are typically lower because of:", options: ["A) Heat", "B) Friction from buildings", "C) Lack of moisture", "D) Pollution"], a: "B) Friction from buildings" },
+                { q: "Precipitation in cities is higher because of:", options: ["A) Fewer clouds", "B) More condensation nuclei", "C) Colder air", "D) High albedo"], a: "B) More condensation nuclei" },
+                { q: "Which of these is a strategy to reduce the heat island effect?", options: ["A) Building more tar roads", "B) Using dark bricks", "C) Reforesting cities", "D) Removing parks"], a: "C) Reforesting cities" },
+                { q: "The CBD is the hottest part of a city because it has the:", options: ["A) Lowest population", "B) Highest density of buildings", "C) Most trees", "D) Lowest pollution"], a: "B) Highest density of buildings" },
+                { q: "Lighter-coloured paving helps by:", options: ["A) Absorbing heat", "B) Reflecting sunlight", "C) Trapping smog", "D) Increasing friction"], a: "B) Reflecting sunlight" },
+                { q: "Anthropogenic heat refers to heat from:", options: ["A) The Sun", "B) Human activities", "C) Volcanos", "D) Ocean currents"], a: "B) Human activities" },
+                { q: "Urban Heat Islands are most intense during the:", options: ["A) Early morning", "B) Afternoon", "C) Night", "D) Spring equinox"], a: "C) Night" },
+                { q: "Which part of the city has the 'pollution dome'?", options: ["A) Parks", "B) Industrial areas", "C) Suburbs", "D) Green belts"], a: "B) Industrial areas" },
+                { q: "What happens to healthcare costs due to urban pollution?", options: ["A) They decrease", "B) They stay the same", "C) They rise", "D) They are abolished"], a: "C) They rise" },
+                { q: "Tall buildings trap heat near the ground by:", options: ["A) Reflecting it to space", "B) Reducing surface area", "C) Absorbing and re-radiating it", "D) Creating snow"], a: "C) Absorbing and re-radiating it" },
+                { q: "Rural areas are cooler because they have more:", options: ["A) Concrete", "B) Cars", "C) Evapotranspiration", "D) Skyscrapers"], a: "C) Evapotranspiration" },
+                { q: "Urban canyons refer to:", options: ["A) Parks", "B) Spaces between tall buildings", "C) Drainage pipes", "D) Underground subways"], a: "B) Spaces between tall buildings" },
+                { q: "The albedo of tar is considered:", options: ["A) High", "B) Low", "C) Neutral", "D) Perfect"], a: "B) Low" },
+                { q: "A 'Lid' on urban air is also known as a/an:", options: ["A) Cyclone", "B) Trough", "C) Inversion layer", "D) Front"], a: "C) Inversion layer" },
+                { q: "Tax rebates are used to encourage:", options: ["A) Air pollution", "B) More cars", "C) Urban greening", "D) Building higher"], a: "C) Urban greening" },
+                { q: "Cities are generally _____ than surrounding rural areas.", options: ["A) Hotter and drier", "B) Hotter and wetter", "C) Colder and windier", "D) Colder and drier"], a: "B) Hotter and wetter" },
+                { q: "Which pollutant acts as a condensation nuclei?", options: ["A) Oxygen", "B) Nitrogen", "C) Smoke particles", "D) Argon"], a: "C) Smoke particles" },
+                { q: "Increased energy demand in cities is often for:", options: ["A) Heating in summer", "B) Air conditioning", "C) Farming", "D) Sailing"], a: "B) Air conditioning" }
+            ],
+            'trueFalse': [
+                { q: "Cities are generally cooler than rural areas.", options: ["True", "False"], a: "False", exp: "Cities are generally hotter due to the Urban Heat Island effect." },
+                { q: "Inversion layers help to disperse air pollution.", options: ["True", "False"], a: "False", exp: "Inversion layers trap pollution near the ground." },
+                { q: "Tall buildings increase wind speeds in the city center.", options: ["True", "False"], a: "False", exp: "They create friction which slows down wind speeds." },
+                { q: "Urban materials like tar have a low albedo.", options: ["True", "False"], a: "True", exp: "They absorb most of the solar radiation as heat." },
+                { q: "Cities receive more rainfall than rural areas.", options: ["True", "False"], a: "True", exp: "Due to more heat and more condensation nuclei (pollution)." },
+                { q: "Reforestation is a strategy to cool down cities.", options: ["True", "False"], a: "True", exp: "Trees provide shade and cooling through evapotranspiration." },
+                { q: "The CBD is usually the coolest part of a city.", options: ["True", "False"], a: "False", exp: "The CBD is usually the hottest part (the 'peak' of the heat island)." },
+                { q: "Pollution domes are caused by clear, circulating air.", options: ["True", "False"], a: "False", exp: "They are caused by trapped pollutants under an inversion." },
+                { q: "Heat fatigue is a social effect of urban heat islands.", options: ["True", "False"], a: "True", exp: "It affects the comfort and health of city dwellers." },
+                { q: "Light-coloured paving reflects more heat than dark paving.", options: ["True", "False"], a: "True", exp: "This is known as increasing the albedo." },
+                { q: "The heat island effect is caused by natural soil and grass.", options: ["True", "False"], a: "False", exp: "It is caused by artificial surfaces like concrete and tar." },
+                { q: "Friction from buildings makes cities less windy.", options: ["True", "False"], a: "True", exp: "Rough surfaces slow down the horizontal flow of air." },
+                { q: "Waterborne diseases are more common in pollution domes.", options: ["True", "False"], a: "False", exp: "Respiratory diseases are more common in pollution domes." },
+                { q: "Green roofs can help reduce a building's energy demand.", options: ["True", "False"], a: "True", exp: "Plants insulate the building and keep it cooler." },
+                { q: "The albedo effect involves reflecting solar radiation.", options: ["True", "False"], a: "True", exp: "Surfaces with high albedo reflect more energy." },
+                { q: "Urban Heat Islands are only found in cold countries.", options: ["True", "False"], a: "False", exp: "They are found in cities worldwide regardless of climate." },
+                { q: "Smoke and dust act as condensation nuclei for rain.", options: ["True", "False"], a: "True", exp: "This leads to increased precipitation in urban areas." },
+                { q: "Cities are more densely populated, leading to more anthropogenic heat.", options: ["True", "False"], a: "True", exp: "Human activity generates significant heat." },
+                { q: "Urban Heat Islands are most noticeable during the day.", options: ["True", "False"], a: "False", exp: "They are most intense at night when surfaces release stored heat." },
+                { q: "A pollution dome acts as a trap for allergens.", options: ["True", "False"], a: "True", exp: "Pollutants cannot escape, increasing health risks." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

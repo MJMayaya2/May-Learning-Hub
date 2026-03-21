@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 12 Geography: Fluvial Processes</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 12 Geography: Fluvial Processes</h1>
+        <p class="game-subtitle">Match profiles, river stages, and complex drainage patterns!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">River Profiles</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Stages of a River</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Erosion & Deposition</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Complex Patterns</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Side view showing a river's length from source to mouth." }, { id: 1, text: "Longitudinal Profile" },
+                { id: 2, text: "Shows the shape of the river channel, width, and depth." }, { id: 2, text: "Transverse Profile" },
+                { id: 3, text: "The lowest level to which a river can erode (usually sea level)." }, { id: 3, text: "Base Level" },
+                { id: 4, text: "A profile that is smooth and concave with no obstructions." }, { id: 4, text: "Graded Profile" },
+                { id: 5, text: "A profile with obstructions like waterfalls or dams." }, { id: 5, text: "Ungraded Profile" },
+                { id: 6, text: "Obstructions that prevent a river from being graded." }, { id: 6, text: "Knickpoints" },
+                { id: 7, text: "Force that makes a river flow from high to low ground." }, { id: 7, text: "Gravity" },
+                { id: 8, text: "Shape of a transverse profile in the upper course." }, { id: 8, text: "V-Shaped Valley" },
+                { id: 9, text: "Shape of a transverse profile in the lower course." }, { id: 9, text: "Wide and Flat" },
+                { id: 10, text: "A local or temporary base level example." }, { id: 10, text: "Lake or Dam" }
+            ],
+            'topic2': [
+                { id: 1, text: "Stage where vertical erosion and turbulent flow dominate." }, { id: 1, text: "Upper Course" },
+                { id: 2, text: "Stage where lateral erosion begins and floodplains form." }, { id: 2, text: "Middle Course" },
+                { id: 3, text: "Stage where deposition is the main process and gradient is flat." }, { id: 3, text: "Lower Course" },
+                { id: 4, text: "Feature found in the upper course; sudden drop in level." }, { id: 4, text: "Waterfall" },
+                { id: 5, text: "Winding curves of a river in the middle and lower course." }, { id: 5, text: "Meanders" },
+                { id: 6, text: "Crescent-shaped lake formed when a meander is cut off." }, { id: 6, text: "Oxbow Lake" },
+                { id: 7, text: "Flat area next to a river that floods occasionally." }, { id: 7, text: "Floodplain" },
+                { id: 8, text: "Triangular deposit of sediment at a river mouth." }, { id: 8, text: "Delta" },
+                { id: 9, text: "Section of the river known as the 'source zone'." }, { id: 9, text: "Upper Course" },
+                { id: 10, text: "Section of the river known as the 'transition zone'." }, { id: 10, text: "Middle Course" }
+            ],
+            'topic3': [
+                { id: 1, text: "Downwearing of the river bed increasing depth." }, { id: 1, text: "Vertical Erosion" },
+                { id: 2, text: "Sideways erosion increasing the width of the valley." }, { id: 2, text: "Lateral Erosion" },
+                { id: 3, text: "The dropping of sediment when a river loses energy." }, { id: 3, text: "Deposition" },
+                { id: 4, text: "Material carried by the river." }, { id: 4, text: "Sediment / Load" },
+                { id: 5, text: "Boulders rolling along the river bed." }, { id: 5, text: "Traction" },
+                { id: 6, text: "Small pebbles bouncing along the river bed." }, { id: 6, text: "Saltation" },
+                { id: 7, text: "Fine particles held up in the water." }, { id: 7, text: "Suspension" },
+                { id: 8, text: "Minerals dissolved in the water." }, { id: 8, text: "Solution" },
+                { id: 9, text: "Process where rocks wear away the river bed." }, { id: 9, text: "Corrasion (Abrasion)" },
+                { id: 10, text: "Chemical weathering of rocks by river water." }, { id: 10, text: "Corrosion" }
+            ],
+            'topic4': [
+                { id: 1, text: "River is older than the structure it cuts through." }, { id: 1, text: "Antecedent Drainage" },
+                { id: 2, text: "River flows over hidden structures exposed by erosion." }, { id: 2, text: "Superimposed Drainage" },
+                { id: 3, text: "Narrow gap cut through a mountain by a river." }, { id: 3, text: "Poort / Gorge" },
+                { id: 4, text: "Pattern where the river cuts through a rising landscape." }, { id: 4, text: "Antecedent" },
+                { id: 5, text: "River is younger than the features it erodes into." }, { id: 5, text: "Superimposed" },
+                { id: 6, text: "Deep valley with steep sides created by rapid erosion." }, { id: 6, text: "Canyon" },
+                { id: 7, text: "River developed first, then tectonic uplift occurred." }, { id: 7, text: "Antecedent" },
+                { id: 8, text: "River develops on sediment, then erodes into older rock." }, { id: 8, text: "Superimposed" },
+                { id: 9, text: "Pattern that ignores the underlying hard rock structures." }, { id: 9, text: "Superimposed Pattern" },
+                { id: 10, text: "Erosion keeps pace with tectonic uplift in this pattern." }, { id: 10, text: "Antecedent" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Grade 12 Geography: Fluvial Processes Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

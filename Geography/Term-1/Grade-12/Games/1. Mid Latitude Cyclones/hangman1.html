@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Geography Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Geography Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 12: Mid-Latitude Cyclones (Chapter 1)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            // 60 CAPS-ALIGNED TERMS FROM CHAPTER 1
+            { word: "FRONTOGENESIS", topic: "Life Cycle", hint: "The first stage where a front starts to form or intensify." },
+            { word: "OCCLUSION", topic: "Life Cycle", hint: "The final stage where the cold front overtakes the warm front." },
+            { word: "WESTERLIES", topic: "General Characteristics", hint: "The wind belt in which mid-latitude cyclones travel." },
+            { word: "JETSTREAM", topic: "General Characteristics", hint: "High-speed air current that moves cyclones from West to East." },
+            { word: "ISOBARS", topic: "Synoptic Maps", hint: "Lines on a weather map joining areas of equal air pressure." },
+            { word: "CUMULONIMBUS", topic: "Weather Conditions", hint: "Clouds associated with heavy rain and storms at a cold front." },
+            { word: "NIMBOSTRATUS", topic: "Weather Conditions", hint: "Clouds that bring steady, gentle rain at a warm front." },
+            { word: "DIVERGENCE", topic: "Formation", hint: "Upper-air process that creates low pressure at the surface." },
+            { word: "CONVERGENCE", topic: "Formation", hint: "Surface process where air moves inward toward a low-pressure center." },
+            { word: "BACKING", topic: "Weather Patterns", hint: "When wind direction changes in an anti-clockwise direction." },
+            { word: "VEERING", topic: "Weather Patterns", hint: "When wind direction changes in a clockwise direction." },
+            { word: "COLDSECTOR", topic: "Structure", hint: "The area of cold air located behind the cold front." },
+            { word: "WARMSECTOR", topic: "Structure", hint: "The triangular area of warm air between two fronts." },
+            { word: "POLARFRONT", topic: "Formation", hint: "The zone where cold polar air and warm subtropical air meet." },
+            { word: "TEMPERATE", topic: "Terminology", hint: "Another name for a Mid-Latitude cyclone." },
+            { word: "EXTRATROPICAL", topic: "Terminology", hint: "Term used for cyclones occurring outside the tropical regions." },
+            { word: "CLOCKWISE", topic: "Southern Hemisphere", hint: "Direction of air circulation in a SH low-pressure system." },
+            { word: "MATURE", topic: "Life Cycle", hint: "The stage where the cyclone shows a clear 'wave' and distinct fronts." },
+            { word: "FRONTOLYSIS", topic: "Life Cycle", hint: "The dissipation or weakening of a front." },
+            { word: "ADVECTION", topic: "Fronts", hint: "Horizontal transfer of heat or air masses." },
+            { word: "VORTICITY", topic: "Formation", hint: "The measure of spin in the atmosphere." },
+            { word: "CIRRUS", topic: "Weather Conditions", hint: "High, wispy clouds that are the first sign of an approaching warm front." },
+            { word: "STRATUS", topic: "Weather Conditions", hint: "Layered clouds often found at a warm front." },
+            { word: "SNOW", topic: "Weather Conditions", hint: "Possible precipitation at a cold front if temperatures are low enough." },
+            { word: "LOWPRESSURE", topic: "General Characteristics", hint: "The type of pressure system a mid-latitude cyclone is." },
+            { word: "WESTTOEAST", topic: "Movement", hint: "The direction in which these systems move across South Africa." },
+            { word: "WINTER", topic: "South Africa", hint: "Season when mid-latitude cyclones mostly affect the Western Cape." },
+            { word: "FAMILY", topic: "General Characteristics", hint: "A group of 3 to 5 cyclones following each other." },
+            { word: "VSHAPED", topic: "Synoptic Maps", hint: "The shape of the isobars as they bend across a front." },
+            { word: "GRADIENT", topic: "General Characteristics", hint: "The rate of change in pressure; determines wind speed." },
+            { word: "STATIONARY", topic: "Life Cycle", hint: "Initial stage where air masses move parallel to the polar front." },
+            { word: "WAVE", topic: "Life Cycle", hint: "Stage where a disturbance causes a kink in the polar front." },
+            { word: "PRESSURE", topic: "Weather Patterns", hint: "This drops to its lowest point as the front passes." },
+            { word: "HUMIDITY", topic: "Weather Patterns", hint: "This increases in the warm sector and drops after the cold front." },
+            { word: "TEMPERATURE", topic: "Weather Patterns", hint: "This drops sharply with the arrival of the cold front." },
+            { word: "ANEMOMETER", topic: "Instruments", hint: "Instrument used to measure the wind speed of the cyclone." },
+            { word: "BAROMETER", topic: "Instruments", hint: "Instrument used to measure the air pressure." },
+            { word: "TROUGH", topic: "Synoptic Maps", hint: "An elongated area of low pressure." },
+            { word: "STORM", topic: "Weather Conditions", hint: "Severe weather condition often found at a cold front." },
+            { word: "CAPETOWN", topic: "South Africa", hint: "Major SA city that receives winter rain from these systems." },
+            { word: "SATELLITE", topic: "Synoptic Maps", hint: "Image type used to see cloud spirals of a cyclone." },
+            { word: "MODERATE", topic: "Weather Conditions", hint: "The typical intensity of rain at a warm front." },
+            { word: "HEAVY", topic: "Weather Conditions", hint: "The typical intensity of rain at a cold front." },
+            { word: "ALTITUDE", topic: "General Characteristics", hint: "The jet stream is located at a high ____." },
+            { word: "SUBTROPICAL", topic: "Formation", hint: "Air mass originating from the 30 degree latitude belt." },
+            { word: "POLAR", topic: "Formation", hint: "Cold air mass originating from high latitudes." },
+            { word: "DENSE", topic: "Fronts", hint: "Characteristic of cold air that causes it to sink and lift warm air." },
+            { word: "BUOYANT", topic: "Fronts", hint: "Characteristic of warm air that causes it to rise over cold air." },
+            { word: "SPIRAL", topic: "Structure", hint: "The pattern clouds make around the center of the low." },
+            { word: "SQUALL", topic: "Weather Conditions", hint: "A sudden, violent gust of wind or localized storm." },
+            { word: "PRECIPITATION", topic: "Weather Conditions", hint: "General term for rain, snow, or hail." },
+            { word: "DISPLACEMENT", topic: "Fronts", hint: "When one air mass pushes another out of the way." },
+            { word: "FRICTION", topic: "Formation", hint: "Surface ____ can slow down the movement of the cyclone." },
+            { word: "DIAMETER", topic: "General Characteristics", hint: "Can be up to 3000km for these large systems." },
+            { word: "INSTABILITY", topic: "Weather Conditions", hint: "Atmospheric condition leading to cloud formation and rain." },
+            { word: "CONDENSATION", topic: "Weather Conditions", hint: "Process as air rises and cools, forming clouds." },
+            { word: "WIND", topic: "Weather Patterns", hint: "This shifts direction (backs) as the cyclone passes." },
+            { word: "LATITUDE", topic: "General Characteristics", hint: "These systems occur between 30 and 60 degrees ____." },
+            { word: "FRONT", topic: "Terminology", hint: "The boundary between two different air masses." },
+            { word: "SYNOPTIC", topic: "Synoptic Maps", hint: "A map showing weather conditions over a large area at a specific time." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (guessedLetters.includes(l)) box.innerText = l;
+                else { box.innerText = ''; won = false; }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Master of Cyclones!";
+            document.getElementById('modalMsg').innerText = "You have completed all 60 Grade 12 Geography terms!";
+            document.getElementById('modalWord').innerText = "DISTINCTION MATERIAL";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
