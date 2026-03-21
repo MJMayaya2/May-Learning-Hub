@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 11 Life Sciences: Immunity Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Life Sciences Challenge</h1>
+        <p class="game-subtitle">Immunity (Grade 11 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is defined as the body's ability to resist infection?", options: ["Metabolism", "Immunity", "Respiration", "Digestion"], a: 1, hint: "It involves recognizing and rejecting foreign cells." },
+            { q: "Which cells in the body are primarily responsible for fighting infection?", options: ["Red blood cells", "White blood cells", "Nerve cells", "Skin cells"], a: 1, hint: "They are the 'soldiers' of the immune system." },
+            { q: "What are the specific proteins produced by the body to neutralize particular microbes?", options: ["Hormones", "Enzymes", "Antibodies", "Vitamins"], a: 2, hint: "They act as 'lock and key' for specific germs." },
+            { q: "What type of immunity is the body's inherent ability to produce antibodies?", options: ["Acquired Immunity", "Natural Immunity", "Passive Immunity", "Artificial Immunity"], a: 1, hint: "You are born with this capacity." },
+            { q: "Which type of immunity does NOT use the person's own immune system to make antibodies?", options: ["Active Immunity", "Natural Active Immunity", "Passive Immunity", "Artificial Active Immunity"], a: 2, hint: "The antibodies are 'supplied' from an outside source." },
+            { q: "How can a baby naturally obtain passive immunity?", options: ["Through exercise", "From breast milk", "By eating vegetables", "Through sunlight"], a: 1, hint: "Maternal antibodies are passed to the infant." },
+            { q: "What is 'Active Immunity'?", options: ["Immunity from a serum", "Immunity obtained through infection or vaccination", "Immunity that lasts only a day", "Immunity given at birth only"], a: 1, hint: "The body actively produces its own antibodies." },
+            { q: "Which type of immunity is obtained specifically through a vaccination?", options: ["Natural Active", "Artificial Active", "Natural Passive", "Artificial Passive"], a: 1, hint: "It is 'active' because the body makes antibodies, but 'artificial' because of the medical intervention." },
+            { q: "A liquid containing the proteins of a disease-causing micro-organism is called a...", options: ["Antibiotic", "Vaccine", "Hormone", "Serum"], a: 1, hint: "It 'trains' the immune system." },
+            { q: "What happens when a vaccine is injected into the body?", options: ["The person gets the disease", "The body produces antibodies against the proteins", "The person becomes a micro-organism", "The body stops making white blood cells"], a: 1, hint: "It triggers an immune response without making the person sick." },
+            { q: "Once produced, how long do antibodies usually remain in the body to fight off specific diseases?", options: ["For 24 hours", "For one week", "For life", "Only while the person is awake"], a: 2, hint: "The body 'remembers' the pathogen." },
+            { q: "What does the immune system do when it encounters foreign tissues or cells?", options: ["It ignores them", "It recognizes and rejects them", "It turns them into fat", "It helps them grow"], a: 1, hint: "This is why organ transplant rejection is a concern." },
+            { q: "Which of the following is an example of Artificial Passive Immunity?", options: ["Catching a cold", "Being vaccinated for Polio", "Ready-made antibodies supplied in a serum", "Drinking orange juice"], a: 2, hint: "Used in emergencies when immediate protection is needed." },
+            { q: "The term 'Specific' in relation to antibodies means they...", options: ["Attack all germs", "Attack only a particular microbe", "Are found only in the brain", "Are made of sugar"], a: 1, hint: "One antibody won't work for a different disease." },
+            { q: "Which type of acquired immunity is obtained through a natural infection?", options: ["Natural Active", "Artificial Active", "Natural Passive", "Artificial Passive"], a: 0, hint: "You caught the disease naturally and your body reacted." },
+            { q: "What is the primary goal of the immune response in humans?", options: ["To digest food faster", "To resist disease and infection", "To regulate body temperature", "To improve memory"], a: 1, hint: "It is a defense mechanism." },
+            { q: "Monoclonal antibodies are a form of...", options: ["Natural Active Immunity", "Artificial Passive Immunity", "Natural Passive Immunity", "Artificial Active Immunity"], a: 1, hint: "They are 'artificial' medical products given to a patient." },
+            { q: "Antibodies are produced by which specific type of cell?", options: ["Erythrocytes", "Leukocytes (White Blood Cells)", "Platelets", "Neurons"], a: 1, hint: "These are the immune system's primary workers." },
+            { q: "In the context of immunity, what is a 'Serum'?", options: ["A type of vaccine", "A fluid containing ready-made antibodies", "A form of bacteria", "A digestive juice"], a: 1, hint: "It provides passive immunity." },
+            { q: "A person who survives Measles and is now immune has which type of immunity?", options: ["Natural Active", "Artificial Active", "Natural Passive", "Artificial Passive"], a: 0, hint: "The body made its own defense after a real-world encounter." },
+            { q: "Maternal antibodies passed through the placenta provide the fetus with...", options: ["Active Immunity", "Natural Passive Immunity", "Artificial Passive Immunity", "Permanent Immunity"], a: 1, hint: "It is 'natural' but the fetus didn't make the antibodies itself." },
+            { q: "What triggers the production of antibodies during a vaccination?", options: ["The needle", "The proteins/antigens of the micro-organism", "The water in the syringe", "The doctor's advice"], a: 1, hint: "The immune system reacts to the 'foreign' protein." },
+            { q: "Why is a second 'booster' shot sometimes needed for a vaccine?", options: ["The first one didn't work", "To strengthen and extend the immune memory", "To change the person's DNA", "To provide energy"], a: 1, hint: "It 'boosts' the existing protection." },
+            { q: "The immune system's ability to 'recognize' a pathogen is due to...", options: ["Memory cells", "Muscle cells", "Brain cells", "Liver cells"], a: 0, hint: "These cells 'remember' past invaders." },
+            { q: "Which of the following is NOT a component of the human immune system?", options: ["White blood cells", "Antibodies", "Digestive enzymes", "Foreign cell recognition"], a: 2, hint: "Enzymes like pepsin belong to a different system." },
+            { q: "Immunity obtained through breast milk is 'Passive' because...", options: ["The baby is sleeping", "The baby's own immune system didn't produce the antibodies", "The milk is liquid", "It only works for a few minutes"], a: 1, hint: "The antibodies are borrowed from the mother." },
+            { q: "What describes the relationship between an antibody and an antigen?", options: ["They are friends", "They are identical", "The antibody fits specifically onto the antigen", "They never meet"], a: 2, hint: "The antigen is the 'target' on the germ." },
+            { q: "Which statement is TRUE about antibodies?", options: ["They are living organisms", "They are specific to a particular microbe", "They only exist in plants", "They are visible to the naked eye"], a: 1, hint: "Specificity is their key characteristic." },
+            { q: "The capacity of the body to distinguish 'self' from 'non-self' is part of...", options: ["Immunity", "Metabolism", "Circulation", "Excretion"], a: 0, hint: "It identifies what belongs and what is an invader." },
+            { q: "Vaccinations are a key tool in...", options: ["Treating broken bones", "Public health and disease prevention", "Improving eyesight", "Increasing height"], a: 1, hint: "They stop outbreaks before they start." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            let options = [...qData.options];
+            let correctText = options[qData.a];
+            options.sort(() => Math.random() - 0.5);
+            let correctIdx = options.indexOf(correctText);
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden', 'selected', 'correct', 'incorrect');
+                btn.setAttribute('data-correct', i === correctIdx);
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            const isCorrect = selectedBtn.getAttribute('data-correct') === 'true';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    for (let i = 0; i < 4; i++) {
+                        if (document.getElementById(`btn${i}`).getAttribute('data-correct') === 'true') {
+                            document.getElementById(`btn${i}`).classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            let hiddenCount = 0;
+            for(let i=0; i<4; i++){
+                let btn = document.getElementById(`btn${i}`);
+                if(btn.getAttribute('data-correct') === 'false' && hiddenCount < 2) {
+                    btn.classList.add('hidden');
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Life Sciences Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Science Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

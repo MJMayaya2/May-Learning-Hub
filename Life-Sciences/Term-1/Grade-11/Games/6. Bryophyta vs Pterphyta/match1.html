@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 11 Life Sciences: Bryophyta vs Pterophyta</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 0.9rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 11 Life Sciences: Land Plants</h1>
+        <p class="game-subtitle">Match the adaptive traits and life cycle features of Mosses and Ferns!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Land Adaptations</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Bryophyta (Mosses)</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Pterophyta (Ferns)</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Plant Reproduction</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Waxy layer on leaves to reduce water loss." }, { id: 1, text: "Cuticle" },
+                { id: 2, text: "Small pores that enable gas exchange." }, { id: 2, text: "Stomata" },
+                { id: 3, text: "Tissue responsible for support and transport (Xylem/Phloem)." }, { id: 3, text: "Vascular Tissue" },
+                { id: 4, text: "Structure responsible for absorption of water and nutrients." }, { id: 4, text: "True Roots" },
+                { id: 5, text: "A plant body without true roots, stems, or leaves." }, { id: 5, text: "Thallus" },
+                { id: 6, text: "Protects the embryo before germination." }, { id: 6, text: "Seed/Fruit" },
+                { id: 7, text: "Required by primitive land plants for sperm to reach the egg." }, { id: 7, text: "Water" },
+                { id: 8, text: "The distribution of materials to all parts of the plant." }, { id: 8, text: "Vascular Transport" },
+                { id: 9, text: "A primary feature used to group land plants." }, { id: 9, text: "Seeds vs Spores" },
+                { id: 10, text: "Found in Pterophytes but absent in Bryophytes." }, { id: 10, text: "True Leaves" }
+            ],
+            'topic2': [
+                { id: 1, text: "Small, non-vascular plants like mosses." }, { id: 1, text: "Bryophyta" },
+                { id: 2, text: "Root-like structures for anchorage in mosses." }, { id: 2, text: "Rhizoids" },
+                { id: 3, text: "The dominant, independent phase of the moss life cycle." }, { id: 3, text: "Gametophyte" },
+                { id: 4, text: "The dependent phase that grows on the gametophyte." }, { id: 4, text: "Sporophyte" },
+                { id: 5, text: "Bryophytes lack this type of supporting tissue." }, { id: 5, text: "Vascular Tissue" },
+                { id: 6, text: "Mosses are usually found in this type of habitat." }, { id: 6, text: "Moist/Shady" },
+                { id: 7, text: "Bryophytes are described as having this body structure." }, { id: 7, text: "Thallus" },
+                { id: 8, text: "Structure that produces spores in mosses." }, { id: 8, text: "Capsule/Sporangium" },
+                { id: 9, text: "Moss sperm must do this to reach the female organ." }, { id: 9, text: "Swim in water" },
+                { id: 10, text: "Mosses disperse and propagate using these." }, { id: 10, text: "Spores" }
+            ],
+            'topic3': [
+                { id: 1, text: "Vascular plants that reproduce via spores, like ferns." }, { id: 1, text: "Pterophyta" },
+                { id: 2, text: "The horizontal underground stem of a fern." }, { id: 2, text: "Rhizome" },
+                { id: 3, text: "The entire leaf of a fern plant." }, { id: 3, text: "Frond" },
+                { id: 4, text: "Small structures on the underside of pinnae that hold spores." }, { id: 4, text: "Sori" },
+                { id: 5, text: "The dominant, independent phase of the fern life cycle." }, { id: 5, text: "Sporophyte" },
+                { id: 6, text: "The heart-shaped gametophyte phase of a fern." }, { id: 6, text: "Prothallus" },
+                { id: 7, text: "Roots that arise from the rhizome." }, { id: 7, text: "Adventitious Roots" },
+                { id: 8, text: "Individual leaflets making up a fern frond." }, { id: 8, text: "Pinnae" },
+                { id: 9, text: "Tightly coiled young fern leaves." }, { id: 9, text: "Fiddleheads" },
+                { id: 10, text: "Ferns have true roots, stems, and these." }, { id: 10, text: "Leaves" }
+            ],
+            'topic4': [
+                { id: 1, text: "Structure where spores are produced." }, { id: 1, text: "Sporangium" },
+                { id: 2, text: "A heart-shaped structure in the fern life cycle." }, { id: 2, text: "Prothallus" },
+                { id: 3, text: "The male reproductive organ in mosses and ferns." }, { id: 3, text: "Antheridium" },
+                { id: 4, text: "The female reproductive organ in mosses and ferns." }, { id: 4, text: "Archegonium" },
+                { id: 5, text: "Fern sperm are dependent on this for fertilization." }, { id: 5, text: "Water film" },
+                { id: 6, text: "When mature, these snap open to fling out spores." }, { id: 6, text: "Sporangia" },
+                { id: 7, text: "Agent of dispersal for fern and moss spores." }, { id: 7, text: "Wind" },
+                { id: 8, text: "Formed after fertilization, grows into a new plant." }, { id: 8, text: "Embryo" },
+                { id: 9, text: "Phase that produces gametes (sperm and eggs)." }, { id: 9, text: "Gametophyte" },
+                { id: 10, text: "Phase that produces spores." }, { id: 10, text: "Sporophyte" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Grade 11 Life Sciences Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

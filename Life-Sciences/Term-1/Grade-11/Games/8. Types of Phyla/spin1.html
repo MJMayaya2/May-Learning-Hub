@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 11 Life Sciences: Animal Phyla</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Life Sciences Quiz: Animal Body Plans</h1>
+        <p class="game-subtitle">Explore Phyla Biodiversity! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Phylum", a: "A taxonomic rank below Kingdom, representing a group of organisms sharing a similar body plan and evolutionary history." },
+                { q: "Symmetry", a: "The arrangement of body parts around a central axis or plane." },
+                { q: "Asymmetry", a: "A body plan with no specific pattern or symmetry, characteristic of Porifera (sponges)." },
+                { q: "Radial Symmetry", a: "A body plan where parts are arranged around a central axis; the animal can be cut in any plane through the center to get identical halves." },
+                { q: "Bilateral Symmetry", a: "A body plan where the animal can be divided into identical left and right halves along only one plane." },
+                { q: "Cephalisation", a: "The concentration of sense organs and a brain at the anterior (front) end of the body, forming a head." },
+                { q: "Diploblastic", a: "Animals that develop from only two embryonic tissue layers: the ectoderm and endoderm." },
+                { q: "Triploblastic", a: "Animals that develop from three embryonic tissue layers: ectoderm, mesoderm, and endoderm." },
+                { q: "Ectoderm", a: "The outermost tissue layer that gives rise to the skin and nervous system." },
+                { q: "Endoderm", a: "The innermost tissue layer that develops into the lining of the digestive tract." },
+                { q: "Mesoderm", a: "The middle tissue layer in triploblastic animals that develops into muscles and organs." },
+                { q: "Blind-ending Gut", a: "A digestive system with only one opening that serves as both the mouth and the anus." },
+                { q: "Through-gut", a: "A digestive system with two separate openings: a mouth for ingestion and an anus for egestion." },
+                { q: "Coelom", a: "A fluid-filled body cavity completely lined by mesoderm." },
+                { q: "Acoelomate", a: "Animals that lack a body cavity between the gut and the outer body wall." },
+                { q: "Sessile", a: "Organisms that are attached to a substrate and do not move from place to place." },
+                { q: "Hydrostatic Skeleton", a: "A skeleton-like support system in soft-bodied animals formed by pressurized fluid in a body cavity." },
+                { q: "Exoskeleton", a: "A rigid external covering for the body in some invertebrate animals, especially arthropods." },
+                { q: "Endoskeleton", a: "An internal skeleton, such as the bony or cartilaginous skeleton of vertebrates." },
+                { q: "Segmentation", a: "The division of the body into repetitive sections or segments, seen in Annelida and Arthropoda." }
+            ],
+            'terms': [
+                { q: "The phylum containing sponges.", a: "Porifera" },
+                { q: "The concentration of sensory organs at the head end.", a: "Cephalisation" },
+                { q: "Animals with three embryonic tissue layers.", a: "Triploblastic" },
+                { q: "A gut with only one opening.", a: "Blind-ending gut" },
+                { q: "The fluid-filled cavity lined by mesoderm.", a: "Coelom" },
+                { q: "The phylum to which jellyfish and sea anemones belong.", a: "Cnidaria" },
+                { q: "The type of symmetry found in an earthworm.", a: "Bilateral symmetry" },
+                { q: "The phylum of flatworms like Planaria.", a: "Platyhelminthes" },
+                { q: "The tissue layer that forms the lining of the gut.", a: "Endoderm" },
+                { q: "The term for animals that do not move (e.g., adult sponges).", a: "Sessile" },
+                { q: "The phylum consisting of segmented worms.", a: "Annelida" },
+                { q: "A gut with two openings (mouth and anus).", a: "Through-gut" },
+                { q: "The middle tissue layer found in triploblastic animals.", a: "Mesoderm" },
+                { q: "The phylum including insects, spiders, and crabs.", a: "Arthropoda" },
+                { q: "Symmetry where the body can be divided into many equal planes.", a: "Radial symmetry" },
+                { q: "The phylum to which humans and other vertebrates belong.", a: "Chordata" },
+                { q: "Term for animals without a body cavity.", a: "Acoelomate" },
+                { q: "The outermost embryonic tissue layer.", a: "Ectoderm" },
+                { q: "The phylum that is asymmetrical and lacks tissues.", a: "Porifera" },
+                { q: "The external skeleton made of chitin in arthropods.", a: "Exoskeleton" }
+            ],
+            'multipleChoice': [
+                { q: "Which phylum is characterized by asymmetry and a lack of true tissues?", options: ["A) Cnidaria", "B) Porifera", "C) Annelida", "D) Chordata"], a: "B) Porifera" },
+                { q: "Radial symmetry is most commonly found in animals that are:", options: ["A) Highly mobile", "B) Sessile or slow-moving", "C) Triploblastic", "D) Segmented"], a: "B) Sessile or slow-moving" },
+                { q: "Which tissue layer is responsible for the development of muscles?", options: ["A) Ectoderm", "B) Endoderm", "C) Mesoderm", "D) Epidermis"], a: "C) Mesoderm" },
+                { q: "A 'through-gut' is an advantage because it allows for:", options: ["A) Only one meal at a time", "B) Simultaneous ingestion and egestion", "C) Intracellular digestion", "D) No anus"], a: "B) Simultaneous ingestion and egestion" },
+                { q: "Which phylum is the first to show cephalisation?", options: ["A) Porifera", "B) Cnidaria", "C) Platyhelminthes", "D) Annelida"], a: "C) Platyhelminthes" },
+                { q: "A coelom is a body cavity that is:", options: ["A) Not lined by tissue", "B) Lined by endoderm", "C) Lined by mesoderm", "D) Lined by ectoderm"], a: "C) Lined by mesoderm" },
+                { q: "Jellyfish belong to the phylum:", options: ["A) Porifera", "B) Cnidaria", "C) Annelida", "D) Arthropoda"], a: "B) Cnidaria" },
+                { q: "Bilateral symmetry is closely associated with:", options: ["A) Lack of a head", "B) Sessile lifestyle", "C) Cephalisation", "D) Radial growth"], a: "C) Cephalisation" },
+                { q: "Triploblastic animals have _____ tissue layers.", options: ["A) 1", "B) 2", "C) 3", "D) 4"], a: "C) 3" },
+                { q: "Which phylum has a through-gut and a closed blood system?", options: ["A) Cnidaria", "B) Platyhelminthes", "C) Annelida", "D) Porifera"], a: "C) Annelida" },
+                { q: "Sponges are described as 'sessile' because they:", options: ["A) Eat plants", "B) Stay in one place", "C) Have no brain", "D) Live in water"], a: "B) Stay in one place" },
+                { q: "Which phylum has an exoskeleton and jointed appendages?", options: ["A) Chordata", "B) Annelida", "C) Arthropoda", "D) Cnidaria"], a: "C) Arthropoda" },
+                { q: "A blind-ending gut is found in:", options: ["A) Arthropods", "B) Chordates", "C) Platyhelminthes", "D) Annelids"], a: "C) Platyhelminthes" },
+                { q: "The advantage of bilateral symmetry is:", options: ["A) No head needed", "B) Better directed movement", "C) Identical halves in all planes", "D) Lack of mesoderm"], a: "B) Better directed movement" },
+                { q: "Diploblastic animals lack which tissue layer?", options: ["A) Ectoderm", "B) Endoderm", "C) Mesoderm", "D) Epithelium"], a: "C) Mesoderm" },
+                { q: "Porifera digest food:", options: ["A) In a stomach", "B) In a through-gut", "C) Intracellularly", "D) In a blind-ending gut"], a: "C) Intracellularly" },
+                { q: "The presence of a coelom allows for:", options: ["A) No internal organs", "B) Complex organ systems and a hydrostatic skeleton", "C) Asymmetry", "D) Lack of tissues"], a: "B) Complex organ systems and a hydrostatic skeleton" },
+                { q: "Which phylum has a dorsal hollow nerve cord and a notochord?", options: ["A) Annelida", "B) Arthropoda", "C) Chordata", "D) Porifera"], a: "C) Chordata" },
+                { q: "Segmentation is a key feature of which phylum?", options: ["A) Cnidaria", "B) Annelida", "C) Platyhelminthes", "D) Porifera"], a: "B) Annelida" },
+                { q: "Which animal is triploblastic but acoelomate?", options: ["A) Sponge", "B) Jellyfish", "C) Flatworm", "D) Earthworm"], a: "C) Flatworm" }
+            ],
+            'trueFalse': [
+                { q: "Porifera show bilateral symmetry.", options: ["True", "False"], a: "False", exp: "Porifera are asymmetrical." },
+                { q: "Cnidaria are diploblastic.", options: ["True", "False"], a: "True", exp: "They have only ectoderm and endoderm." },
+                { q: "All triploblastic animals have a coelom.", options: ["True", "False"], a: "False", exp: "Flatworms (Platyhelminthes) are triploblastic but acoelomate." },
+                { q: "Cephalisation allows an animal to meet its environment head-first.", options: ["True", "False"], a: "True", exp: "Sensory organs are concentrated at the anterior end." },
+                { q: "Annelida have a through-gut.", options: ["True", "False"], a: "True", exp: "They have both a mouth and an anus." },
+                { q: "Arthropods have an internal skeleton made of bone.", options: ["True", "False"], a: "False", exp: "Arthropods have a chitinous exoskeleton." },
+                { q: "Chordata show bilateral symmetry.", options: ["True", "False"], a: "True", exp: "Most vertebrates have bilateral symmetry." },
+                { q: "Sponges have a centralized nervous system.", options: ["True", "False"], a: "False", exp: "They lack tissues and a nervous system." },
+                { q: "Radial symmetry allows an animal to sense food from all directions.", options: ["True", "False"], a: "True", exp: "This is beneficial for sessile or slow-moving animals." },
+                { q: "A coelom provides a space for organ development.", options: ["True", "False"], a: "True", exp: "It also acts as a hydrostatic skeleton." },
+                { q: "Platyhelminthes have a through-gut.", options: ["True", "False"], a: "False", exp: "They have a blind-ending gut." },
+                { q: "The ectoderm forms the lining of the digestive tract.", options: ["True", "False"], a: "False", exp: "The endoderm forms the gut lining; ectoderm forms the skin/nerves." },
+                { q: "Segmentation allows for specialized body regions.", options: ["True", "False"], a: "True", exp: "Segments can be modified for different functions." },
+                { q: "Cnidaria are the only phylum with radial symmetry in this study.", options: ["True", "False"], a: "True", exp: "Jellyfish and corals are radially symmetrical." },
+                { q: "Triploblastic animals are generally more complex than diploblastic ones.", options: ["True", "False"], a: "True", exp: "The addition of mesoderm allows for more complex organs." },
+                { q: "A hydrostatic skeleton uses fluid pressure for support.", options: ["True", "False"], a: "True", exp: "Common in soft-bodied animals like earthworms." },
+                { q: "Porifera have a mouth and an anus.", options: ["True", "False"], a: "False", exp: "They lack a gut entirely." },
+                { q: "Arthropoda is the most diverse and abundant animal phylum.", options: ["True", "False"], a: "True", exp: "It includes over 80% of all known animal species." },
+                { q: "Cephalisation is absent in animals with radial symmetry.", options: ["True", "False"], a: "True", exp: "Symmetry without a head is common in radial animals." },
+                { q: "All animals in Phylum Chordata have a backbone at some stage.", options: ["True", "False"], a: "False", exp: "All have a notochord; most have a backbone (vertebrates)." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

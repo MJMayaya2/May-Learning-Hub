@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Life Sciences Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Life Sciences Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 11: Spermatophytes (Chapter 7)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "SPERMATOPHYTA", topic: "Intro", hint: "The most highly advanced group of plants that produce seeds." },
+            { word: "GYMNOSPERMS", topic: "Subgroups", hint: "Plants that produce 'naked' seeds, not enclosed in a fruit." },
+            { word: "ANGIOSPERMS", topic: "Subgroups", hint: "Flowering plants that produce seeds enclosed within a fruit." },
+            { word: "DORMANT", topic: "Seeds", hint: "A state of inactivity where a seed waits for right conditions to grow." },
+            { word: "GERMINATION", topic: "Seeds", hint: "The process by which a seed begins to grow into a new plant." },
+            { word: "EMBRYO", topic: "Seeds", hint: "The 'baby plant' protected inside a seed." },
+            { word: "TESTA", topic: "Seeds", hint: "The hard, protective outer coat of a seed." },
+            { word: "DISPERSAL", topic: "Seeds", hint: "The spreading of seeds away from the parent plant to reduce competition." },
+            { word: "COMPETITION", topic: "Seeds", hint: "Seed dispersal reduces ____ for resources like light and water." },
+            { word: "CONIFERS", topic: "Gymnosperms", hint: "The most diverse group of gymnosperms, including pine trees." },
+            { word: "PINUS", topic: "Gymnosperms", hint: "The scientific genus name for pine trees." },
+            { word: "TAP ROOT", topic: "Gymnosperms", hint: "The primary root system of gymnosperms with lateral branches." },
+            { word: "MYCORRHIZAE", topic: "Gymnosperms", hint: "Mutualistic fungi that help pine roots absorb water and minerals." },
+            { word: "NEEDLE LIKE", topic: "Gymnosperms", hint: "The shape of pine leaves to reduce water loss (transpiration)." },
+            { word: "EVERGREEN", topic: "Gymnosperms", hint: "Plants that keep their leaves all year round." },
+            { word: "CONES", topic: "Gymnosperms", hint: "The reproductive structures of gymnosperms; house the seeds." },
+            { word: "MALE CONE", topic: "Gymnosperms", hint: "Small, yellow cones that produce pollen grains." },
+            { word: "FEMALE CONE", topic: "Gymnosperms", hint: "Larger, woody cones that produce ovules and seeds." },
+            { word: "POLLEN", topic: "Reproduction", hint: "Grains that transfer male gametes to the female organ." },
+            { word: "OVULES", topic: "Reproduction", hint: "Structures that develop into seeds after fertilization." },
+            { word: "FLOWER", topic: "Angiosperms", hint: "The reproductive organ of an angiosperm." },
+            { word: "FRUIT", topic: "Angiosperms", hint: "The mature ovary of a flower that protects seeds and aids dispersal." },
+            { word: "OVARY", topic: "Angiosperms", hint: "The part of the flower that develops into the fruit." },
+            { word: "POLLINATION", topic: "Reproduction", hint: "The transfer of pollen from the anther to the stigma." },
+            { word: "WIND", topic: "Pollination", hint: "A common agent of pollination for gymnosperms and some angiosperms." },
+            { word: "INSECTS", topic: "Pollination", hint: "Common biotic agents of pollination for bright, smelly flowers." },
+            { word: "STAPLE DIET", topic: "Food Security", hint: "Grains like maize and rice form the ____ for many humans." },
+            { word: "GRAINS", topic: "Food Security", hint: "The seeds of cereal grasses, such as oats, rice, and wheat." },
+            { word: "SEED BANK", topic: "Conservation", hint: "Facilities established to conserve seeds and protect plant biodiversity." },
+            { word: "ENDANGERED", topic: "Conservation", hint: "Species at high risk of extinction that seed banks help protect." },
+            { word: "EXTINCT", topic: "Conservation", hint: "When a species has no living members left." },
+            { word: "URBANISATION", topic: "Conservation", hint: "Human activity that puts strain on natural plant resources." },
+            { word: "VULNERABLE", topic: "Conservation", hint: "Species that are likely to become endangered." },
+            { word: "BIODIVERSITY", topic: "Conservation", hint: "The variety of all plant species on Earth." },
+            { word: "REINTRODUCED", topic: "Conservation", hint: "Endangered plants from seed banks can be ____ to the environment." },
+            { word: "SPOROPHYTE", topic: "Life Cycle", hint: "The large, dominant tree generation in spermatophytes." },
+            { word: "XYLEM", topic: "Vascular", hint: "Strengthening and conducting tissue that transports water." },
+            { word: "PHLOEM", topic: "Vascular", hint: "Conducting tissue that transports manufactured food." },
+            { word: "CYCADS", topic: "Gymnosperms", hint: "Ancient gymnosperms that resemble palm trees." },
+            { word: "GINGKOES", topic: "Gymnosperms", hint: "Gymnosperms with fan-shaped leaves; only one species survives." },
+            { word: "TESTA", topic: "Seeds", hint: "Another name for the protective seed coat." },
+            { word: "RESOURCES", topic: "Seeds", hint: "Light, water, and minerals are examples of plant ____." },
+            { word: "FERTILIZATION", topic: "Reproduction", hint: "The fusion of male and female gametes to form a zygote." },
+            { word: "HAPLOID", topic: "Genetics", hint: "Grains of pollen contain ____ male gametes (n)." },
+            { word: "DIPLOID", topic: "Genetics", hint: "The sporophyte tree is a ____ structure (2n)." },
+            { word: "VASCULAR", topic: "Basics", hint: "Plants with well-developed conducting tissues are ____ plants." },
+            { word: "CONDUCTING", topic: "Vascular", hint: "Xylem and Phloem are examples of ____ tissues." },
+            { word: "STRENGTHENING", topic: "Vascular", hint: "Tissues that allow spermatophytes to grow into large trees." },
+            { word: "MAIZE", topic: "Food Security", hint: "A common grain and staple food in South Africa." },
+            { word: "SUNFLOWER", topic: "Food Security", hint: "A plant whose seeds are a rich source of oil." },
+            { word: "NUTS", topic: "Food Security", hint: "Large seeds that are a rich source of fats and proteins." },
+            { word: "FIBRE", topic: "Food Security", hint: "Indigestible plant material found in grains, essential for health." },
+            { word: "CARBOHYDRATES", topic: "Food Security", hint: "Grains provide a major part of our ____ for energy." },
+            { word: "EVOLUTION", topic: "Botany", hint: "Spermatophytes are considered the peak of plant ____." },
+            { word: "POLLEN TUBE", topic: "Reproduction", hint: "Structure that grows to deliver sperm to the ovule." },
+            { word: "WATER", topic: "Reproduction", hint: "Unlike mosses, spermatophytes do NOT require ____ for fertilization." },
+            { word: "FRUIT DISPERSAL", topic: "Angiosperms", hint: "Animals eating fruit aid in ____." },
+            { word: "TESTA", topic: "Seeds", hint: "Protects the embryo from drying out." },
+            { word: "CAPS", topic: "Intro", hint: "The South African curriculum framework for Life Sciences." },
+            { word: "WILD TYPES", topic: "Conservation", hint: "Seed banks conserve original ____ of crop plants." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Spermatophyte Master!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for Gymnosperms and Angiosperms!";
+            document.getElementById('modalWord').innerText = "BOTANY EXPERT";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

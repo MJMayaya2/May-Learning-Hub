@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 11 Life Sciences Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input { width: 100%; padding: 0.7rem 0.8rem; border-radius: 10px; border: 2px solid #cce0ff; font-size: 1rem; outline: none; }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 11 Life Sciences Jeopardy</h1>
+        <p class="game-subtitle">Topic: Roles of Micro-Organisms (Chapter 3)</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" style="font-weight:bold; color:#856404; margin-bottom:10px;">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        // --- PLAYER 1 DATA ---
+        const p1Cats = [
+            { name: "Viruses in Nature", questions: [
+                { points: 10, q: "General role of viral diseases in wild populations.", a: "Control host numbers / maintain healthy populations" },
+                { points: 20, q: "Using viruses to manage plant and animal pests.", a: "Biological control agents" },
+                { points: 30, q: "Reprogramming viruses with healthy human genes to fix disorders.", a: "Gene therapy" },
+                { points: 40, q: "Condition treated by targeting unhealthy tissue with corrected DNA.", a: "Medical disorders (e.g., cystic fibrosis)" },
+                { points: 50, q: "Weakened form of a virus used to stimulate antibodies.", a: "Vaccine" }
+            ]},
+            { name: "Bacteria: Decomposers", questions: [
+                { points: 10, q: "Bacteria that break down dead plant and animal matter.", a: "Saprophytes" },
+                { points: 20, q: "What bacteria secrete to break down organic matter externally.", a: "Digestive enzymes" },
+                { points: 30, q: "Name one of the three by-products of bacterial decomposition.", a: "Water, CO2, or Nitrogenous waste" },
+                { points: 40, q: "Why is decomposition vital for other organisms?", a: "Returns nutrients/by-products to the environment for use" },
+                { points: 50, q: "Are decomposers autotrophs or heterotrophs?", a: "Heterotrophs" }
+            ]},
+            { name: "Nitrogen Fixers", questions: [
+                { points: 10, q: "Can plants use nitrogen directly from the atmosphere?", a: "No" },
+                { points: 20, q: "Bacteria that convert atmospheric nitrogen into nitrates.", a: "Nitrogen-fixing bacteria" },
+                { points: 30, q: "Where plants store the nitrogen absorbed from bacteria.", a: "Proteins" },
+                { points: 40, q: "Type of plant that has nodules for nitrogen-fixing bacteria.", a: "Legumes" },
+                { points: 50, q: "Status of the relationship where both plant and bacteria benefit.", a: "Mutualism" }
+            ]},
+            { name: "Gut Bacteria", questions: [
+                { points: 10, q: "Mutualistic bacteria in herbivores break down this complex carb.", a: "Cellulose" },
+                { points: 20, q: "The simple substance cellulose is turned into for absorption.", a: "Simple sugars" },
+                { points: 30, q: "What the bacteria get in return from the herbivore.", a: "Nutrients (and habitat)" },
+                { points: 40, q: "Name one vitamin released by bacteria in the human intestine.", a: "Vitamin B12, E, or K" },
+                { points: 50, q: "How do humans benefit from their intestinal bacteria?", a: "Vitamins are absorbed into the blood" }
+            ]}
+        ];
+
+        // --- PLAYER 2 DATA ---
+        const p2Cats = [
+            { name: "Virus Tech", questions: [
+                { points: 10, q: "Treatment that uses viruses to deliver healthy genes.", a: "Gene therapy" },
+                { points: 20, q: "Name of the lung condition mentioned as treated by gene therapy.", a: "Cystic fibrosis" },
+                { points: 30, q: "A 'reprogrammed' virus carries this into a human cell.", a: "Healthy gene / DNA" },
+                { points: 40, q: "Viruses can act as pathogens leading to this outcome for a host.", a: "Death / Population control" },
+                { points: 50, q: "What do vaccines stimulate the immune system to produce?", a: "Antibodies" }
+            ]},
+            { name: "Bacterial Ecology", questions: [
+                { points: 10, q: "Bacteria that live on dead matter are called ___.", a: "Saprophytes" },
+                { points: 20, q: "The process of breaking down dead matter to return nutrients.", a: "Decomposition" },
+                { points: 30, q: "Waste product returned to the atmosphere by bacteria.", a: "Carbon dioxide" },
+                { points: 40, q: "Method bacteria use to obtain food from dead matter.", a: "Absorption (after external digestion)" },
+                { points: 50, q: "Are nitrogen-fixing bacteria always found in plant roots?", a: "No (they can be free-living)" }
+            ]},
+            { name: "Mutualism I", questions: [
+                { points: 10, q: "The usable form of nitrogen for plants created by bacteria.", a: "Nitrates" },
+                { points: 20, q: "Part of the legume plant where bacteria live.", a: "Nodules" },
+                { points: 30, q: "What the plant provides to the nitrogen-fixing bacteria.", a: "Carbohydrates" },
+                { points: 40, q: "Mutualism: Do both or just one organism benefit?", a: "Both" },
+                { points: 50, q: "The element being 'fixed' from the atmosphere.", a: "Nitrogen" }
+            ]},
+            { name: "Herbivore Help", questions: [
+                { points: 10, q: "Digestive part of a cow where bacteria ferment food.", a: "Rumen (digestive tract)" },
+                { points: 20, q: "Bacteria help herbivores get ___ from tough plant material.", a: "Energy / Nutrients" },
+                { points: 30, q: "Can herbivores digest cellulose without bacteria?", a: "No" },
+                { points: 40, q: "Bacteria in the human gut obtain ___ from partially digested food.", a: "Nutrients" },
+                { points: 50, q: "Vitamin K is vital for humans and provided by ___.", a: "Intestinal bacteria" }
+            ]}
+        ];
+
+        // --- PLAYER 3 DATA ---
+        const p3Cats = [
+            { name: "Biotechnology", questions: [
+                { points: 10, q: "Goal of biological control in agriculture.", a: "Management of pests" },
+                { points: 20, q: "Viruses can compensate for genes that are abnormal or ___.", a: "Malfunctioning" },
+                { points: 30, q: "Type of medicine made from weakened viruses.", a: "Vaccines" },
+                { points: 40, q: "Does gene therapy change the protein production of a cell?", a: "Yes (helps function normally)" },
+                { points: 50, q: "Viruses in nature keep host species populations ___.", a: "Healthy / Controlled" }
+            ]},
+            { name: "Bacterial Waste", questions: [
+                { points: 10, q: "One nitrogenous by-product of decomposition.", a: "Nitrogenous wastes" },
+                { points: 20, q: "Is water a by-product of bacterial decomposition?", a: "Yes" },
+                { points: 30, q: "Where bacteria get their energy in a food chain.", a: "Dead organic matter" },
+                { points: 40, q: "Saprophytic bacteria perform digestion ___ their bodies.", a: "Outside (Externally)" },
+                { points: 50, q: "Essential molecules bacteria produce for plants to make proteins.", a: "Nitrates" }
+            ]},
+            { name: "Nitrogen Cycle", questions: [
+                { points: 10, q: "Element needed for protein manufacture in plants.", a: "Nitrogen" },
+                { points: 20, q: "Bacteria in nodules convert atmospheric gas into ___.", a: "Nitrates" },
+                { points: 30, q: "Legumes are used to replenish soil with this nutrient.", a: "Nitrogen/Nitrates" },
+                { points: 40, q: "Do bacteria benefit from a safe habitat in plant roots?", a: "Yes" },
+                { points: 50, q: "The term for atmospheric nitrogen being converted for biological use.", a: "Nitrogen fixation" }
+            ]},
+            { name: "Digestive Allies", questions: [
+                { points: 10, q: "Specific vitamin B provided by human gut bacteria.", a: "Vitamin B12" },
+                { points: 20, q: "The enzyme-like action of bacteria on cellulose produces ___.", a: "Simple sugars" },
+                { points: 30, q: "Benefit to the host in a mutualistic digestive relationship.", a: "Vitamins / Digested food" },
+                { points: 40, q: "Vitamin E is important for humans and provided by ___.", a: "Bacteria" },
+                { points: 50, q: "Location where mutualistic bacteria are found in herbivores.", a: "Digestive tract" }
+            ]}
+        ];
+
+        // --- PLAYER 4 DATA ---
+        const p4Cats = [
+            { name: "Virus Utility", questions: [
+                { points: 10, q: "Pathogenic viruses can lead to the ___ of a host.", a: "Death" },
+                { points: 20, q: "Mechanism used by vaccines to provide immunity.", a: "Stimulate antibody production" },
+                { points: 30, q: "Viruses used as biological control target ___.", a: "Pests" },
+                { points: 40, q: "In gene therapy, the healthy gene is incorporated into the ___.", a: "DNA / Cell" },
+                { points: 50, q: "Healthy populations are maintained by viral diseases in ___.", a: "Nature" }
+            ]},
+            { name: "Saprophytes", questions: [
+                { points: 10, q: "The organic material saprophytes feed on.", a: "Dead plant and animal matter" },
+                { points: 20, q: "Do saprophytic bacteria play a role in carbon cycling?", a: "Yes (release CO2)" },
+                { points: 30, q: "By-products of decomposition are returned to the ___.", a: "Environment" },
+                { points: 40, q: "Digestive ___ are secreted by bacteria into dead matter.", a: "Enzymes" },
+                { points: 50, q: "Bacteria absorb ___ after breaking down organic matter.", a: "Nutrients" }
+            ]},
+            { name: "Symbiosis", questions: [
+                { points: 10, q: "Are all nitrogen-fixing bacteria mutualistic?", a: "No (some are free-living)" },
+                { points: 20, q: "Mutual benefit in legumes: Plant gets ___ and Bacteria gets carbohydrates.", a: "Nitrates" },
+                { points: 30, q: "Relationship type where both benefit.", a: "Mutualism" },
+                { points: 40, q: "Can atmospheric nitrogen be used by plants to make protein directly?", a: "No" },
+                { points: 50, q: "Nodules are characteristic of ___ plants.", a: "Legume" }
+            ]},
+            { name: "Bacteria & Hosts", questions: [
+                { points: 10, q: "The source of carbohydrates for bacteria in plants.", a: "Photosynthesis / The plant" },
+                { points: 20, q: "Vitamin K is absorbed into the human ___ system.", a: "Blood" },
+                { points: 30, q: "Simple sugars from cellulose are absorbed by ___.", a: "Herbivores / Animals" },
+                { points: 40, q: "Mutualistic bacteria obtain ___ from the digested food in the intestine.", a: "Nutrients" },
+                { points: 50, q: "Do bacteria in herbivores live in the respiratory or digestive tract?", a: "Digestive tract" }
+            ]}
+        ];
+
+        const gameData = [p1Cats, p2Cats, p3Cats, p4Cats];
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() { document.getElementById('nameSetupSection').classList.remove('hidden'); }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header'; h.innerText = c.name; board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn'; btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points; activeTileButton = btn;
+            document.getElementById('modalCategory').innerText = `${playerNames[pIdx]} | ${catName}`;
+            document.getElementById('modalQuestion').innerText = qData.q;
+            document.getElementById('modalAnswer').innerText = qData.a;
+            document.getElementById('activePlayerName').innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block'; answerArea.style.display = 'none'; modal.style.display = 'flex';
+        }
+
+        function revealAnswer() { btnReveal.style.display = 'none'; answerArea.style.display = 'block'; }
+
+        function judgeActivePlayer(correct) {
+            if (correct) { scores[currentPlayerIndex] += activePointValue; updateScore(currentPlayerIndex); closeModal(); } 
+            else { showSteal(); }
+        }
+
+        function showSteal() {
+            const stealArea = document.querySelector('.steal-area'); stealArea.style.display = 'block';
+            const container = document.getElementById('stealButtons'); container.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button'); b.className = 'btn-steal'; b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    container.appendChild(b);
+                }
+            }
+            let none = document.createElement('button'); none.className = 'btn-incorrect'; none.innerText = "No one"; none.onclick = closeModal; container.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { 
+            activeTileButton.innerText = ""; activeTileButton.disabled = true; 
+            modal.style.display = 'none'; document.querySelector('.steal-area').style.display = 'none';
+        }
+        function resetPlayerNames() { location.reload(); }
+        buildBoards();
+    </script>
+</body>
+</html>

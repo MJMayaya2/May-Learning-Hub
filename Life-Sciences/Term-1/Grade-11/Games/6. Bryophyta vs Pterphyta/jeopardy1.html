@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 11 Life Sciences Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input { width: 100%; padding: 0.7rem 0.8rem; border-radius: 10px; border: 2px solid #cce0ff; font-size: 1rem; outline: none; }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 11 Life Sciences Jeopardy</h1>
+        <p class="game-subtitle">Topic: Biodiversity of Plants (Bryophyta & Pterophyta)</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" style="font-weight:bold; color:#856404; margin-bottom:10px;">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        // --- PLAYER 1 DATA ---
+        const p1Cats = [
+            { name: "Land Adaptations", questions: [
+                { points: 10, q: "Waxy layer on leaves that reduces water loss.", a: "Cuticle" },
+                { points: 20, q: "Pores on leaves that enable gas exchange.", a: "Stomata" },
+                { points: 30, q: "Specialized tissue used for support and transport of water.", a: "Vascular tissue (Xylem/Phloem)" },
+                { points: 40, q: "True or False: All land plants have true roots, stems, and leaves.", a: "False (Bryophytes do not)" },
+                { points: 50, q: "Benefit of fruit production in Angiosperms.", a: "Dispersal of seeds and protection of embryo" }
+            ]},
+            { name: "Bryophyta (Mosses)", questions: [
+                { points: 10, q: "Do Bryophytes contain vascular tissue (xylem and phloem)?", a: "No" },
+                { points: 20, q: "Structure used by mosses for anchorage instead of true roots.", a: "Rhizoids" },
+                { points: 30, q: "The leaf-like structures of a moss plant.", a: "Phyllids" },
+                { points: 40, q: "The stem-like structure of a moss plant.", a: "Caulid" },
+                { points: 50, q: "Why must mosses live in moist habitats?", a: "Lack of vascular tissue for water transport and dependence on water for sperm to swim" }
+            ]},
+            { name: "Pterophyta (Ferns)", questions: [
+                { points: 10, q: "Term for a fern leaf.", a: "Frond" },
+                { points: 20, q: "The underground stem of a fern.", a: "Rhizome" },
+                { points: 30, q: "Type of roots found in ferns that arise from the rhizome.", a: "Adventitious roots" },
+                { points: 40, q: "Small structures on the underside of mature pinnae that contain sporangia.", a: "Sori" },
+                { points: 50, q: "The heart-shaped structure that a fern spore grows into.", a: "Prothallus" }
+            ]},
+            { name: "Reproduction", questions: [
+                { points: 10, q: "Method of reproduction used by both mosses and ferns.", a: "Spores" },
+                { points: 20, q: "In mosses, what does the zygote grow into?", a: "Sporophyte" },
+                { points: 30, q: "Which group is more dependent on water for reproduction?", a: "Bryophyta" },
+                { points: 40, q: "What is produced inside the sporangium of a fern?", a: "Spores" },
+                { points: 50, q: "Where do male and female reproductive organs develop in a fern's life cycle?", a: "Underside of the prothallus" }
+            ]}
+        ];
+
+        // --- PLAYER 2 DATA ---
+        const p2Cats = [
+            { name: "Plant Groups", questions: [
+                { points: 10, q: "Which group has 'naked' seeds?", a: "Gymnosperms" },
+                { points: 20, q: "Flowering plants that produce seeds inside fruit.", a: "Angiosperms" },
+                { points: 30, q: "Are mosses classified as vascular or non-vascular?", a: "Non-vascular" },
+                { points: 40, q: "Are ferns classified as vascular or non-vascular?", a: "Vascular" },
+                { points: 50, q: "Trait that allows Angiosperms to be highly successful on land.", a: "Vascular tissue, flowers, and fruit" }
+            ]},
+            { name: "Moss Structures", questions: [
+                { points: 10, q: "Does the caulid of a moss contain xylem?", a: "No" },
+                { points: 20, q: "Does a moss plant have a waxy cuticle?", a: "Yes (on the phyllids)" },
+                { points: 30, q: "Part of the moss sporophyte that contains spores.", a: "Capsule (Sporangium)" },
+                { points: 40, q: "The stalk that supports the moss capsule.", a: "Seta" },
+                { points: 50, q: "The leaf-like structures are only ___ cell layer thick.", a: "One" }
+            ]},
+            { name: "Fern Life Cycle", questions: [
+                { points: 10, q: "Is the mature fern plant a sporophyte or gametophyte?", a: "Sporophyte" },
+                { points: 20, q: "What is required for a fern sperm to reach an ovum?", a: "A film of water" },
+                { points: 30, q: "The process by which fern sporangia release spores.", a: "They snap open and fling them out" },
+                { points: 40, q: "Is the prothallus vascular or non-vascular?", a: "Non-vascular" },
+                { points: 50, q: "Role of the rhizome in a fern plant.", a: "Support, transport, and storage" }
+            ]},
+            { name: "Comparison", questions: [
+                { points: 10, q: "Which group has true roots: Mosses or Ferns?", a: "Ferns" },
+                { points: 20, q: "Which group is typically smaller in size?", a: "Bryophyta (Mosses)" },
+                { points: 30, q: "Which group uses seeds for dispersal?", a: "Neither (both use spores)" },
+                { points: 40, q: "Do both mosses and ferns have stomata?", a: "Yes" },
+                { points: 50, q: "Which group has a more reduced dependence on water for survival?", a: "Pterophyta (Ferns)" }
+            ]}
+        ];
+
+        // --- PLAYER 3 DATA ---
+        const p3Cats = [
+            { name: "Evolution", questions: [
+                { points: 10, q: "Primitive plants that lack vascular tissue.", a: "Bryophytes" },
+                { points: 20, q: "First group of plants to develop vascular tissue.", a: "Pterophytes (Ferns)" },
+                { points: 30, q: "Adaptation that allows plants to stand upright.", a: "Vascular tissue (Xylem)" },
+                { points: 40, q: "Why is seed production an advantage over spores?", a: "Protection and nutrition for the embryo" },
+                { points: 50, q: "Land plants need a way to absorb water from the ___.", a: "Soil/Substrate" }
+            ]},
+            { name: "Moss Biology", questions: [
+                { points: 10, q: "Function of rhizoids.", a: "Anchorage (and minor absorption)" },
+                { points: 20, q: "Main site of photosynthesis in a moss.", a: "Phyllids" },
+                { points: 30, q: "Is the moss gametophyte dependent on the sporophyte?", a: "No (it is the dominant phase)" },
+                { points: 40, q: "Is the moss sporophyte dependent on the gametophyte?", a: "Yes (for nutrition)" },
+                { points: 50, q: "What happens when a moss spore germinates?", a: "It grows into a new gametophyte" }
+            ]},
+            { name: "Fern Anatomy", questions: [
+                { points: 10, q: "The 'leaflets' of a fern frond.", a: "Pinnae" },
+                { points: 20, q: "Appearance of a young fern leaf.", a: "Tightly coiled and hairy" },
+                { points: 30, q: "What makes a fern frond a 'compound' leaf?", a: "It is divided into many pinnae" },
+                { points: 40, q: "Does a fern rhizome contain xylem?", a: "Yes" },
+                { points: 50, q: "Protective role of the coiling in young leaves.", a: "Protects the growing point" }
+            ]},
+            { name: "Habitats", questions: [
+                { points: 10, q: "Typical habitat for mosses.", a: "Shady, moist areas" },
+                { points: 20, q: "Typical habitat for ferns.", a: "Damp, shady areas (often forest floors)" },
+                { points: 30, q: "Why can't mosses grow in very dry deserts?", a: "Lack of vascular tissue/cuticle protection/water for reproduction" },
+                { points: 40, q: "Can ferns grow larger than mosses? Why?", a: "Yes, because they have vascular tissue for support and transport" },
+                { points: 50, q: "A plant body not differentiated into roots, stems, or leaves.", a: "Thallus" }
+            ]}
+        ];
+
+        // --- PLAYER 4 DATA ---
+        const p4Cats = [
+            { name: "Vascular Systems", questions: [
+                { points: 10, q: "Tissue that transports water.", a: "Xylem" },
+                { points: 20, q: "Tissue that transports manufactured food.", a: "Phloem" },
+                { points: 30, q: "Do Bryophytes have a 'true' stem? Why?", a: "No, because it lacks vascular tissue" },
+                { points: 40, q: "Do Pterophytes have a 'true' stem? Why?", a: "Yes, because it contains vascular tissue" },
+                { points: 50, q: "Role of lignin in vascular plants (inference).", a: "Strength and support (allowing height)" }
+            ]},
+            { name: "Gametophytes", questions: [
+                { points: 10, q: "Dominant phase in a moss life cycle.", a: "Gametophyte" },
+                { points: 20, q: "Reduced, heart-shaped phase in a fern life cycle.", a: "Gametophyte (Prothallus)" },
+                { points: 30, q: "Does a moss gametophyte produce spores or gametes?", a: "Gametes" },
+                { points: 40, q: "Is the fern prothallus autotrophic?", a: "Yes (it is green and photosynthetic)" },
+                { points: 50, q: "Where is the zygote formed in both groups?", a: "In the female reproductive organ" }
+            ]},
+            { name: "Spore Science", questions: [
+                { points: 10, q: "Are spores used for sexual or asexual reproduction in these plants?", a: "Asexual (they are part of the life cycle alternation)" },
+                { points: 20, q: "Agent of dispersal for moss and fern spores.", a: "Wind" },
+                { points: 30, q: "Requirement for a spore to germinate.", a: "Moist habitat" },
+                { points: 40, q: "Difference between a spore and a seed (inference).", a: "Spore is unicellular; seed is multicellular with an embryo" },
+                { points: 50, q: "Structure that produces spores in a fern.", a: "Sporangium" }
+            ]},
+            { name: "Final Review", questions: [
+                { points: 10, q: "Group name for mosses.", a: "Bryophyta" },
+                { points: 20, q: "Group name for ferns.", a: "Pterophyta" },
+                { points: 30, q: "Is the moss setae part of the sporophyte or gametophyte?", a: "Sporophyte" },
+                { points: 40, q: "Is the fern rhizome part of the sporophyte or gametophyte?", a: "Sporophyte" },
+                { points: 50, q: "One shared trait between mosses and ferns.", a: "Dependence on water for reproduction / Use of spores" }
+            ]}
+        ];
+
+        const gameData = [p1Cats, p2Cats, p3Cats, p4Cats];
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() { document.getElementById('nameSetupSection').classList.remove('hidden'); }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header'; h.innerText = c.name; board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn'; btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points; activeTileButton = btn;
+            document.getElementById('modalCategory').innerText = `${playerNames[pIdx]} | ${catName}`;
+            document.getElementById('modalQuestion').innerText = qData.q;
+            document.getElementById('modalAnswer').innerText = qData.a;
+            document.getElementById('activePlayerName').innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block'; answerArea.style.display = 'none'; modal.style.display = 'flex';
+        }
+
+        function revealAnswer() { btnReveal.style.display = 'none'; answerArea.style.display = 'block'; }
+
+        function judgeActivePlayer(correct) {
+            if (correct) { scores[currentPlayerIndex] += activePointValue; updateScore(currentPlayerIndex); closeModal(); } 
+            else { showSteal(); }
+        }
+
+        function showSteal() {
+            const stealArea = document.querySelector('.steal-area'); stealArea.style.display = 'block';
+            const container = document.getElementById('stealButtons'); container.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button'); b.className = 'btn-steal'; b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    container.appendChild(b);
+                }
+            }
+            let none = document.createElement('button'); none.className = 'btn-incorrect'; none.innerText = "No one"; none.onclick = closeModal; container.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { 
+            activeTileButton.innerText = ""; activeTileButton.disabled = true; 
+            modal.style.display = 'none'; document.querySelector('.steal-area').style.display = 'none';
+        }
+        function resetPlayerNames() { location.reload(); }
+        buildBoards();
+    </script>
+</body>
+</html>

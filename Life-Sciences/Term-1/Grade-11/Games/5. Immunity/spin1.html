@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 11 Life Sciences: Immunity</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Life Sciences Quiz: Immunity</h1>
+        <p class="game-subtitle">Test your Grade 11 Immune System Knowledge! Select a category and spin.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Immunity", a: "The body's ability to resist infection and protect itself against disease-causing organisms." },
+                { q: "Antibodies", a: "Specific proteins produced by white blood cells that identify and neutralize foreign microbes." },
+                { q: "White Blood Cells", a: "Cells of the immune system that fight infections and protect the body." },
+                { q: "Natural Immunity", a: "The body's inherent, built-in ability to produce antibodies and fight diseases." },
+                { q: "Acquired Immunity", a: "Immunity that is developed after exposure to a pathogen or through medical intervention." },
+                { q: "Passive Immunity", a: "Immunity obtained from ready-made antibodies, such as from breast milk or a serum." },
+                { q: "Active Immunity", a: "Immunity where the person's own immune system produces antibodies after infection or vaccination." },
+                { q: "Vaccine", a: "A liquid containing proteins or weakened forms of a micro-organism used to stimulate antibody production." },
+                { q: "Serum", a: "A blood product containing ready-made antibodies used to provide immediate passive immunity." },
+                { q: "Memory Cells", a: "Specialized white blood cells that remain in the body to recognize a pathogen if it enters again." },
+                { q: "Pathogen", a: "A disease-causing micro-organism, such as a bacterium or virus." },
+                { q: "Active Natural Immunity", a: "Immunity gained by naturally contracting a disease and recovering from it." },
+                { q: "Active Artificial Immunity", a: "Immunity gained through a vaccination that triggers the immune response." },
+                { q: "Passive Natural Immunity", a: "Immunity passed from mother to baby through the placenta or breast milk." },
+                { q: "Passive Artificial Immunity", a: "Immunity provided by an injection of ready-made antibodies (serum)." },
+                { q: "Immune Response", a: "The reaction of the body's immune system to the presence of foreign substances." },
+                { q: "Microbe", a: "A micro-organism, especially one that causes disease." },
+                { q: "Specificity", a: "The property of antibodies where they only attack the specific microbe they were created for." },
+                { q: "Antigen", a: "The foreign protein or substance on a microbe that triggers an immune response." },
+                { q: "Immunization", a: "The process of making a person immune to an infectious disease, typically by vaccination." }
+            ],
+            'terms': [
+                { q: "The body's ability to resist infection.", a: "Immunity" },
+                { q: "Specific proteins produced to fight particular microbes.", a: "Antibodies" },
+                { q: "Type of immunity that uses ready-made antibodies from another source.", a: "Passive Immunity" },
+                { q: "Type of immunity where the body makes its own antibodies.", a: "Active Immunity" },
+                { q: "A liquid containing weakened pathogen proteins used for immunization.", a: "Vaccine" },
+                { q: "Immunity passed to a baby through breast milk.", a: "Passive Natural Immunity" },
+                { q: "Immunity gained by being vaccinated.", a: "Active Artificial Immunity" },
+                { q: "The type of blood cells that produce antibodies.", a: "White blood cells" },
+                { q: "A preparation used to provide immediate, ready-made antibodies.", a: "Serum" },
+                { q: "Immunity gained after catching a cold and recovering.", a: "Active Natural Immunity" },
+                { q: "The term for immunity that lasts for life once antibodies are made.", a: "Active immunity" },
+                { q: "Foreign substances that trigger an immune response.", a: "Antigens" },
+                { q: "Type of immunity provided by monoclonal antibody injections.", a: "Passive Artificial Immunity" },
+                { q: "The process of recognizing and rejecting foreign tissues.", a: "Immune response" },
+                { q: "Specific term for immunity a baby gets via the placenta.", a: "Maternal antibodies / Passive natural" },
+                { q: "The length of time antibodies stay in the body after active immunity is gained.", a: "For life" },
+                { q: "The system in humans that aids in resisting disease.", a: "Immune system" },
+                { q: "What antibodies neutralize in the body.", a: "Microbes / Pathogens" },
+                { q: "The opposite of passive immunity.", a: "Active immunity" },
+                { q: "The process of artificial active immunization.", a: "Vaccination" }
+            ],
+            'multipleChoice': [
+                { q: "Immunity is the body's ability to:", options: ["A) Breathe faster", "B) Resist infection", "C) Digest food", "D) Grow hair"], a: "B) Resist infection" },
+                { q: "Which cells produce antibodies in the human body?", options: ["A) Red blood cells", "B) Nerve cells", "C) White blood cells", "D) Platelets"], a: "C) White blood cells" },
+                { q: "Passive natural immunity is obtained from:", options: ["A) Vaccinations", "B) Breast milk", "C) Serums", "D) Previous infections"], a: "B) Breast milk" },
+                { q: "Active artificial immunity is gained through:", options: ["A) Catching a virus", "B) Vaccination", "C) Eating healthy", "D) Antibiotics"], a: "B) Vaccination" },
+                { q: "Antibodies are specific, meaning they:", options: ["A) Attack any cell", "B) Only attack a particular microbe", "C) Only work in the stomach", "D) Die immediately"], a: "B) Only attack a particular microbe" },
+                { q: "A vaccine contains:", options: ["A) Strong antibiotics", "B) Dead white blood cells", "C) Weakened pathogen proteins", "D) High doses of vitamins"], a: "C) Weakened pathogen proteins" },
+                { q: "Which of these provides immediate but temporary protection?", options: ["A) Active immunity", "B) Passive immunity", "C) Natural infection", "D) Exercise"], a: "B) Passive immunity" },
+                { q: "Immunity passed through the placenta is:", options: ["A) Active artificial", "B) Passive natural", "C) Active natural", "D) Passive artificial"], a: "B) Passive natural" },
+                { q: "Once produced during active immunity, antibodies usually stay for:", options: ["A) 24 hours", "B) 1 week", "C) Life", "D) 1 month"], a: "C) Life" },
+                { q: "The immune system also helps the body to:", options: ["A) Circulate blood", "B) Reject foreign tissues", "C) Absorb oxygen", "D) Store fat"], a: "B) Reject foreign tissues" },
+                { q: "What is a serum used for?", options: ["A) Long-term growth", "B) Immediate ready-made antibodies", "C) Fixing broken bones", "D) DNA replication"], a: "B) Immediate ready-made antibodies" },
+                { q: "Active natural immunity follows:", options: ["A) A vaccination", "B) A natural infection", "C) A blood transfusion", "D) Taking vitamins"], a: "B) A natural infection" },
+                { q: "Monoclonal antibodies are an example of:", options: ["A) Passive Natural", "B) Passive Artificial", "C) Active Natural", "D) Active Artificial"], a: "B) Passive Artificial" },
+                { q: "Antibodies are made of:", options: ["A) Carbohydrates", "B) Lipids", "C) Proteins", "D) Minerals"], a: "C) Proteins" },
+                { q: "Artificial immunity always involves:", options: ["A) Breastfeeding", "B) Medical intervention (needle/serum)", "C) Natural recovery", "D) Genetic inheritance"], a: "B) Medical intervention (needle/serum)" },
+                { q: "Vaccination stimulates the body to:", options: ["A) Stop breathing", "B) Produce its own antibodies", "C) Get very sick", "D) Change DNA"], a: "B) Produce its own antibodies" },
+                { q: "Passive immunity is 'passive' because:", options: ["A) It is slow", "B) The person's own immune system is NOT used", "C) It only happens in sleep", "D) It is weak"], a: "B) The person's own immune system is NOT used" },
+                { q: "Which of the following describes 'Active Natural'?", options: ["A) Getting a flu shot", "B) Recovering from chickenpox", "C) Receiving a serum", "D) Drinking milk"], a: "B) Recovering from chickenpox" },
+                { q: "The term 'Maternal antibodies' refers to immunity from:", options: ["A) Doctors", "B) Mothers", "C) Food", "D) Siblings"], a: "B) Mothers" },
+                { q: "Acquired immunity is split into two main branches:", options: ["A) Fast and Slow", "B) Passive and Active", "C) Good and Bad", "D) Local and Global"], a: "B) Passive and Active" }
+            ],
+            'trueFalse': [
+                { q: "Passive immunity involves the body producing its own antibodies.", options: ["True", "False"], a: "False", exp: "Passive immunity uses ready-made antibodies from another source." },
+                { q: "Active immunity can be obtained through vaccination.", options: ["True", "False"], a: "True", exp: "This is active artificial immunity." },
+                { q: "Antibodies are non-specific and attack any micro-organism.", options: ["True", "False"], a: "False", exp: "They are specific to a particular microbe." },
+                { q: "Passive natural immunity is provided through breast milk.", options: ["True", "False"], a: "True", exp: "Antibodies are passed from mother to baby." },
+                { q: "Vaccines contain active, dangerous pathogens.", options: ["True", "False"], a: "False", exp: "They contain weakened or dead proteins to trigger an immune response safely." },
+                { q: "Active immunity usually lasts longer than passive immunity.", options: ["True", "False"], a: "True", exp: "Active immunity often lasts for life, while passive is temporary." },
+                { q: "The immune system recognizes and rejects foreign tissues.", options: ["True", "False"], a: "True", exp: "This is why organ transplants can sometimes be rejected." },
+                { q: "Active natural immunity is acquired through an infection.", options: ["True", "False"], a: "True", exp: "The body learns to fight the pathogen naturally." },
+                { q: "Serums are a form of active immunity.", options: ["True", "False"], a: "False", exp: "Serums provide passive artificial immunity." },
+                { q: "A person's immune system aids in resisting disease.", options: ["True", "False"], a: "True", exp: "This is its primary function." },
+                { q: "Natural immunity is the body's inherent ability to fight disease.", options: ["True", "False"], a: "True", exp: "It is built-in, not acquired from medicine." },
+                { q: "Antibodies remain in the body for life after active immunity is triggered.", options: ["True", "False"], a: "True", exp: "This provides long-term protection." },
+                { q: "Infection and vaccination both lead to active immunity.", options: ["True", "False"], a: "True", exp: "Both force the body to produce its own antibodies." },
+                { q: "Ready-made antibodies provide active immunity.", options: ["True", "False"], a: "False", exp: "They provide passive immunity." },
+                { q: "Vaccination is a form of passive artificial immunity.", options: ["True", "False"], a: "False", exp: "It is active artificial because the body makes the antibodies." },
+                { q: "Maternal antibodies are passed through the placenta.", options: ["True", "False"], a: "True", exp: "This protects the baby before birth." },
+                { q: "All microbes are beneficial to the body.", options: ["True", "False"], a: "False", exp: "Many are pathogens that cause disease." },
+                { q: "Antibodies are produced by red blood cells.", options: ["True", "False"], a: "False", exp: "They are produced by white blood cells." },
+                { q: "Passively acquired immunity is always permanent.", options: ["True", "False"], a: "False", exp: "It is temporary as the body hasn't learned to make the antibodies itself." },
+                { q: "Acquired immunity can be either natural or artificial.", options: ["True", "False"], a: "True", exp: "Depending on whether it was through nature or medicine." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

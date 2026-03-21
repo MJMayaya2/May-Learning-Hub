@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Life Sciences Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Life Sciences Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 11: Immunity (Chapter 5)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "IMMUNITY", topic: "Intro", hint: "The body's ability to resist infection and disease." },
+            { word: "ANTIBODIES", topic: "Basics", hint: "Proteins produced by the body that recognize and attack specific microbes." },
+            { word: "WHITE BLOOD CELLS", topic: "Basics", hint: "Cells produced by the immune system to fight infection." },
+            { word: "NATURAL IMMUNITY", topic: "Types", hint: "The body's inherent ability to produce antibodies and fight diseases." },
+            { word: "ACQUIRED IMMUNITY", topic: "Types", hint: "Immunity obtained through natural infection or vaccination." },
+            { word: "PASSIVE", topic: "Types", hint: "____ immunity does not use the person's own immune system (e.g. breast milk)." },
+            { word: "ACTIVE", topic: "Types", hint: "____ immunity is obtained through a person's own immune response." },
+            { word: "MATERNAL", topic: "Passive", hint: "____ antibodies are passed from mother to baby naturally through breast milk." },
+            { word: "SERUM", topic: "Passive", hint: "Ready-made antibodies supplied artificially in a ____ provide passive immunity." },
+            { word: "VACCINATION", topic: "Active", hint: "Artificial method of obtaining active immunity by injecting micro-organism proteins." },
+            { word: "VACCINE", topic: "Prevention", hint: "A liquid containing proteins or weakened versions of a pathogen." },
+            { word: "FOREIGN", topic: "Basics", hint: "The immune system recognizes and rejects ____ cells and tissues." },
+            { word: "MICROBE", topic: "Basics", hint: "A microscopic organism; antibodies attack a particular ____." },
+            { word: "BREAST MILK", topic: "Passive", hint: "A natural source of passively acquired immunity for infants." },
+            { word: "REJECTS", topic: "Basics", hint: "The immune system ____ foreign tissues to protect the body." },
+            { word: "SPECIFIC", topic: "Basics", hint: "Antibodies are ____; they only attack one particular type of microbe." },
+            { word: "INFECTION", topic: "Basics", hint: "The invasion of body tissues by disease-causing agents." },
+            { word: "RESIST", topic: "Intro", hint: "Immunity is the body's ability to ____ infection." },
+            { word: "ARTIFICIAL", topic: "Types", hint: "Vaccination is an ____ form of actively acquired immunity." },
+            { word: "ACTIVE ACQUIRED", topic: "Types", hint: "Type of immunity obtained through natural infection." },
+            { word: "RECOGNIZE", topic: "Basics", hint: "White blood cells must first ____ foreign cells before attacking." },
+            { word: "LIFE", topic: "Basics", hint: "Once produced, antibodies often remain in the body to fight disease for ____." },
+            { word: "MONOCLONAL", topic: "Passive", hint: "Artificial passive immunity can be provided by ____ antibodies." },
+            { word: "RESPONSE", topic: "Intro", hint: "The immune ____ is the body's reaction to an invading pathogen." },
+            { word: "ANTIGEN", topic: "Basics", hint: "A protein from outside the body (like a vaccine) that triggers an immune response." },
+            { word: "DEFENSE", topic: "Basics", hint: "The immune system is the body's primary ____ mechanism." },
+            { word: "PATHOGEN", topic: "Intro", hint: "A general term for any micro-organism that causes disease." },
+            { word: "STIMULATE", topic: "Prevention", hint: "Vaccines ____ the body to produce its own antibodies." },
+            { word: "PROPHYLAXIS", topic: "Health", hint: "Protective treatment; vaccines are a form of this." },
+            { word: "WEAKENED", topic: "Prevention", hint: "Some vaccines contain a ____ form of the micro-organism." },
+            { word: "PROTEINS", topic: "Prevention", hint: "Vaccines can be made from the ____ of a micro-organism." },
+            { word: "PROTECTION", topic: "Intro", hint: "The ultimate goal of immunity." },
+            { word: "REPLICATION", topic: "Health", hint: "Pathogen ____ is stopped by the action of antibodies." },
+            { word: "MEMORY CELLS", topic: "Basics", hint: "Cells that 'remember' a pathogen to provide long-term immunity." },
+            { word: "SYSTEM", topic: "Intro", hint: "The immune ____ works throughout the entire body." },
+            { word: "TISSUES", topic: "Basics", hint: "The immune system identifies foreign ____ during organ transplants." },
+            { word: "TRANSPLANT", topic: "Basics", hint: "A medical procedure where foreign tissue rejection is a major concern." },
+            { word: "INHERENT", topic: "Natural", hint: "Natural immunity is the body's ____ ability to fight germs." },
+            { word: "INVADER", topic: "Basics", hint: "The immune system treats microbes as an ____." },
+            { word: "BARRIER", topic: "Intro", hint: "The skin is often the first ____ against infection." },
+            { word: "IDENTIFY", topic: "Basics", hint: "A key role of the immune system is to ____ foreign substances." },
+            { word: "SEROLOGY", topic: "Science", hint: "The scientific study of serum and other body fluids, often for immunity." },
+            { word: "BLOODSTREAM", topic: "Basics", hint: "Where white blood cells and antibodies circulate." },
+            { word: "CIRCULATE", topic: "Basics", hint: "Antibodies ____ through the blood to find pathogens." },
+            { word: "LYMPHOCYTE", topic: "Basics", hint: "A type of white blood cell involved in the immune response." },
+            { word: "PHAGOCYTE", topic: "Basics", hint: "A type of white blood cell that engulfs and digests pathogens." },
+            { word: "INFLAMMATION", topic: "Basics", hint: "A localized physical condition in response to infection or injury." },
+            { word: "FEVER", topic: "Basics", hint: "An increase in body temperature used to help fight infection." },
+            { word: "BOOSTER", topic: "Prevention", hint: "An extra dose of a vaccine to maintain high levels of immunity." },
+            { word: "OUTBREAK", topic: "Health", hint: "A sudden start of a disease in a community." },
+            { word: "EPIDEMIC", topic: "Health", hint: "A widespread occurrence of an infectious disease." },
+            { word: "RESISTANCE", topic: "Intro", hint: "The body's ability to not be affected by something." },
+            { word: "SUPPRESSED", topic: "Health", hint: "An immune system that is weakened is described as ____." },
+            { word: "AUTOIMMUNE", topic: "Health", hint: "When the immune system mistakenly attacks the body's own cells." },
+            { word: "HYPERSENSITIVITY", topic: "Health", hint: "An overreaction of the immune system (e.g. allergies)." },
+            { word: "ALLERGY", topic: "Health", hint: "A common type of immune system overreaction." },
+            { word: "SERUM THERAPY", topic: "Passive", hint: "Using blood serum to transfer immunity to another person." },
+            { word: "CONVALESCENT", topic: "Passive", hint: "Serum from a ____ patient contains antibodies for a specific disease." },
+            { word: "IMMUNOLOGY", topic: "Science", hint: "The study of the immune system." },
+            { word: "CAPS", topic: "Intro", hint: "The South African curriculum framework for Life Sciences." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Immunity Master!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for Immune Response!";
+            document.getElementById('modalWord').innerText = "BIOLOGY SCHOLAR";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

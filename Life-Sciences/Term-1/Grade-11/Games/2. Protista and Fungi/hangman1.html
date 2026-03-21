@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Life Sciences Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Life Sciences Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 11: Protists and Fungi (Chapter 2)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "PROTISTA", topic: "Protists", hint: "Kingdom of diverse eukaryotes, including algae and protozoans." },
+            { word: "AMOEBA", topic: "Protists", hint: "Unicellular, animal-like protist that uses pseudopodia." },
+            { word: "PSEUDOPODIA", topic: "Protists", hint: "False feet used by Amoeba for locomotion and engulfing prey." },
+            { word: "EUKARYOTIC", topic: "General", hint: "Organisms with a true nucleus and membrane-bound organelles." },
+            { word: "HETEROTROPHIC", topic: "Nutrition", hint: "Organisms that cannot make their own food; must ingest or absorb it." },
+            { word: "AUTOTROPHIC", topic: "Nutrition", hint: "Organisms that make their own food, like algae using photosynthesis." },
+            { word: "ALGAE", topic: "Protists", hint: "Plant-like protists that contain chlorophyll." },
+            { word: "PROTOZOA", topic: "Protists", hint: "Animal-like protists that are unicellular and heterotrophic." },
+            { word: "SLIME MOULDS", topic: "Protists", hint: "Fungus-like protists that are heterotrophic decomposers." },
+            { word: "CONTRACTILE", topic: "Protists", hint: "____ vacuole used by Amoeba for osmoregulation (water balance)." },
+            { word: "OSMOREGULATION", topic: "Protists", hint: "The control of water balance within an organism." },
+            { word: "ECTOPLASM", topic: "Protists", hint: "The semi-solid outer part of the cytoplasm in an Amoeba." },
+            { word: "ENDOPLASM", topic: "Protists", hint: "The more liquid inner part of the cytoplasm in an Amoeba." },
+            { word: "FUNGI", topic: "Fungi", hint: "Kingdom of eukaryotic heterotrophs, mostly saprophytes." },
+            { word: "RHIZOPUS", topic: "Fungi", hint: "The scientific genus name for common bread mould." },
+            { word: "SAPROPHYTES", topic: "Fungi", hint: "Organisms that feed on dead organic matter." },
+            { word: "HYPHAE", topic: "Fungi", hint: "Thread-like filaments that make up the body of a fungus." },
+            { word: "MYCELIUM", topic: "Fungi", hint: "A collective mass of hyphae forming the body of a fungus." },
+            { word: "SPORANGIOPHORE", topic: "Fungi", hint: "Vertical hypha that supports the spore-producing structure." },
+            { word: "SPORANGIUM", topic: "Fungi", hint: "The structure where spores are produced in bread mould." },
+            { word: "SPORES", topic: "Fungi", hint: "Asexual reproductive cells produced by the sporangium." },
+            { word: "STOLON", topic: "Fungi", hint: "Horizontal hyphae that grow along the surface of the substrate." },
+            { word: "RHIZOIDS", topic: "Fungi", hint: "Root-like hyphae that anchor the fungus and absorb nutrients." },
+            { word: "THALLUS", topic: "Fungi", hint: "A body structure that lacks true roots, stems, or leaves." },
+            { word: "CHLOROPHYLL", topic: "General", hint: "Pigment absent in fungi but present in algae." },
+            { word: "DECOMPOSERS", topic: "General", hint: "Organisms that break down dead matter, returning nutrients to the soil." },
+            { word: "CHITIN", topic: "Fungi", hint: "The material that makes up the cell walls of fungi." },
+            { word: "MULTICELLULAR", topic: "General", hint: "Consisting of many cells, like most fungi." },
+            { word: "UNICELLULAR", topic: "General", hint: "Consisting of one cell, like yeast or Amoeba." },
+            { word: "SUBSTRATE", topic: "Fungi", hint: "The surface or material on which a fungus grows (e.g., bread)." },
+            { word: "COLUMELLA", topic: "Fungi", hint: "Cross wall separating the sporangium from the sporangiophore." },
+            { word: "GERMINATE", topic: "Fungi", hint: "When a spore starts to grow into a new mycelium." },
+            { word: "ENZYMES", topic: "Fungi", hint: "Chemicals secreted by rhizoids to digest food externally." },
+            { word: "ABSORPTION", topic: "Nutrition", hint: "Fungi obtain nutrients through this process after external digestion." },
+            { word: "ASYMMETRICAL", topic: "Protists", hint: "Lacking a definite shape, like an Amoeba." },
+            { word: "MULTINUCLEATE", topic: "Fungi", hint: "Hyphae that contain many nuclei within a single filament." },
+            { word: "MYCOLOGY", topic: "General", hint: "The scientific study of fungi." },
+            { word: "YEAST", topic: "Fungi", hint: "A common unicellular fungus used in baking." },
+            { word: "PENICILLIUM", topic: "Fungi", hint: "Fungus used to produce the first antibiotic." },
+            { word: "PATHOGENIC", topic: "General", hint: "Disease-causing, such as the protist that causes malaria." },
+            { word: "MALARIA", topic: "Protists", hint: "Disease caused by the protist Plasmodium." },
+            { word: "PLASMODIUM", topic: "Protists", hint: "The genus of the protist that causes malaria." },
+            { word: "LOCOMOTION", topic: "Protists", hint: "The ability to move from one place to another." },
+            { word: "MACROSCOPIC", topic: "General", hint: "Visible to the naked eye, like large multicellular algae." },
+            { word: "MICROSCOPIC", topic: "General", hint: "Only visible using a microscope, like an Amoeba." },
+            { word: "ASEXUAL", topic: "Reproduction", hint: "Reproduction involving only one parent, like spore formation." },
+            { word: "REPRODUCTION", topic: "General", hint: "The biological process by which new individual organisms are produced." },
+            { word: "DIVERSITY", topic: "General", hint: "The wide variety of different organisms in a kingdom." },
+            { word: "BIODIVERSITY", topic: "General", hint: "The variety of all living things on Earth." },
+            { word: "KINGDOM", topic: "General", hint: "A primary category in biological classification." },
+            { word: "MONERA", topic: "Kingdoms", hint: "The kingdom we studied previously (bacteria)." },
+            { word: "PARASITE", topic: "Nutrition", hint: "An organism that lives on or in a host and causes harm." },
+            { word: "MUTUALISM", topic: "Nutrition", hint: "Symbiotic relationship where both benefit (e.g., lichens)." },
+            { word: "LICHEN", topic: "Symbiosis", hint: "Organism made of a mutualistic relationship between fungus and algae." },
+            { word: "EXTERNAL", topic: "Nutrition", hint: "Fungi perform ____ digestion before absorbing nutrients." },
+            { word: "MUSHROOM", topic: "Fungi", hint: "The reproductive structure of some large multicellular fungi." },
+            { word: "MOLD", topic: "Fungi", hint: "A common name for a type of fungus that grows on food." },
+            { word: "SPORE DISPERSAL", topic: "Fungi", hint: "The spreading of spores by wind, water, or animals." },
+            { word: "PHOTOSYNTHESIS", topic: "Nutrition", hint: "Process used by algae to make food using sunlight." },
+            { word: "METABOLISM", topic: "General", hint: "The chemical processes that occur within a living organism." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Biodiversity Master!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for Protists and Fungi!";
+            document.getElementById('modalWord').innerText = "BIOLOGY EXPERT";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

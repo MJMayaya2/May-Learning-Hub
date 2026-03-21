@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Life Sciences Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Life Sciences Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 11: Animal Body Plans (Chapter 8)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "PHYLUM", topic: "Taxonomy", hint: "The taxonomic rank below Kingdom and above Class." },
+            { word: "BODY PLAN", topic: "General", hint: "A group of structural and functional characteristics shared by a phylum." },
+            { word: "SYMMETRY", topic: "Body Plan", hint: "How body parts are arranged around a central axis." },
+            { word: "ASYMMETRICAL", topic: "Symmetry", hint: "Having no specific body pattern, like sponges (Porifera)." },
+            { word: "RADIAL", topic: "Symmetry", hint: "Body parts arranged in a circle around a center, like jellyfish." },
+            { word: "BILATERAL", topic: "Symmetry", hint: "Body can be divided into identical left and right halves." },
+            { word: "CEPHALISATION", topic: "Body Plan", hint: "The concentration of sense organs and a brain at the front (head) end." },
+            { word: "DIPLOBLASTIC", topic: "Tissue Layers", hint: "Developing from two embryonic layers: ectoderm and endoderm." },
+            { word: "TRIPLOBLASTIC", topic: "Tissue Layers", hint: "Developing from three embryonic layers: ectoderm, mesoderm, and endoderm." },
+            { word: "ECTODERM", topic: "Tissue Layers", hint: "The outer tissue layer that develops into skin and nervous system." },
+            { word: "ENDODERM", topic: "Tissue Layers", hint: "The inner tissue layer that develops into the gut lining." },
+            { word: "MESODERM", topic: "Tissue Layers", hint: "The middle tissue layer that develops into muscles and organs." },
+            { word: "COELOM", topic: "Body Cavity", hint: "A fluid-filled body cavity completely lined by mesoderm." },
+            { word: "ACOELOMATE", topic: "Body Cavity", hint: "Animals that lack a body cavity (e.g., Flatworms)." },
+            { word: "COELOMATE", topic: "Body Cavity", hint: "Animals with a true body cavity (e.g., Earthworms, Insects)." },
+            { word: "THROUGH GUT", topic: "Digestion", hint: "A digestive system with two openings: a mouth and an anus." },
+            { word: "BLIND ENDING", topic: "Digestion", hint: "A digestive system with only one opening (mouth acts as anus)." },
+            { word: "SESSILE", topic: "Mode of Life", hint: "Organisms that are attached to a surface and do not move (e.g., sponges)." },
+            { word: "PORIFERA", topic: "Phyla", hint: "The phylum containing sponges; asymmetrical and no true tissues." },
+            { word: "CNIDARIA", topic: "Phyla", hint: "The phylum containing jellyfish and corals; radial symmetry." },
+            { word: "PLATYHELMINTHES", topic: "Phyla", hint: "The phylum containing flatworms; acoelomate and triploblastic." },
+            { word: "ANNELIDA", topic: "Phyla", hint: "The phylum containing segmented worms like earthworms." },
+            { word: "ARTHROPODA", topic: "Phyla", hint: "The phylum containing insects and spiders; has an exoskeleton." },
+            { word: "CHORDATA", topic: "Phyla", hint: "The phylum containing vertebrates; possesses a notochord." },
+            { word: "EXOSKELETON", topic: "Arthropods", hint: "A hard external skeleton made of chitin." },
+            { word: "VERTEBRATA", topic: "Chordates", hint: "The subphylum of Chordata that has a backbone." },
+            { word: "NOTOCHORD", topic: "Chordates", hint: "A flexible rod that supports the back in Chordata embryos." },
+            { word: "SEGMENTATION", topic: "Annelids", hint: "The division of the body into repetitive sections." },
+            { word: "HYDROSTATIC", topic: "Skeletons", hint: "A skeleton supported by fluid pressure (common in Annelids)." },
+            { word: "INVERTEBRATE", topic: "General", hint: "An animal without a backbone." },
+            { word: "EVOLUTIONARY", topic: "General", hint: "Body plans reflect the ____ history of an animal group." },
+            { word: "AQUATIC", topic: "Mode of Life", hint: "Living in water; habitat for Porifera and Cnidaria." },
+            { word: "TERRESTRIAL", topic: "Mode of Life", hint: "Living on land; habitat for many Arthropods and Chordates." },
+            { word: "MOBILES", topic: "Mode of Life", hint: "Animals that are capable of moving from place to place." },
+            { word: "PARASITIC", topic: "Mode of Life", hint: "Living on or in a host; common in some flatworms." },
+            { word: "INTRACELLULAR", topic: "Digestion", hint: "Digestion that happens inside cells (only in Porifera)." },
+            { word: "CENTRAL AXIS", topic: "Symmetry", hint: "The line around which body parts are balanced in symmetry." },
+            { word: "ANUS", topic: "Digestion", hint: "The second opening in a through gut." },
+            { word: "MOUTH", topic: "Digestion", hint: "The opening where food enters the digestive system." },
+            { word: "TISSUE", topic: "General", hint: "A group of similar cells working together." },
+            { word: "DEVELOPMENT", topic: "General", hint: "The process of an embryo growing into an adult." },
+            { word: "BLOOD SYSTEM", topic: "Body Plan", hint: "System used to transport nutrients and oxygen (Closed vs Open)." },
+            { word: "CLOSED", topic: "Blood System", hint: "Blood system where blood stays inside vessels (Annelids, Chordates)." },
+            { word: "OPEN", topic: "Blood System", hint: "Blood system where blood bathes organs directly (Arthropods)." },
+            { word: "LOCOMOTION", topic: "Mode of Life", hint: "The ability to move; limited in sessile animals." },
+            { word: "SENSORY", topic: "Cephalisation", hint: "Nerve cells and ____ organs are concentrated in the head." },
+            { word: "ANTERIOR", topic: "Symmetry", hint: "The front or head end of a bilateral animal." },
+            { word: "POSTERIOR", topic: "Symmetry", hint: "The back or tail end of a bilateral animal." },
+            { word: "DORSAL", topic: "Symmetry", hint: "The top or 'back' side of a bilateral animal." },
+            { word: "VENTRAL", topic: "Symmetry", hint: "The bottom or 'belly' side of a bilateral animal." },
+            { word: "DIVERSITY", topic: "General", hint: "The wide variety of animal phyla on Earth." },
+            { word: "HERMAPHRODITE", topic: "Reproduction", hint: "An organism having both male and female reproductive organs." },
+            { word: "CHITIN", topic: "Arthropods", hint: "The polysaccharide that makes up the arthropod exoskeleton." },
+            { word: "SEGMENTED", topic: "Annelids", hint: "Describes the body of an earthworm." },
+            { word: "JELLYFISH", topic: "Cnidaria", hint: "A common example of Phylum Cnidaria." },
+            { word: "EARTHWORM", topic: "Annelids", hint: "A common example of Phylum Annelida." },
+            { word: "TAPEWORM", topic: "Platyhelminthes", hint: "A parasitic example of Phylum Platyhelminthes." },
+            { word: "VERTEBRATE", topic: "Chordates", hint: "Animals with a spinal column." },
+            { word: "JOINTED", topic: "Arthropods", hint: "Arthropoda means '____ legs'." },
+            { word: "CAPS", topic: "General", hint: "The South African curriculum framework for Life Sciences." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Zoology Master!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for Animal Body Plans!";
+            document.getElementById('modalWord').innerText = "BIOLOGY CHAMPION";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

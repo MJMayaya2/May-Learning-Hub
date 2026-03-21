@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 11 Life Sciences: Protists & Fungi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Life Sciences Quiz: Protists & Fungi</h1>
+        <p class="game-subtitle">Explore Kingdom Diversity! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Protista", a: "A diverse kingdom of eukaryotic organisms that can be unicellular or multicellular, including algae and protozoans." },
+                { q: "Fungi", a: "A kingdom of eukaryotic, heterotrophic organisms that have cell walls made of chitin and reproduce via spores." },
+                { q: "Thallus", a: "A plant-like body that does not contain true roots, stems, or leaves, characteristic of bread mould." },
+                { q: "Hyphae", a: "Thread-like filaments that make up the body of a multicellular fungus." },
+                { q: "Mycelium", a: "A collective term for the entire network of hyphae that forms the body of a fungus." },
+                { q: "Saprophyte", a: "An organism that feeds on dead organic matter by secreting digestive enzymes and absorbing the nutrients." },
+                { q: "Heterotrophic", a: "Organisms that cannot produce their own food and must obtain nutrients from other organic sources." },
+                { q: "Autotrophic", a: "Organisms, such as algae, that can produce their own food through photosynthesis." },
+                { q: "Pseudopodia", a: "False feet; temporary extensions of the cytoplasm used by Amoeba for movement and engulfing prey." },
+                { q: "Contractile Vacuole", a: "An organelle in protists that regulates water balance by collecting and expelling excess water." },
+                { q: "Sporangium", a: "A structure in fungi, like bread mould, where spores are produced and stored." },
+                { q: "Rhizoid", a: "Root-like hyphae that anchor fungi to a substrate and absorb nutrients." },
+                { q: "Stolon", a: "Horizontal hyphae that grow across the surface of a substrate, like bread." },
+                { q: "Eukaryotic", a: "Organisms whose cells contain a membrane-bound nucleus and organelles." },
+                { q: "Amoeba", a: "A unicellular, heterotrophic protozoan that moves using pseudopodia." },
+                { q: "Protozoa", a: "Animal-like protists that are unicellular and heterotrophic." },
+                { q: "Algae", a: "Plant-like protists that are autotrophic and contain chloroplasts." },
+                { q: "Slime Moulds", a: "Fungus-like protists that are heterotrophic decomposers." },
+                { q: "Osmo-regulation", a: "The control of water and salt balance in an organism's body fluid." },
+                { q: "Chitin", a: "The chemical substance that makes up the cell walls of fungi." }
+            ],
+            'terms': [
+                { q: "The kingdom that includes slime moulds, algae, and protozoans.", a: "Protista" },
+                { q: "The root-like structures of Rhizopus.", a: "Rhizoids" },
+                { q: "The entire body of a fungus consisting of all its hyphae.", a: "Mycelium" },
+                { q: "The organelle in Amoeba used to digest engulfed food.", a: "Food vacuole" },
+                { q: "The structure in bread mould that produces mature spores.", a: "Sporangium" },
+                { q: "The horizontal hyphae that spread across a substrate.", a: "Stolon" },
+                { q: "The plant-like protists that are autotrophic.", a: "Algae" },
+                { q: "The animal-like protists, such as Amoeba.", a: "Protozoa" },
+                { q: "The process of maintaining water balance in protists.", a: "Osmo-regulation" },
+                { q: "The 'false feet' used by Amoeba for locomotion.", a: "Pseudopodia" },
+                { q: "A unicellular fungus used in baking and brewing.", a: "Yeast" },
+                { q: "The chemical found in the cell walls of fungi.", a: "Chitin" },
+                { q: "A fungus that does not have true roots, stems, or leaves is called a _____.", a: "Thallus" },
+                { q: "The vertical hyphae that support the sporangium.", a: "Sporangiophore" },
+                { q: "Type of nutrition where enzymes are secreted onto dead matter.", a: "Saprophytic" },
+                { q: "The kingdom to which bread mould belongs.", a: "Fungi" },
+                { q: "The part of the Amoeba's cytoplasm that is semi-solid.", a: "Ectoplasm" },
+                { q: "The inner, more liquid part of the Amoeba's cytoplasm.", a: "Endoplasm" },
+                { q: "The organelle in Algae used for photosynthesis.", a: "Chloroplast" },
+                { q: "Fungus-like protists that are decomposers.", a: "Slime moulds" }
+            ],
+            'multipleChoice': [
+                { q: "Which of the following is an autotrophic protist?", options: ["A) Amoeba", "B) Slime mould", "C) Algae", "D) Bread mould"], a: "C) Algae" },
+                { q: "Rhizopus (bread mould) is best described as a:", options: ["A) Parasite", "B) Saprophyte", "C) Autotroph", "D) Mutualist"], a: "B) Saprophyte" },
+                { q: "The cell walls of fungi are made of:", options: ["A) Cellulose", "B) Chitin", "C) Protein", "D) Silica"], a: "B) Chitin" },
+                { q: "Amoeba moves and captures food using:", options: ["A) Cilia", "B) Flagella", "C) Pseudopodia", "D) Rhizoids"], a: "C) Pseudopodia" },
+                { q: "The contractile vacuole is responsible for:", options: ["A) Digestion", "B) Reproduction", "C) Osmo-regulation", "D) Photosynthesis"], a: "C) Osmo-regulation" },
+                { q: "Which structure in bread mould anchors it to the bread?", options: ["A) Stolon", "B) Sporangiophore", "C) Rhizoid", "D) Columella"], a: "C) Rhizoid" },
+                { q: "Protists are classified as eukaryotes because they have:", options: ["A) A cell wall", "B) A true nucleus", "C) Flagella", "D) Only one cell"], a: "B) A true nucleus" },
+                { q: "Spores in Rhizopus are produced in the:", options: ["A) Stolon", "B) Rhizoid", "C) Sporangium", "D) Hyphae"], a: "C) Sporangium" },
+                { q: "Which of these is a fungus-like protist?", options: ["A) Diatom", "B) Slime mould", "C) Yeast", "D) Green algae"], a: "B) Slime mould" },
+                { q: "Yeasts are unique fungi because they are:", options: ["A) Autotrophic", "B) Unicellular", "C) Prokaryotic", "D) Parasitic"], a: "B) Unicellular" },
+                { q: "The inner liquid part of the cytoplasm in Amoeba is the:", options: ["A) Ectoplasm", "B) Endoplasm", "C) Plasma membrane", "D) Food vacuole"], a: "B) Endoplasm" },
+                { q: "Fungi are heterotrophic because they:", options: ["A) Have no nucleus", "B) Lack chloroplasts", "C) Live in water", "D) Reproduce by spores"], a: "B) Lack chloroplasts" },
+                { q: "Slime moulds are primarily:", options: ["A) Producers", "B) Decomposers", "C) Pathogens", "D) Predators"], a: "B) Decomposers" },
+                { q: "In Rhizopus, the horizontal hyphae are called:", options: ["A) Rhizoids", "B) Stolons", "C) Sporangiophores", "D) Mycelium"], a: "B) Stolons" },
+                { q: "Which organelle protects the Amoeba and allows for gas exchange?", options: ["A) Nucleus", "B) Food vacuole", "C) Plasma membrane", "D) Contractile vacuole"], a: "C) Plasma membrane" },
+                { q: "The thread-like filaments of a fungus are called:", options: ["A) Fibers", "B) Hyphae", "C) Stolons", "D) Rhizoids"], a: "B) Hyphae" },
+                { q: "Which group of protists is animal-like and heterotrophic?", options: ["A) Algae", "B) Slime moulds", "C) Protozoa", "D) Yeasts"], a: "C) Protozoa" },
+                { q: "Multicellular algae are similar to plants because they are:", options: ["A) Saprophytes", "B) Autotrophs", "C) Pathogens", "D) Parasites"], a: "B) Autotrophs" },
+                { q: "The columella in Rhizopus is the:", options: ["A) Outer wall", "B) Cross wall", "C) Root", "D) Spore"], a: "B) Cross wall" },
+                { q: "Saprophytic nutrition involves:", options: ["A) Internal digestion", "B) External digestion", "C) Photosynthesis", "D) Phagocytosis"], a: "B) External digestion" }
+            ],
+            'trueFalse': [
+                { q: "Amoeba belongs to the kingdom Monera.", options: ["True", "False"], a: "False", exp: "Amoeba is a protist; Monera is for bacteria." },
+                { q: "Rhizopus has true roots, stems, and leaves.", options: ["True", "False"], a: "False", exp: "It has a thallus structure, lacking these true organs." },
+                { q: "Fungi are eukaryotic organisms.", options: ["True", "False"], a: "True", exp: "They have a true nucleus and organelles." },
+                { q: "All protists are unicellular.", options: ["True", "False"], a: "False", exp: "Some, like certain algae, are multicellular." },
+                { q: "The mycelium is the entire network of fungal hyphae.", options: ["True", "False"], a: "True", exp: "It forms the main body of the fungus." },
+                { q: "Algae are autotrophic because they contain chloroplasts.", options: ["True", "False"], a: "True", exp: "They can produce their own food through photosynthesis." },
+                { q: "Pseudopodia are used by fungi for movement.", options: ["True", "False"], a: "False", exp: "Pseudopodia are used by certain protists like Amoeba." },
+                { q: "Yeasts are multicellular fungi.", options: ["True", "False"], a: "False", exp: "Yeasts are unicellular." },
+                { q: "The contractile vacuole helps regulate water in protists.", options: ["True", "False"], a: "True", exp: "This process is called osmo-regulation." },
+                { q: "Chitin is a major component of fungal cell walls.", options: ["True", "False"], a: "True", exp: "It provides structural support." },
+                { q: "Bread mould is a saprophyte.", options: ["True", "False"], a: "True", exp: "It digests dead organic matter (bread)." },
+                { q: "Slime moulds are animal-like protists.", options: ["True", "False"], a: "False", exp: "They are fungus-like protists." },
+                { q: "Sporangiophores grow upright to support the sporangium.", options: ["True", "False"], a: "True", exp: "This helps in the dispersal of spores." },
+                { q: "Protists are prokaryotic organisms.", options: ["True", "False"], a: "False", exp: "Protists are eukaryotic." },
+                { q: "The ectoplasm of an Amoeba is the outer part of its cytoplasm.", options: ["True", "False"], a: "True", exp: "It is semi-solid compared to the endoplasm." },
+                { q: "Protozoans are plant-like protists.", options: ["True", "False"], a: "False", exp: "They are animal-like protists." },
+                { q: "Spores allow fungi to reproduce and spread.", options: ["True", "False"], a: "True", exp: "They are lightweight and easily dispersed by wind." },
+                { q: "Amoeba captures food using its pseudopodia.", options: ["True", "False"], a: "True", exp: "The process is known as phagocytosis." },
+                { q: "All fungi are harmful to humans.", options: ["True", "False"], a: "False", exp: "Many are useful, such as mushrooms and yeast." },
+                { q: "Osmo-regulation is not necessary for organisms living in water.", options: ["True", "False"], a: "False", exp: "It is vital to prevent the cell from bursting or shriveling." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Life Sciences Hangman</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation - Maintained Original Links */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Progress Bar */
+        .progress-container { max-width: 800px; width: 90%; margin: 1rem auto 0; background-color: #d1d9e6; border-radius: 10px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #3385ff, #002b5e); width: 0%; transition: width 0.5s ease; }
+        .progress-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: #fff; line-height: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+        /* Game Header */
+        .game-header { text-align: center; padding: 1.5rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1rem; font-size: 1.1rem; }
+
+        /* Main Game Layout */
+        .game-wrapper { max-width: 800px; margin: 0 auto 3rem; padding: 0 20px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .game-board { background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; width: 100%; text-align: center; }
+
+        /* Hangman SVG */
+        .drawing-area { margin: 0 auto 1.5rem; height: 180px; width: 200px; position: relative; }
+        .figure-part { stroke: #002b5e; stroke-width: 4; fill: transparent; stroke-linecap: round; display: none; }
+        .gallows { stroke: #99b3cc; stroke-width: 6; fill: transparent; stroke-linecap: round; }
+
+        /* Hint & Word Area */
+        .hint-box { background: #e6f0fa; color: #004080; padding: 1rem; border-radius: 8px; font-weight: bold; margin-bottom: 1.5rem; border-left: 4px solid #3385ff; font-size: 1.1rem; }
+        .topic-tag { display: inline-block; background: #002b5e; color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; text-transform: uppercase; }
+        .word-display { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .letter-box { width: 35px; height: 45px; border-bottom: 3px solid #004080; font-size: 1.8rem; font-weight: bold; color: #002b5e; display: flex; align-items: flex-end; justify-content: center; text-transform: uppercase; }
+
+        /* Keyboard */
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; max-width: 600px; margin: 0 auto; }
+        .key { background: #f0f7ff; border: 2px solid #b3d4ff; color: #002b5e; font-size: 1.1rem; font-weight: bold; border-radius: 6px; width: 42px; height: 45px; cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+        .key:hover:not(:disabled) { background: #3385ff; color: #fff; transform: translateY(-2px); }
+        .key:disabled { cursor: not-allowed; }
+        .key.correct { background: #28a745; border-color: #1e7e34; color: #fff; opacity: 0.8; }
+        .key.incorrect { background: #dc3545; border-color: #bd2130; color: #fff; opacity: 0.5; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; border-top: 6px solid #004080; }
+        .modal-title { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-word { font-size: 1.5rem; color: #004080; font-weight: bold; letter-spacing: 2px; margin-bottom: 1.5rem; }
+        .play-again-btn { background: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; }
+
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <div class="progress-container">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-text" id="progressText">0 / 60 Words Completed</div>
+    </div>
+
+    <header class="game-header">
+        <h1 class="game-title">Life Sciences Hangman Challenge</h1>
+        <p class="game-subtitle">Grade 11: Bryophytes and Pterophytes (Chapter 6)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board">
+            <div class="drawing-area">
+                <svg height="180" width="200">
+                    <line x1="10" y1="170" x2="90" y2="170" class="gallows" />
+                    <line x1="50" y1="170" x2="50" y2="10" class="gallows" />
+                    <line x1="50" y1="10" x2="130" y2="10" class="gallows" />
+                    <line x1="130" y1="10" x2="130" y2="30" class="gallows" />
+                    <circle cx="130" cy="50" r="20" class="figure-part" id="part-0" />
+                    <line x1="130" y1="70" x2="130" y2="120" class="figure-part" id="part-1" />
+                    <line x1="130" y1="80" x2="100" y2="110" class="figure-part" id="part-2" />
+                    <line x1="130" y1="80" x2="160" y2="110" class="figure-part" id="part-3" />
+                    <line x1="130" y1="120" x2="100" y2="160" class="figure-part" id="part-4" />
+                    <line x1="130" y1="120" x2="160" y2="160" class="figure-part" id="part-5" />
+                </svg>
+            </div>
+            <div id="topicTag" class="topic-tag">Topic</div>
+            <div class="hint-box" id="hintBox">Hint goes here</div>
+            <div class="word-display" id="wordDisplay"></div>
+            <div class="keyboard" id="keyboard"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle">Correct!</h2>
+            <p id="modalMsg">The word was:</p>
+            <div class="modal-word" id="modalWord">TERM</div>
+            <button class="play-again-btn" id="modalBtn" onclick="nextWord()">Continue</button>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const fullWordList = [
+            { word: "BRYOPHYTA", topic: "Mosses", hint: "The group of non-vascular plants, commonly known as mosses." },
+            { word: "PTEROPHYTA", topic: "Ferns", hint: "The group of seedless vascular plants, commonly known as ferns." },
+            { word: "THALLUS", topic: "Bryophytes", hint: "A simple plant body that is not differentiated into true roots, stems, or leaves." },
+            { word: "RHIZOIDS", topic: "Bryophytes", hint: "Root-like structures that anchor mosses and absorb water via capillary action." },
+            { word: "VASCULAR", topic: "General", hint: "Plants containing xylem and phloem for transport are called ____ plants." },
+            { word: "XYLEM", topic: "Vascular Tissue", hint: "Tissue responsible for transporting water and minerals from roots to leaves." },
+            { word: "PHLOEM", topic: "Vascular Tissue", hint: "Tissue responsible for transporting manufactured food (sugars) throughout the plant." },
+            { word: "CUTICLE", topic: "Land Adaptation", hint: "A waxy layer on the surface of land plants to reduce water loss." },
+            { word: "STOMATA", topic: "Land Adaptation", hint: "Small pores on leaves that enable gaseous exchange." },
+            { word: "SPORES", topic: "Reproduction", hint: "Asexual reproductive units used by both mosses and ferns." },
+            { word: "GAMETOPHYTE", topic: "Life Cycle", hint: "The haploid generation that produces gametes (sperm and egg)." },
+            { word: "SPOROPHYTE", topic: "Life Cycle", hint: "The diploid generation that produces spores." },
+            { word: "DOMINANT", topic: "Life Cycle", hint: "The generation that is larger, more visible, and independent." },
+            { word: "CAPSULE", topic: "Bryophytes", hint: "The part of the moss sporophyte where spores are produced." },
+            { word: "PROTHALLUS", topic: "Pterophytes", hint: "The small, heart-shaped gametophyte of a fern." },
+            { word: "RHIZOME", topic: "Pterophytes", hint: "A horizontal underground stem found in ferns." },
+            { word: "FROND", topic: "Pterophytes", hint: "The leaf of a fern, often compound with many leaflets." },
+            { word: "SORI", topic: "Pterophytes", hint: "Clusters of sporangia found on the underside of fern fronds." },
+            { word: "SPORANGIA", topic: "Reproduction", hint: "Structures in which spores are produced." },
+            { word: "MOTILE", topic: "Reproduction", hint: "Fern and moss sperm are ____, meaning they must swim through water to reach the egg." },
+            { word: "FERTILIZATION", topic: "Reproduction", hint: "The fusion of a male gamete with a female gamete." },
+            { word: "ADVENTITIOUS", topic: "Pterophytes", hint: "The type of roots that arise from the rhizome in ferns." },
+            { word: "PINNAE", topic: "Pterophytes", hint: "The individual leaflets that make up a fern frond." },
+            { word: "GAMETES", topic: "Life Cycle", hint: "Male (sperm) and female (ova) reproductive cells." },
+            { word: "HAPLOID", topic: "General", hint: "A cell containing a single set of chromosomes (n)." },
+            { word: "DIPLOID", topic: "General", hint: "A cell containing two sets of chromosomes (2n)." },
+            { word: "EMBRYO", topic: "Reproduction", hint: "The structure formed after fertilization that grows into a new plant." },
+            { word: "GERMINATE", topic: "Life Cycle", hint: "When a spore lands in a moist habitat and starts to grow." },
+            { word: "MOISTURE", topic: "Environment", hint: "Both bryophytes and pterophytes are highly dependent on ____ for reproduction." },
+            { word: "ALTERNATION", topic: "Life Cycle", hint: "The life cycle of plants is called ____ of generations." },
+            { word: "TRANSPIRATION", topic: "General", hint: "The loss of water vapor from the leaves of a plant." },
+            { word: "HETERO", topic: "General", hint: "____sporous plants produce two different types of spores." },
+            { word: "HOMO", topic: "General", hint: "____sporous plants produce only one type of spore." },
+            { word: "ARCHEGONIUM", topic: "Reproduction", hint: "The female reproductive organ that produces eggs." },
+            { word: "ANTHERIDIUM", topic: "Reproduction", hint: "The male reproductive organ that produces sperm." },
+            { word: "ZYGOTE", topic: "Reproduction", hint: "The diploid cell resulting from fertilization." },
+            { word: "PROTONEMA", topic: "Bryophytes", hint: "A thread-like structure that develops from a germinating moss spore." },
+            { word: "FIDDLEHEAD", topic: "Pterophytes", hint: "The coiled young leaf of a fern." },
+            { word: "SORUS", topic: "Pterophytes", hint: "Singular form of sori." },
+            { word: "NON VASCULAR", topic: "Bryophytes", hint: "Plants lacking specialized transport tissues." },
+            { word: "TRACHEOPHYTES", topic: "General", hint: "A general name for all vascular plants." },
+            { word: "STALK", topic: "Bryophytes", hint: "The part of the moss sporophyte that supports the capsule." },
+            { word: "CALYPTRA", topic: "Bryophytes", hint: "A protective cap covering the moss capsule." },
+            { word: "FILAMENT", topic: "General", hint: "A thread-like structure." },
+            { word: "ANNULUS", topic: "Pterophytes", hint: "A ring of cells in the fern sporangium that helps fling out spores." },
+            { word: "VENTRAL", topic: "Pterophytes", hint: "The underside of the leaf where sori are located." },
+            { word: "ABSORPTION", topic: "General", hint: "The process of taking in water and minerals." },
+            { word: "ANCHORAGE", topic: "General", hint: "The function of roots or rhizoids in holding the plant in place." },
+            { word: "AQUATIC", topic: "General", hint: "Relating to water; the ancestors of land plants were ____." },
+            { word: "EVOLUTION", topic: "General", hint: "The gradual development of plants from water to land." },
+            { word: "TISSUE", topic: "General", hint: "A group of similar cells performing a specific function." },
+            { word: "PROPAGATION", topic: "General", hint: "The breeding of specimens by natural processes from parent stock." },
+            { word: "DISPERSAL", topic: "General", hint: "The spreading of spores or seeds away from the parent plant." },
+            { word: "HABITAT", topic: "General", hint: "The natural home or environment of an organism." },
+            { word: "PIGMENT", topic: "General", hint: "A colored material like chlorophyll found in plant cells." },
+            { word: "PHOTOSYNTHETIC", topic: "General", hint: "Capable of making food using sunlight." },
+            { word: "INDEPENDENT", topic: "Life Cycle", hint: "The dominant generation is usually nutritionally ____." },
+            { word: "DEPENDENT", topic: "Life Cycle", hint: "In mosses, the sporophyte is ____ on the gametophyte for food." },
+            { word: "MULTICELLULAR", topic: "General", hint: "Consisting of many cells." },
+            { word: "CAPS", topic: "Intro", hint: "The South African curriculum framework for Life Sciences." }
+        ];
+
+        let remainingWords = [...fullWordList];
+        let chosenWordObj = {};
+        let guessedLetters = [];
+        let mistakes = 0;
+        let completedCount = 0;
+        const totalWords = 60;
+
+        function updateProgressBar() {
+            const percent = (completedCount / totalWords) * 100;
+            document.getElementById('progressFill').style.width = percent + "%";
+            document.getElementById('progressText').innerText = `${completedCount} / ${totalWords} Words Completed`;
+        }
+
+        function createKeyboard() {
+            const kb = document.getElementById('keyboard');
+            kb.innerHTML = '';
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(l => {
+                const b = document.createElement("button");
+                b.innerText = l; b.classList.add("key"); b.id = `key-${l}`;
+                b.onclick = () => handleGuess(l);
+                kb.appendChild(b);
+            });
+        }
+
+        function initGame() {
+            if (remainingWords.length === 0) {
+                showFinalScreen();
+                return;
+            }
+            document.getElementById('gameModal').style.display = "none";
+            guessedLetters = []; mistakes = 0;
+            const index = Math.floor(Math.random() * remainingWords.length);
+            chosenWordObj = remainingWords[index];
+            document.getElementById('topicTag').innerText = chosenWordObj.topic;
+            document.getElementById('hintBox').innerText = `Hint: ${chosenWordObj.hint}`;
+            for(let i=0; i<6; i++) document.getElementById(`part-${i}`).style.display = 'none';
+            createKeyboard();
+            updateWordDisplay();
+            updateProgressBar();
+        }
+
+        function updateWordDisplay() {
+            const display = document.getElementById('wordDisplay');
+            display.innerHTML = '';
+            let won = true;
+            chosenWordObj.word.split('').forEach(l => {
+                const box = document.createElement('div');
+                box.classList.add('letter-box');
+                if (l === ' ') {
+                    box.style.borderBottom = 'none';
+                    box.innerText = ' ';
+                } else if (guessedLetters.includes(l)) {
+                    box.innerText = l;
+                } else {
+                    box.innerText = '';
+                    won = false;
+                }
+                display.appendChild(box);
+            });
+            if (won) endGame(true);
+        }
+
+        function handleGuess(l) {
+            guessedLetters.push(l);
+            const btn = document.getElementById(`key-${l}`);
+            btn.disabled = true;
+            if (chosenWordObj.word.includes(l)) {
+                btn.classList.add('correct');
+                updateWordDisplay();
+            } else {
+                btn.classList.add('incorrect');
+                document.getElementById(`part-${mistakes}`).style.display = 'block';
+                mistakes++;
+                if (mistakes === 6) endGame(false);
+            }
+        }
+
+        function endGame(isWin) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            if (isWin) {
+                title.innerText = "Correct!";
+                title.style.color = "#28a745";
+                completedCount++;
+                remainingWords = remainingWords.filter(w => w.word !== chosenWordObj.word);
+            } else {
+                title.innerText = "Try Again!";
+                title.style.color = "#dc3545";
+            }
+            document.getElementById('modalWord').innerText = chosenWordObj.word;
+            setTimeout(() => modal.style.display = "flex", 400);
+        }
+
+        function nextWord() {
+            initGame();
+        }
+
+        function showFinalScreen() {
+            document.getElementById('gameModal').style.display = "flex";
+            document.getElementById('modalTitle').innerText = "🏆 Botany Master!";
+            document.getElementById('modalMsg').innerText = "You have mastered all 60 terms for Mosses and Ferns!";
+            document.getElementById('modalWord').innerText = "PLANT BIOLOGIST";
+            document.getElementById('modalBtn').innerText = "Restart Game";
+            document.getElementById('modalBtn').onclick = () => location.reload();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

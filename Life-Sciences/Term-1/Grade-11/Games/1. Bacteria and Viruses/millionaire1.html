@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 11 Life Sciences: Micro-organisms Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Life Sciences Challenge</h1>
+        <p class="game-subtitle">Biodiversity of Micro-organisms (Grade 11 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What term is used to describe micro-organisms that cause diseases?", options: ["Beneficial", "Pathogenic", "Mutualistic", "Saphrophytic"], a: 1, hint: "They 'generate' 'pathology' or sickness." },
+            { q: "Why are viruses not placed into any of the five kingdoms of living organisms?", options: ["They are too small", "They show characteristics of both living and non-living things", "They lack DNA", "They only live in water"], a: 1, hint: "They are essentially 'infectious particles' at the edge of life." },
+            { q: "What is the protein coat that encloses the genetic material of a virus called?", options: ["Cell Wall", "Capsid", "Envelop", "Nucleus"], a: 1, hint: "It protects the DNA or RNA core." },
+            { q: "Viruses that can only reproduce inside a living host cell are called...", options: ["Ectoparasites", "Obligate endoparasites", "Saprobes", "Free-living"], a: 1, hint: "They are 'obliged' to stay 'inside' a host." },
+            { q: "Bacteria belong to which kingdom of organisms?", options: ["Protista", "Fungi", "Monera", "Plantae"], a: 2, hint: "This kingdom contains unicellular prokaryotes." },
+            { q: "What describes the cellular structure of bacteria?", options: ["Multicellular eukaryotes", "Unicellular prokaryotes", "Non-living particles", "Eukaryotic spores"], a: 1, hint: "They are single-celled and lack a true nucleus." },
+            { q: "How do bacteria primarily reproduce?", options: ["Meiosis", "Sexual reproduction", "Binary fission", "Budding"], a: 2, hint: "One cell 'splits' into two 'twins' identical cells." },
+            { q: "What is the protective layer found outside the cell wall in some bacteria?", options: ["Flagellum", "Slime capsule", "Nucleoid", "Ribosome"], a: 1, hint: "It helps them stick to surfaces and resist the immune system." },
+            { q: "Which of the following is a characteristic of a virus?", options: ["They breathe oxygen", "They respire and eat", "They are host-specific", "They have ribosomes"], a: 2, hint: "A virus usually only attacks certain types of tissue." },
+            { q: "What name is given to viruses that infect bacteria?", options: ["Pathogens", "Bacteriophages", "Retroviruses", "Oncoviruses"], a: 1, hint: "They are 'bacteria eaters'." },
+            { q: "In terms of size, how do viruses compare to bacteria?", options: ["They are much larger", "They are roughly the same size", "They are much smaller", "They can only be seen with a magnifying glass"], a: 2, hint: "Viruses are measured in nanometers, bacteria in micrometers." },
+            { q: "What is the function of flagella in bacteria?", options: ["Protein synthesis", "Movement", "Reproduction", "Storage"], a: 1, hint: "Think of a long, whip-like tail." },
+            { q: "Bacteria that break down dead organic matter are known as...", options: ["Parasites", "Autotrophs", "Saprophytes", "Mutualists"], a: 2, hint: "They are critical decomposers in ecosystems." },
+            { q: "Which beneficial role is played by bacteria in the human digestive system?", options: ["Causing flu", "Fixing nitrogen", "Gut flora for digestion", "Producing insulin naturally"], a: 2, hint: "These are 'good' bacteria like Lactobacillus." },
+            { q: "Antibiotics are effective against which type of micro-organism?", options: ["Viruses", "Bacteria", "Prions", "Viroids"], a: 1, hint: "They target bacterial cell processes." },
+            { q: "Why are antibiotics ineffective against viral infections?", options: ["Viruses are too strong", "Viruses lack metabolic machinery to target", "Viruses have cell walls", "Antibiotics only work in water"], a: 1, hint: "Viruses hijack host cell machinery rather than having their own." },
+            { q: "What is a 'vaccine' used for?", options: ["To cure an active infection", "To prevent infections by stimulating the immune system", "To kill bacteria instantly", "To feed viruses"], a: 1, hint: "It prepares your body to fight a specific pathogen." },
+            { q: "Bacteria that live in the root nodules of legumes and help the plant are called...", options: ["Pathogenic bacteria", "Nitrogen-fixing bacteria", "Parasitic bacteria", "Decomposing bacteria"], a: 1, hint: "They convert N2 gas into a form plants can use." },
+            { q: "Which of the following is an example of a viral disease?", options: ["Streptococcus", "Tuberculosis", "Influenza (Flu)", "Salmonella"], a: 2, hint: "Managed with antivirals or vaccines, not antibiotics." },
+            { q: "What structure does a bacterium use to store its genetic information?", options: ["Nucleus", "Capsid", "Nucleoid (Free-floating DNA)", "Mitochondria"], a: 2, hint: "They don't have a membrane around their DNA." },
+            { q: "The 'Capsid' of a virus is made of...", options: ["Lipids", "Sugars", "Proteins", "Cellulose"], a: 2, hint: "It is a protective 'coat' of organic molecules." },
+            { q: "Some bacteria can form 'Endospores'. What is their purpose?", options: ["Reproduction", "Survival in harsh conditions", "Movement", "Photosynthesis"], a: 1, hint: "A dormant, tough, non-reproductive structure." },
+            { q: "What describes a 'Malignant' tumor in the context of cancer?", options: ["Harmless", "Spreading to other parts of the body", "Only found in plants", "Disappears on its own"], a: 1, hint: "It is the dangerous, invasive type of growth." },
+            { q: "Washing hands with soap helps control micro-organisms because...", options: ["It feeds them", "It disrupts their membranes and removes them", "It makes them reproduce faster", "Soap is a nutrient"], a: 1, hint: "It is a basic form of hygiene and sterilization." },
+            { q: "What is the main difference between prokaryotes and eukaryotes?", options: ["Prokaryotes are bigger", "Eukaryotes lack a nucleus", "Prokaryotes lack a membrane-bound nucleus", "Eukaryotes only live in space"], a: 2, hint: "Pro- means before; karyon means nucleus." },
+            { q: "A 'Retrovirus' like HIV is unique because it contains...", options: ["Only DNA", "RNA and uses reverse transcriptase", "No genetic material", "A cell wall"], a: 1, hint: "It 'retrogrades' or reverses the normal flow of info." },
+            { q: "Which process is used in the food industry to make yogurt and cheese?", options: ["Viral replication", "Bacterial fermentation", "Nitrogen fixation", "Photosynthesis"], a: 1, hint: "Lactobacillus bacteria turn milk into yogurt." },
+            { q: "What is the role of 'Decomposers' in an ecosystem?", options: ["Creating new energy", "Recycling nutrients from dead matter", "Causing global warming", "Producing oxygen"], a: 1, hint: "Without them, the world would be covered in dead things." },
+            { q: "Which of the following is a bacterial infection?", options: ["COVID-19", "E. coli infection", "HIV/AIDS", "Rabies"], a: 1, hint: "Can usually be treated with antibiotics." },
+            { q: "What is the term for a symbiotic relationship where both organisms benefit, such as gut bacteria?", options: ["Parasitism", "Commensalism", "Mutualism", "Competition"], a: 2, hint: "It is 'mutual' benefit." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            let options = [...qData.options];
+            let correctText = options[qData.a];
+            options.sort(() => Math.random() - 0.5);
+            let correctIdx = options.indexOf(correctText);
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden', 'selected', 'correct', 'incorrect');
+                btn.setAttribute('data-correct', i === correctIdx);
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            const isCorrect = selectedBtn.getAttribute('data-correct') === 'true';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    for (let i = 0; i < 4; i++) {
+                        if (document.getElementById(`btn${i}`).getAttribute('data-correct') === 'true') {
+                            document.getElementById(`btn${i}`).classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            let hiddenCount = 0;
+            for(let i=0; i<4; i++){
+                let btn = document.getElementById(`btn${i}`);
+                if(btn.getAttribute('data-correct') === 'false' && hiddenCount < 2) {
+                    btn.classList.add('hidden');
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Life Sciences Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Science Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>
