@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Geography: Precipitation Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Atmospheric Moisture & Precipitation (Grade 10 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is the definition of precipitation?", options: ["The evaporation of ocean water", "The falling of water or ice from a cloud to the ground", "The movement of air from land to sea", "The process of plants releasing oxygen"], a: 1, hint: "It involves moisture leaving the clouds and reaching the surface." },
+            { q: "Which of these is a form of solid precipitation created by frozen raindrops being carried into freezing parts of a cloud?", options: ["Rain", "Snow", "Dew", "Hail"], a: 3, hint: "These are often associated with strong rising air currents." },
+            { q: "At what temperature does water vapour condense directly into ice (forming snow or frost)?", options: ["When dew point is above 0°C", "When dew point is below 0°C", "Only at exactly 100°C", "When the air is hot and dry"], a: 1, hint: "The freezing point of water is the key factor here." },
+            { q: "Which type of rainfall is common in the South African interior plateau during summer afternoons?", options: ["Frontal rain", "Relief rain", "Convection rain", "Cyclonic rain"], a: 2, hint: "This rain is caused by the ground heating up, causing air to rise." },
+            { q: "In South Africa, the Western Cape primarily receives its rainfall during which season?", options: ["Summer", "Winter", "Spring", "Autumn"], a: 1, hint: "Think about the timing of the cold fronts that hit Cape Town." },
+            { q: "What is the name for the dry area on the 'leeward' side of a mountain?", options: ["Windward zone", "Rain shadow", "Coastal plain", "Saturation point"], a: 1, hint: "It is the area protected from the rain-bearing winds." },
+            { q: "Which cloud type is specifically associated with heavy thunderstorms and convection rain?", options: ["Cirrus", "Stratus", "Cumulonimbus", "Altocumulus"], a: 2, hint: "These are large, towering clouds that often indicate storms." },
+            { q: "Relief rainfall is also known by what other geographical name?", options: ["Orographic rain", "Frontal rain", "Convection rain", "Monsoon rain"], a: 0, hint: "The name refers to the physical shape of the land." },
+            { q: "Which region in South Africa is famous for experiencing relief rainfall because of its mountain range?", options: ["The Kalahari", "The Drakensberg in KZN", "The Karoo", "The Highveld"], a: 1, hint: "It involves air being forced up a major mountain barrier." },
+            { q: "What happens to warm air when it meets a cold air mass in a frontal system?", options: ["It sinks below the cold air", "It stops moving", "It rises above the cold air", "It turns into a desert"], a: 2, hint: "Warm air is lighter and less dense than cold air." },
+            { q: "Which form of moisture occurs when water vapour condenses onto cold surfaces like grass at night?", options: ["Rain", "Hail", "Dew", "Snow"], a: 2, hint: "This happens when the dew point is above freezing." },
+            { q: "What makes a 'black frost' particularly dangerous for plants?", options: ["It turns the leaves black with soot", "The sap inside the plants freezes", "It causes heavy flooding", "It attracts pests"], a: 1, hint: "It happens when the dew point is well below freezing." },
+            { q: "Which process describes air being heated, expanding, and rising?", options: ["Conduction", "Convection", "Radiation", "Sublimation"], a: 1, hint: "This is the primary driver of summer thunderstorms." },
+            { q: "What is the 'windward' side of a mountain?", options: ["The side facing away from the wind", "The side that is always dry", "The side that faces the sea and receives rain", "The highest peak of the mountain"], a: 2, hint: "It is the side that the wind hits first." },
+            { q: "Frontal rain in the Western Cape is caused by air rising at which type of boundary?", options: ["A mountain barrier", "A cold or warm front", "A valley floor", "A forest edge"], a: 1, hint: "It involves the interaction of different air masses." },
+            { q: "If the dew point is above 0°C, what form of precipitation will most likely fall?", options: ["Snow", "Hail", "Raindrops", "Frost"], a: 2, hint: "The water remains in a liquid state." },
+            { q: "Why does convection rain usually happen in the late afternoon?", options: ["The moon is rising", "The land has been heated by the sun all day", "The wind speed decreases", "The sea is colder then"], a: 1, hint: "The ground needs time to reach its maximum temperature." },
+            { q: "Snow is formed through which atmospheric process?", options: ["Evaporation", "Melting", "Sublimation (vapour straight to ice)", "Freezing of liquid rain"], a: 2, hint: "It skips the liquid phase entirely." },
+            { q: "What is the main requirement for air to cool and reach its dew point for rain to occur?", options: ["The air must sink", "The air must rise", "The air must blow horizontally", "The air must stay still"], a: 1, hint: "Rising air cools as it reaches higher altitudes." },
+            { q: "In relief rain, what is the physical factor that causes the air to rise?", options: ["Intense ground heat", "Frontal boundaries", "Mountains or hills", "High pressure"], a: 2, hint: "The air has to climb over an obstacle." },
+            { q: "Which type of precipitation consists of frozen raindrops that often have layers of ice?", options: ["Snow", "Dew", "Hail", "Sleet"], a: 2, hint: "They fall when air currents can no longer support their weight." },
+            { q: "What term refers to the altitude where rising air reaches its dew point and clouds form?", options: ["Precipitation point", "Condensation level", "Sea level", "Windward peak"], a: 1, hint: "It is the height where the vapour starts turning back into liquid/solid." },
+            { q: "White frost forms when...", options: ["It rains on a very cold night", "Vapour condenses into ice on surfaces", "The sun is blocked by clouds", "The ground is made of salt"], a: 1, hint: "This happens on clear, cold winter nights." },
+            { q: "Which type of rainfall is typically gentle but lasts for a long time?", options: ["Convection rain", "Frontal rain", "Hail storm", "Thunderstorm"], a: 1, hint: "This is common during the rainy season in the Western Cape." },
+            { q: "What is the 'leeward' side of a mountain?", options: ["The side that gets the most rain", "The side protected from the wind", "The side facing the ocean", "The coldest part of the mountain"], a: 1, hint: "The air sinks and warms up on this side." },
+            { q: "Which South African province is most likely to experience frontal rain in July?", options: ["Limpopo", "Gauteng", "Western Cape", "Mpumalanga"], a: 2, hint: "July is mid-winter in South Africa." },
+            { q: "Convectional rainfall is a key characteristic of which South African region?", options: ["The interior plateau", "The coastal desert", "The southern coast", "The mountain peaks"], a: 0, hint: "This area gets most of its rain in summer." },
+            { q: "What is the 'dew point'?", options: ["The time when it stops raining", "The temperature at which air is saturated", "The highest temperature of the day", "The speed of the rising air"], a: 1, hint: "At this temperature, relative humidity is 100%." },
+            { q: "Hail is formed from raindrops that have...", options: ["Evaporated", "Frozen due to rising currents", "Melted", "Turned into gas"], a: 1, hint: "They are carried high into the sub-zero parts of the cloud." },
+            { q: "Why is the air on the leeward side of a mountain usually dry?", options: ["The air is rising there", "The air is sinking and warming up", "There is no sun on that side", "The ocean is too close"], a: 1, hint: "Sinking air can hold more moisture, so it doesn't rain." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

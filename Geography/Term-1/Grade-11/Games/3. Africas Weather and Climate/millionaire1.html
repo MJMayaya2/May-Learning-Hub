@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 11 Geography: Africa's Weather Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Africa's Weather & Climate (Grade 11 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is defined as the downward movement of air, causing high pressure at the surface?", options: ["Convergence", "Insolation", "Subsidence", "Advection"], a: 2, hint: "This process suppresses cloud formation." },
+            { q: "Which zone is created when air masses meet at low-pressure areas, forcing air to rise?", options: ["Subsidence Zone", "Divergence Zone", "Convergence Zone", "Static Zone"], a: 2, hint: "Rising air here leads to clouds and rain." },
+            { q: "What is the primary impact of subsidence on weather conditions?", options: ["Heavy thunderstorms", "Dry conditions and clear skies", "Cyclonic activity", "High humidity"], a: 1, hint: "Descending air warms up and dries out." },
+            { q: "Which feature is the best example of a convergence zone over Africa?", options: ["The Kalahari High", "The ITCZ", "The South Atlantic High", "The Karoo Basin"], a: 1, hint: "It stands for Intertropical Convergence Zone." },
+            { q: "How many major high-pressure cells influence South Africa's weather?", options: ["Two", "Five", "Three", "Seven"], a: 2, hint: "The Kalahari, South Atlantic, and South Indian cells." },
+            { q: "Which high-pressure cell is located over the interior of South Africa, especially in winter?", options: ["South Indian High", "South Atlantic High", "Kalahari High", "Equatorial Low"], a: 2, hint: "It is often called the Continental High." },
+            { q: "Where is the South Atlantic High-Pressure cell located?", options: ["Off the East Coast", "Over the Limpopo Valley", "Off the West Coast", "Over the Drakensberg"], a: 2, hint: "It is associated with the cold Benguela current." },
+            { q: "The South Indian High-Pressure cell is located off which coast of South Africa?", options: ["The West Coast", "The South Coast", "The East Coast", "The North Coast"], a: 2, hint: "This side is near the warm Agulhas current." },
+            { q: "Which pressure system is often trapped between the escarpment and the ocean?", options: ["Mid-latitude cyclone", "Coastal Low", "Kalahari High", "Tropical Low"], a: 1, hint: "It moves along the shoreline." },
+            { q: "In which season do high-pressure cells migrate northwards toward 30°S?", options: ["Summer", "Spring", "Winter", "Autumn"], a: 2, hint: "This allows cold fronts to reach the land." },
+            { q: "What is a characteristic of a Summer synoptic weather map in South Africa?", options: ["A date in July", "Low pressure over the interior", "High pressure over the land", "Mid-latitude cyclones over the interior"], a: 1, hint: "Heat causes a thermal or tropical low to form." },
+            { q: "How does the South Atlantic High affect weather in Summer?", options: ["It moves North to allow rain", "It moves South to block cold fronts", "It disappears completely", "It stays at 30°S"], a: 1, hint: "It shifts to about 35°S, pushing storm systems away." },
+            { q: "What prevents rainfall over the Kalahari Desert?", options: ["Convergence", "High humidity", "Subsidence", "Frontal systems"], a: 2, hint: "Sinking air prevents cloud development." },
+            { q: "Which system brings rain to the Western Cape in winter?", options: ["Kalahari High", "Mid-latitude cyclone (Cold Front)", "Tropical Low", "Coastal Low"], a: 1, hint: "These travel from the West across the ocean." },
+            { q: "What happens to the ITCZ during the Southern Hemisphere summer?", options: ["It shifts North", "It stays at the Equator", "It shifts South over Africa", "It disappears"], a: 2, hint: "It follows the sun's direct heat, bringing moisture." },
+            { q: "A 'Thermal Low' on a synoptic map is an indicator of which season?", options: ["Winter", "Summer", "Autumn", "Spring"], a: 1, hint: "Intense ground heating creates this low pressure." },
+            { q: "What is 'Convergence' in meteorological terms?", options: ["Air moving away from a center", "Air masses meeting and rising", "Air sinking and warming", "Winds stopping completely"], a: 1, hint: "Think of air 'coming together'." },
+            { q: "Which pressure cell is primarily responsible for the dry winter weather in the interior?", options: ["Coastal Low", "Kalahari High", "Equatorial Low", "South Indian High"], a: 1, hint: "It dominates the landmass in the colder months." },
+            { q: "In a synoptic map, isobars that are very close together indicate...", options: ["No wind", "High humidity", "Strong winds", "Clear skies"], a: 2, hint: "A steep pressure gradient creates speed." },
+            { q: "Which wind direction is typically associated with the South Atlantic High in SA?", options: ["North-Westerly", "South-Easterly", "North-Easterly", "South-Westerly"], a: 1, hint: "Think of the 'Cape Doctor'." },
+            { q: "What does 'hPa' stand for on a synoptic map?", options: ["Heat per area", "High pressure altitude", "Hectopascals", "Humidity percentage"], a: 2, hint: "The unit used for air pressure." },
+            { q: "Where does air move in a Low Pressure system in the Southern Hemisphere?", options: ["Clockwise and inwards", "Clockwise and outwards", "Anticlockwise and inwards", "Anticlockwise and outwards"], a: 0, hint: "Think of the rotation toward the center." },
+            { q: "Which high-pressure cell is most associated with 'ridging' and bringing rain to the East Coast?", options: ["Kalahari High", "South Indian High", "South Atlantic High", "Thermal Low"], a: 1, hint: "It pushes moist air from the Indian Ocean toward the land." },
+            { q: "What determines if a synoptic map represents July?", options: ["A Tropical Low is present", "Temperatures are above 30°C", "High pressure over the interior", "The ITCZ is over South Africa"], a: 2, hint: "High pressure (Kalahari) dominates in winter." },
+            { q: "What is the average pressure at sea level?", options: ["1000 hPa", "1013.25 hPa", "990 hPa", "1030 hPa"], a: 1, hint: "Look for the standard baseline used by meteorologists." },
+            { q: "A 'Tropical Low' usually brings what type of weather?", options: ["Clear skies", "Heavy rain and thunderstorms", "Dust storms", "Freezing temperatures"], a: 1, hint: "Rising air leads to condensation." },
+            { q: "Why can't cold fronts reach the interior during Summer?", options: ["They are too weak", "The high-pressure cells are too far North", "The high-pressure cells have migrated South and block them", "There is no wind"], a: 2, hint: "The Atlantic and Indian highs shift and act as a barrier." },
+            { q: "Which line on a map connects points of equal pressure?", options: ["Isotherm", "Isobar", "Isohyet", "Isoneph"], a: 1, hint: "Pressure is the 'bar' part of the word." },
+            { q: "The 'Eye' of a tropical cyclone is a region of...", options: ["Extreme wind", "Intense rain", "Very low pressure and calm", "Sinking cold air"], a: 2, hint: "The center of the storm." },
+            { q: "Which of the following is a result of convergence at the ITCZ?", options: ["Deserts", "Ice caps", "Tropical rainforests", "Clear winter days"], a: 2, hint: "Constant rising air leads to daily rain." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            // Randomize options
+            let options = [...qData.options];
+            let correctText = options[qData.a];
+            options.sort(() => Math.random() - 0.5);
+            let correctIdx = options.indexOf(correctText);
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                btn.innerText = options[i];
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+                btn.classList.remove('hidden', 'selected', 'correct', 'incorrect');
+                btn.setAttribute('data-correct', i === correctIdx);
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            const isCorrect = selectedBtn.getAttribute('data-correct') === 'true';
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (isCorrect) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    for (let i = 0; i < 4; i++) {
+                        if (document.getElementById(`btn${i}`).getAttribute('data-correct') === 'true') {
+                            document.getElementById(`btn${i}`).classList.add('correct');
+                        }
+                    }
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            let hiddenCount = 0;
+            for(let i=0; i<4; i++){
+                let btn = document.getElementById(`btn${i}`);
+                if(btn.getAttribute('data-correct') === 'false' && hiddenCount < 2) {
+                    btn.classList.add('hidden');
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

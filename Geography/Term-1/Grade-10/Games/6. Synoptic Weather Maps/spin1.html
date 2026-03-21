@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 10 Geography: Synoptic Weather Maps</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Synoptic Weather Maps</h1>
+        <p class="game-subtitle">Master Grade 10 Map Interpretation! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Subsidence", a: "The downward movement of air that causes high pressure at the surface and suppresses cloud formation." },
+                { q: "Convergence", a: "The meeting of air masses at low-pressure zones which forces air to rise and condense into clouds." },
+                { q: "Isobars", a: "Lines on a synoptic weather map that connect points of equal air pressure." },
+                { q: "El Niño", a: "The warming of surface waters in the Pacific Ocean that alters global weather patterns and often leads to drought in Southern Africa." },
+                { q: "La Niña", a: "The cooling of surface waters in the Pacific Ocean, which can cause increased rainfall and flooding in Southern Africa." },
+                { q: "Benguela Current", a: "A cold ocean current along the west coast of Africa that leads to arid conditions like the Namib Desert." },
+                { q: "Mozambique Current", a: "A warm ocean current that brings humid and tropical conditions to eastern Africa." },
+                { q: "Cold Front", a: "The boundary of an advancing mass of cold air, often bringing storms and a drop in temperature." },
+                { q: "Dew Point", a: "The temperature at which air reaches saturation and condensation begins." },
+                { q: "Synoptic Chart", a: "A map showing a summary of weather conditions over a large area at a specific time." },
+                { q: "Knots", a: "The unit of measurement used to represent wind speed on a weather station model." },
+                { q: "Coastal Low", a: "A small low-pressure system that typically moves along the South African coast ahead of a cold front." },
+                { q: "ITCZ", a: "Intertropical Convergence Zone; a low-pressure meeting point of air masses over Africa that causes rainfall." },
+                { q: "Station Model", a: "A symbolic representation of weather elements at a specific location on a synoptic map." },
+                { q: "Thermal Low", a: "A low-pressure system caused by the intense heating of the land surface, common in summer." },
+                { q: "Continental High", a: "A high-pressure cell usually found over the South African interior during winter." },
+                { q: "Mid-latitude Cyclone", a: "A low-pressure system that brings cold fronts and winter rainfall to the Western Cape." },
+                { q: "Isobar Interval", a: "The fixed difference in air pressure (usually 4hPa) between adjacent isobar lines." },
+                { q: "Monsoons", a: "Seasonal winds driven by the Indian Ocean that are critical for East Africa's rainfall." },
+                { q: "Warm Front", a: "A boundary where warm air advances and rises over cooler air, usually resulting in steady rain." }
+            ],
+            'terms': [
+                { q: "The Meeting of air masses at low-pressure zones that forces air to rise.", a: "Convergence" },
+                { q: "The cold current that Influences the dry climate of the Sahara Desert.", a: "Canary Current" },
+                { q: "The Pacific Ocean phenomenon that leads to drought in Southern Africa.", a: "El Niño" },
+                { q: "The specific symbol on a station model used for 'Snow'.", a: "Asterisk (*)" },
+                { q: "The pressure system that migrates south to block cold fronts in summer.", a: "South Atlantic High" },
+                { q: "The boundary marking the meeting of warm and cold air masses.", a: "Front" },
+                { q: "The sea that moderates temperatures in northern Africa creating mild winters.", a: "Mediterranean Sea" },
+                { q: "The current cooling the west coast of Africa leading to the Namib Desert.", a: "Benguela Current" },
+                { q: "The standard pressure interval (in hPa) between isobars in South Africa.", a: "4 hPa" },
+                { q: "The term for downward movement of air causing high pressure at the surface.", a: "Subsidence" },
+                { q: "The symbol used for 'Overcast' cloud cover (8/8).", a: "Solid black circle" },
+                { q: "The small low-pressure system present ahead of a cold front.", a: "Coastal Low" },
+                { q: "The unit used for measuring wind speed on a synoptic chart.", a: "Knots" },
+                { q: "The phenomenon causing increased rainfall in Southern Africa.", a: "La Niña" },
+                { q: "The high-pressure cell found in the Indian Ocean near South Africa.", a: "South Indian High" },
+                { q: "The difference between Air Temperature and Dew Point indicates how ___ the air is.", a: "Dry" },
+                { q: "The towering cloud type associated with thunderstorms.", a: "Cumulonimbus" },
+                { q: "The high flat interior region of SA where convection rain occurs.", a: "Plateau" },
+                { q: "The direction of air movement around a low-pressure cell in the Southern Hemisphere.", a: "Clockwise" },
+                { q: "The specific date on a map used to identify the time of year.", a: "Date" }
+            ],
+            'multipleChoice': [
+                { q: "What does the meeting of air masses at low-pressure zones cause?", options: ["A) Subsidence", "B) Convergence", "C) Ridging", "D) High Pressure"], a: "B) Convergence" },
+                { q: "Which current brings humid conditions to eastern Africa?", options: ["A) Benguela", "B) Canary", "C) Mozambique", "D) Gulf Stream"], a: "C) Mozambique" },
+                { q: "During El Niño, Southern Africa typically experiences:", options: ["A) Floods", "B) Drought", "C) Extreme Snow", "D) Heavy Rain"], a: "B) Drought" },
+                { q: "La Niña is characterized by the:", options: ["A) Warming of Pacific waters", "B) Cooling of Pacific waters", "C) Warming of Atlantic waters", "D) No change"], a: "B) Cooling of Pacific waters" },
+                { q: "Closely spaced isobars on a map indicate:", options: ["A) Light winds", "B) Strong winds", "C) No wind", "D) High humidity"], a: "B) Strong winds" },
+                { q: "The symbol representing 'Fog' consists of:", options: ["A) One comma", "B) Two horizontal lines", "C) Three horizontal lines", "D) A star"], a: "C) Three horizontal lines" },
+                { q: "In winter, SA high-pressure cells migrate northwards to about:", options: ["A) 20°S", "B) 30°S", "C) 35°S", "D) 40°S"], a: "B) 30°S" },
+                { q: "Which feature is found on a South African Summer map?", options: ["A) Continental High", "B) Thermal Low", "C) Winter date", "D) Snow symbol"], a: "B) Thermal Low" },
+                { q: "Ocean current that cools the west coast leading to the Namib Desert:", options: ["A) Mozambique", "B) Agulhas", "C) Benguela", "D) Canary"], a: "C) Benguela" },
+                { q: "What is the impact of subsidence on weather?", options: ["A) Heavy rain", "B) Suppresses cloud formation", "C) Causes floods", "D) Increases humidity"], a: "B) Suppresses cloud formation" },
+                { q: "A 'Coastal Low' is typically located:", options: ["A) Behind a cold front", "B) Ahead of a cold front", "C) Over the interior", "D) Near the poles"], a: "B) Ahead of a cold front" },
+                { q: "The unit used for wind speed is:", options: ["A) km/h", "B) m/s", "C) Knots", "D) Celsius"], a: "C) Knots" },
+                { q: "A circle that is 4/8 shaded represents:", options: ["A) Clear sky", "B) Overcast", "C) Half cloud cover", "D) Drizzle"], a: "C) Half cloud cover" },
+                { q: "The 'Rain Shadow' effect is associated with:", options: ["A) Frontal Rain", "B) Relief Rain", "C) Convection", "D) El Niño"], a: "B) Relief Rain" },
+                { q: "The symbol for 'Drizzle' is:", options: ["A) *", "B) ,", "C) .", "D) R"], a: "B) ," },
+                { q: "In the Southern Hemisphere, air around a High pressure moves:", options: ["A) Clockwise", "B) Anti-clockwise", "C) Vertically", "D) Inward"], a: "B) Anti-clockwise" },
+                { q: "The standard isobar interval on SA maps is:", options: ["A) 2hPa", "B) 4hPa", "C) 10hPa", "D) 1013hPa"], a: "B) 4hPa" },
+                { q: "Which ocean drives monsoonal winds in East Africa?", options: ["A) Atlantic", "B) Pacific", "C) Indian", "D) Arctic"], a: "C) Indian" },
+                { q: "Winter maps in SA often show a cold front passing over:", options: ["A) The Ocean only", "B) The Interior", "C) The Sahara", "D) Europe"], a: "B) The Interior" },
+                { q: "High pressure systems (H) usually bring:", options: ["A) Clear skies", "B) Thunderstorms", "C) Snow", "D) Hail"], a: "A) Clear skies" }
+            ],
+            'trueFalse': [
+                { q: "Subsidence involves the upward movement of air.", options: ["True", "False"], a: "False", exp: "Subsidence is downward air movement." },
+                { q: "The ITCZ is a low-pressure zone over Africa.", options: ["True", "False"], a: "True", exp: "Meeting air masses rise here, causing rain." },
+                { q: "Benguela is a warm ocean current.", options: ["True", "False"], a: "False", exp: "Benguela is a cold current." },
+                { q: "El Niño can disrupt agricultural cycles in Southern Africa.", options: ["True", "False"], a: "True", exp: "It often leads to severe droughts." },
+                { q: "La Niña usually causes drought in Southern Africa.", options: ["True", "False"], a: "False", exp: "La Niña often leads to increased rainfall." },
+                { q: "Isobars connect points of equal air pressure.", options: ["True", "False"], a: "True", exp: "This is their primary definition." },
+                { q: "A High-pressure system (H) is associated with rain.", options: ["True", "False"], a: "False", exp: "H-systems usually bring clear and dry weather." },
+                { q: "15 knots is shown by one long and one short feather.", options: ["True", "False"], a: "True", exp: "10 knots (long) + 5 knots (short)." },
+                { q: "South Indian High pressure cell migrates north in winter.", options: ["True", "False"], a: "True", exp: "This allows cold fronts to pass over land." },
+                { q: "Coastal lows are a feature of the SA interior plateau.", options: ["True", "False"], a: "False", exp: "They move specifically along the coastline." },
+                { q: "Thermal lows over the interior are common in summer.", options: ["True", "False"], a: "True", exp: "Caused by intense heating of the land." },
+                { q: "Mid-latitude cyclones move from east to west.", options: ["True", "False"], a: "False", exp: "They move from west to east." },
+                { q: "Dew point is the temperature at which air is saturated.", options: ["True", "False"], a: "True", exp: "Condensation begins at this temperature." },
+                { q: "Overcast sky is represented as 1/8 on a station model.", options: ["True", "False"], a: "False", exp: "Overcast is represented as 8/8." },
+                { q: "The Mozambique Current brings humid conditions to eastern Africa.", options: ["True", "False"], a: "True", exp: "It is a warm, tropical current." },
+                { q: "Indian Ocean monsoons are critical for East Africa's rain.", options: ["True", "False"], a: "True", exp: "They drive monsoonal wind patterns." },
+                { q: "El Niño leads to Southern Africa floods.", options: ["True", "False"], a: "False", exp: "El Niño is linked to droughts in the region." },
+                { q: "Closely spaced isobars indicate light winds.", options: ["True", "False"], a: "False", exp: "Close isobars indicate strong winds." },
+                { q: "The Continental High is a feature of summer maps.", options: ["True", "False"], a: "False", exp: "It is a characteristic feature of winter maps." },
+                { q: "The standard isobar interval in SA is 4 hPa.", options: ["True", "False"], a: "True", exp: "This is consistent across most local maps." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

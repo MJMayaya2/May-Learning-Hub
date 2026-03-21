@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 11 Geography: Global Air Circulation</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Global Air Circulation</h1>
+        <p class="game-subtitle">Master Grade 11 Atmospheric Systems! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Pressure Gradient Force", a: "The force that triggers air to move from an area of high pressure to an area of low pressure." },
+                { q: "Coriolis Force", a: "The force caused by Earth's rotation that deflects moving air to the left in the Southern Hemisphere and right in the Northern Hemisphere." },
+                { q: "Convergence", a: "The meeting of air masses at a low-pressure zone, which forces the air to rise." },
+                { q: "Subsidence", a: "The downward movement of air, which creates high pressure at the surface and suppresses cloud formation." },
+                { q: "ITCZ", a: "Intertropical Convergence Zone; the low-pressure area near the equator where the Trade Winds from both hemispheres meet." },
+                { q: "Hadley Cell", a: "The atmospheric circulation cell that operates between the equator and 30 degrees latitude." },
+                { q: "Ferrel Cell", a: "The mid-latitude atmospheric circulation cell that operates between 30 and 60 degrees latitude." },
+                { q: "Polar Cell", a: "The circulation cell between 60 degrees and the poles where cold air sinks at the poles and rises at the subpolar low." },
+                { q: "Monsoon", a: "A seasonal reversal in wind direction caused by the temperature difference between large landmasses and oceans." },
+                { q: "Föhn Wind", a: "A warm, dry wind that descends on the leeward side of a mountain range after losing its moisture." },
+                { q: "Adiabatic Heating", a: "The warming of air as it sinks and is compressed under increasing atmospheric pressure." },
+                { q: "Adiabatic Cooling", a: "The cooling of air as it rises and expands due to decreasing atmospheric pressure." },
+                { q: "Leeward Side", a: "The side of a mountain shielded from the prevailing winds, which is typically dry (rain shadow)." },
+                { q: "Windward Side", a: "The side of a mountain facing the prevailing winds, which receives the most precipitation." },
+                { q: "Orographic Lifting", a: "The process where air is physically forced to rise over a mountain range." },
+                { q: "Jet Stream", a: "High-speed, high-altitude winds found at the boundaries of the major circulation cells." },
+                { q: "Global Air Circulation", a: "The large-scale movement of air in the atmosphere intended to distribute heat from the equator to the poles." },
+                { q: "Anticyclone", a: "A high-pressure weather system characterized by sinking air and clear, dry weather." },
+                { q: "Isobars", a: "Lines on a weather map that connect points of equal atmospheric pressure." },
+                { q: "Divergence", a: "The movement of air away from a center of high pressure at the surface." }
+            ],
+            'terms': [
+                { q: "Winds blowing from the subtropical high-pressure zones toward the equator.", a: "Trade Winds" },
+                { q: "Winds blowing from the subtropical high-pressure zones toward the subpolar low (30° to 60°).", a: "Westerlies" },
+                { q: "Winds blowing from the polar high-pressure zones toward the subpolar low (90° to 60°).", a: "Polar Easterlies" },
+                { q: "The high-pressure belt located at approximately 30 degrees North and South latitude.", a: "Subtropical High (Horse Latitudes)" },
+                { q: "The low-pressure belt located at approximately 60 degrees North and South latitude.", a: "Subpolar Low" },
+                { q: "The South African version of a Föhn wind, common in the Drakensberg region.", a: "Berg Wind" },
+                { q: "The wet seasonal winds that bring massive rainfall to India in summer.", a: "South-West Monsoons" },
+                { q: "The dry seasonal winds that blow from the cold interior of Asia in winter.", a: "North-East Monsoons" },
+                { q: "The hidden energy released during condensation that powers thunderstorms.", a: "Latent Heat" },
+                { q: "The region of the ITCZ known for its calm or very light winds.", a: "Doldrums" },
+                { q: "The boundary where warm westerlies meet cold polar easterlies at 60° latitude.", a: "Polar Front" },
+                { q: "The process where sinking air becomes warmer and drier due to compression.", a: "Adiabatic heating" },
+                { q: "The force that prevents wind from blowing directly from High to Low, making it curve.", a: "Coriolis force" },
+                { q: "The name of the cell responsible for the circulation of air in the tropics.", a: "Hadley Cell" },
+                { q: "The mountain range in South Africa most associated with Berg winds.", a: "Drakensberg" },
+                { q: "The direction of air movement around a Low Pressure cell in the Southern Hemisphere.", a: "Clockwise" },
+                { q: "The direction of air movement around a High Pressure cell in the Southern Hemisphere.", a: "Anti-clockwise" },
+                { q: "The name of the dry area on the leeward side of a mountain.", a: "Rain Shadow" },
+                { q: "The primary source of heat that drives the entire global circulation system.", a: "Solar Radiation" },
+                { q: "The term for air coming together and rising.", a: "Convergence" }
+            ],
+            'multipleChoice': [
+                { q: "In the Southern Hemisphere, the Coriolis force deflects wind to the:", options: ["A) Right", "B) Left", "C) North", "D) South"], a: "B) Left" },
+                { q: "Which cell is found between 30° and 60° latitude?", options: ["A) Hadley", "B) Polar", "C) Ferrel", "D) ITCZ"], a: "C) Ferrel" },
+                { q: "High pressure is generally associated with:", options: ["A) Rising air and rain", "B) Sinking air and clear skies", "C) Convergence", "D) Tropical cyclones"], a: "B) Sinking air and clear skies" },
+                { q: "The 'Roaring Forties' refers to which wind belt?", options: ["A) Trade Winds", "B) Polar Easterlies", "C) Westerlies", "D) Monsoons"], a: "C) Westerlies" },
+                { q: "Where is the Coriolis force at its weakest (zero)?", options: ["A) North Pole", "B) South Pole", "C) Equator", "D) 30 degrees latitude"], a: "C) Equator" },
+                { q: "Summer Monsoons in India are wet because the winds blow:", options: ["A) From Land to Sea", "B) From Sea to Land", "C) From North to South", "D) Only during the night"], a: "B) From Sea to Land" },
+                { q: "What happens to air as it moves down the leeward side of a mountain?", options: ["A) It cools and condenses", "B) It warms and becomes drier", "C) It stays the same", "D) It forms snow"], a: "B) It warms and becomes drier" },
+                { q: "The ITCZ moves throughout the year based on the position of:", options: ["A) The Moon", "B) The Stars", "C) The Sun (Direct rays)", "D) Ocean Currents"], a: "C) The Sun (Direct rays)" },
+                { q: "Which pressure belt is also known as the 'Horse Latitudes'?", options: ["A) Equatorial Low", "B) Subtropical High", "C) Subpolar Low", "D) Polar High"], a: "B) Subtropical High" },
+                { q: "Air rises at the ITCZ because of:", options: ["A) Intense surface heating", "B) Intense surface cooling", "C) High altitude winds", "D) Sinking air"], a: "A) Intense surface heating" },
+                { q: "Winter Monsoons are dry because the winds originate from:", options: ["A) The Indian Ocean", "B) Cold continental interiors", "C) The Equator", "D) The Stratosphere"], a: "B) Cold continental interiors" },
+                { q: "Berg winds in South Africa typically occur during which season?", options: ["A) Summer", "B) Autumn", "C) Winter", "D) Spring"], a: "C) Winter" },
+                { q: "Which force is responsible for the initial movement of air?", options: ["A) Coriolis Force", "B) Centrifugal Force", "C) Pressure Gradient Force", "D) Friction"], a: "C) Pressure Gradient Force" },
+                { q: "The Polar Front is located at approximately which latitude?", options: ["A) 0°", "B) 30°", "C) 60°", "D) 90°"], a: "C) 60°" },
+                { q: "What kind of weather is characteristic of the ITCZ?", options: ["A) Constant clear skies", "B) Heavy thunderstorms", "C) Dry desert winds", "D) Freezing snow"], a: "B) Heavy thunderstorms" },
+                { q: "Westerlies blow from the _____ toward the _____.", options: ["A) Poles; Equator", "B) Subtropical High; Subpolar Low", "C) Equator; Poles", "D) Sea; Land"], a: "B) Subtropical High; Subpolar Low" },
+                { q: "Föhn winds cause the air to be warm because of:", options: ["A) Latent heat release and adiabatic heating", "B) Direct sunlight", "C) Volcanic activity", "D) Ocean currents"], a: "A) Latent heat release and adiabatic heating" },
+                { q: "The circulation between 60° and 90° is the:", options: ["A) Ferrel Cell", "B) Hadley Cell", "C) Polar Cell", "D) Mid-latitude cell"], a: "C) Polar Cell" },
+                { q: "Winds curve to the right in the:", options: ["A) Southern Hemisphere", "B) Northern Hemisphere", "C) Equator", "D) Ocean"], a: "B) Northern Hemisphere" },
+                { q: "Which term describes air masses meeting and being forced upwards?", options: ["A) Divergence", "B) Subsidence", "C) Convergence", "D) Conduction"], a: "C) Convergence" }
+            ],
+            'trueFalse': [
+                { q: "The ITCZ is a region of high pressure.", options: ["True", "False"], a: "False", exp: "It is a low-pressure belt where air converges and rises." },
+                { q: "Coriolis force is strongest at the poles.", options: ["True", "False"], a: "True", exp: "It decreases as you move toward the equator." },
+                { q: "The Ferrel Cell is the circulation cell closest to the equator.", options: ["True", "False"], a: "False", exp: "The Hadley Cell is closest to the equator." },
+                { q: "Monsoons are a seasonal reversal of winds.", options: ["True", "False"], a: "True", exp: "They are caused by large-scale temperature differences between land and sea." },
+                { q: "Berg winds are cool and moist winds.", options: ["True", "False"], a: "False", exp: "They are warm and dry winds common in SA winters." },
+                { q: "Air sinks in a High-pressure system.", options: ["True", "False"], a: "True", exp: "This is known as subsidence." },
+                { q: "The windward side of a mountain is dry.", options: ["True", "False"], a: "False", exp: "The leeward side is dry; the windward side gets the rain." },
+                { q: "Latent heat is released when water vapour condenses.", options: ["True", "False"], a: "True", exp: "This energy helps drive atmospheric movement." },
+                { q: "Westerlies blow from East to West.", options: ["True", "False"], a: "False", exp: "They blow from the West toward the East." },
+                { q: "The Polar Front is a boundary between cold and warm air masses.", options: ["True", "False"], a: "True", exp: "It occurs at approximately 60 degrees latitude." },
+                { q: "Convergence leads to the formation of clouds and rain.", options: ["True", "False"], a: "True", exp: "Rising air cools and condenses into clouds." },
+                { q: "The subtropical high-pressure belt is at 90 degrees.", options: ["True", "False"], a: "False", exp: "It is located at 30 degrees latitude." },
+                { q: "Summer Monsoons in India occur during the months of June to September.", options: ["True", "False"], a: "True", exp: "This is the rainy season for the region." },
+                { q: "Adiabatic heating occurs as air rises.", options: ["True", "False"], a: "False", exp: "Adiabatic cooling occurs as air rises; heating occurs as it sinks." },
+                { q: "Trade winds blow from 30° toward the equator.", options: ["True", "False"], a: "True", exp: "They are the surface winds of the Hadley cell." },
+                { q: "The leeward side is also known as the rain shadow area.", options: ["True", "False"], a: "True", exp: "It receives very little rain due to dry descending air." },
+                { q: "High pressure brings overcast and rainy conditions.", options: ["True", "False"], a: "False", exp: "Low pressure brings rain; High pressure brings clear skies." },
+                { q: "Coriolis force causes wind to blow across the isobars at 90 degrees.", options: ["True", "False"], a: "False", exp: "It causes wind to deflect and often blow parallel to isobars." },
+                { q: "Global air circulation helps prevent the poles from becoming even colder.", options: ["True", "False"], a: "True", exp: "It transfers heat from the equator to the polar regions." },
+                { q: "The Horse Latitudes are areas of intense rainfall.", options: ["True", "False"], a: "False", exp: "They are areas of sinking air and dry weather." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

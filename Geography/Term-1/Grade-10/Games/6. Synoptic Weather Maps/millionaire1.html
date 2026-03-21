@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Geography: Synoptic Weather Maps Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Synoptic Weather Maps (Grade 10 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "What is the primary purpose of a synoptic weather map?", options: ["To show the movement of the moon", "To show a summary of weather conditions over a large area", "To count the number of trees in a forest", "To track the migration of birds"], a: 1, hint: "Synoptic means 'summary' or 'overview'." },
+            { q: "What do we call the lines on a weather map that connect points of equal air pressure?", options: ["Isotherms", "Isohyets", "Isobars", "Contour lines"], a: 2, hint: "These are usually drawn in hectopascals (hPa)." },
+            { q: "In which unit is atmospheric pressure measured on a synoptic weather map?", options: ["Degrees Celsius", "Hectopascals (hPa)", "Kilometres per hour", "Percentage"], a: 1, hint: "Look for the numbers on the isobars." },
+            { q: "Which of the following describes a high-pressure system (Anticyclone)?", options: ["Air is rising and unstable", "Air is sinking (subsidence) and stable", "It always brings heavy rain", "The isobars are very close together"], a: 1, hint: "Sinking air prevents clouds from forming." },
+            { q: "Which term refers to the downward movement of air that causes high pressure at the surface?", options: ["Convergence", "Insolation", "Subsidence", "Advection"], a: 2, hint: "Think of air 'subsidizing' or settling down." },
+            { q: "What is the result of air convergence in a low-pressure system?", options: ["Air sinks and clears the sky", "Air rises, cools, and forms clouds", "Pressure increases dramatically", "Winds stop blowing"], a: 1, hint: "Rising air leads to condensation and potentially rain." },
+            { q: "In the Southern Hemisphere, which way does air move around a High Pressure cell?", options: ["Clockwise and outwards", "Anticlockwise and inwards", "Straight up", "It doesn't move"], a: 0, hint: "Think about the rotation direction for an anticyclone in our hemisphere." },
+            { q: "What is the name of the high-pressure cell usually found over the interior of South Africa in winter?", options: ["South Atlantic High", "South Indian High", "Kalahari High", "Thermal Low"], a: 2, hint: "It is named after the dry region in the middle of Southern Africa." },
+            { q: "Where is the South Atlantic High-Pressure cell located?", options: ["Off the East Coast of South Africa", "Over the Drakensberg mountains", "Off the West Coast of South Africa", "In the Limpopo Valley"], a: 2, hint: "It is on the side where the cold Benguela current flows." },
+            { q: "The South Indian High-Pressure cell is found off which coast of South Africa?", options: ["The West Coast", "The North Coast", "The East Coast", "The South Coast"], a: 2, hint: "This side is near the warm Agulhas current." },
+            { q: "Which pressure system is often 'trapped' between the escarpment and the sea?", options: ["Mid-latitude cyclone", "Coastal Low", "Kalahari High", "Tropical Low"], a: 1, hint: "It is a small, localized low-pressure system along the shoreline." },
+            { q: "How can you identify a Winter synoptic map for South Africa?", options: ["Presence of a Kalahari High over the interior", "Temperatures above 30°C everywhere", "Mid-latitude cyclones are far to the south", "No cold fronts are visible"], a: 0, hint: "High pressure dominates the center of the country during this season." },
+            { q: "In which direction do Mid-latitude cyclones move across South Africa?", options: ["East to West", "North to South", "West to East", "South to North"], a: 2, hint: "They are driven by the prevailing Westerly winds." },
+            { q: "What symbol represents a cold front on a synoptic weather map?", options: ["Semicircles on a line", "A solid green line", "Triangles on a line", "Alternating triangles and circles"], a: 2, hint: "Think of sharp, cold points." },
+            { q: "On a weather station model, what does the number in the top-left position represent?", options: ["Dew point temperature", "Wind speed", "Air temperature", "Cloud cover"], a: 2, hint: "This is the most common way to read how hot it is at that station." },
+            { q: "What does the bottom-left number on a weather station model represent?", options: ["Wind direction", "Dew point temperature", "Pressure", "Rainfall"], a: 1, hint: "This tells us the temperature at which condensation begins." },
+            { q: "A weather station model shows a circle that is completely black. What is the cloud cover?", options: ["Clear skies", "4/8 (half covered)", "8/8 (overcast)", "No clouds at all"], a: 2, hint: "A fully shaded circle means the sky is full of clouds." },
+            { q: "How is wind direction indicated on a station model?", options: ["By the number in the center", "By a tail pointing into the circle from a specific direction", "By a red arrow", "By the color of the circle"], a: 1, hint: "The 'shaft' or 'tail' points to where the wind is coming from." },
+            { q: "What do the 'feathers' or small lines at the end of a wind shaft represent?", options: ["Humidity", "Wind speed in knots", "Visibility", "Chance of rain"], a: 1, hint: "More feathers mean a stronger wind." },
+            { q: "Why do high-pressure cells migrate northwards in winter?", options: ["To follow the apparent movement of the sun", "Because of the moon's gravity", "To escape the cold ocean", "They don't move"], a: 0, hint: "Everything in the atmosphere shifts with the tilt of the Earth relative to the sun." },
+            { q: "What is a 'Thermal Low'?", options: ["A low-pressure cell caused by intense surface heating", "A high-pressure cell in the ocean", "A cold front from the poles", "A cloud that produces snow"], a: 0, hint: "This is common over the South African interior in summer." },
+            { q: "Which feature is a characteristic of a Summer synoptic map?", options: ["A high pressure over the interior", "The date shows July or August", "A thermal or tropical low over the interior", "Mid-latitude cyclones passing over the land"], a: 2, hint: "Heat causes air to rise, creating low pressure." },
+            { q: "What is an isobaric 'Ridge'?", options: ["An extension of high pressure", "An extension of low pressure", "A type of storm", "A place with no wind"], a: 0, hint: "Think of it as a 'mountain' or high point of pressure." },
+            { q: "What is an isobaric 'Trough'?", options: ["An extension of high pressure", "An extension of low pressure", "A hurricane", "The center of an anticyclone"], a: 1, hint: "Think of a 'valley' or low point of pressure." },
+            { q: "What does it mean when isobars are very close together on a map?", options: ["The wind is calm", "The temperature is dropping", "The pressure gradient is steep, causing strong winds", "It is about to snow"], a: 2, hint: "Close lines mean the pressure changes quickly over a short distance." },
+            { q: "Which weather system brings cold, wet weather to the Western Cape in winter?", options: ["Tropical cyclone", "Mid-latitude cyclone (Cold Front)", "Coastal Low", "Kalahari High"], a: 1, hint: "These travel in the belt of the Westerlies." },
+            { q: "On a station model, if the air temperature and dew point temperature are the same, what is likely happening?", options: ["The air is very dry", "It is mid-day", "The air is saturated and condensation is occurring", "The wind is blowing from the north"], a: 2, hint: "This means the relative humidity is 100%." },
+            { q: "What pressure cell blocks cold fronts from reaching the interior of South Africa in summer?", options: ["The Coastal Low", "The South Atlantic High (which has migrated south)", "The Tropical Low", "The Equator"], a: 1, hint: "In summer, the high-pressure cells move further south, pushing the fronts away." },
+            { q: "Which of the following is NOT a weather element shown on a station model?", options: ["Pressure", "Wind direction", "Soil pH level", "Cloud cover"], a: 2, hint: "Station models focus on the atmosphere, not the ground chemistry." },
+            { q: "What is the impact of the Kalahari High-Pressure cell on rainfall in winter?", options: ["It causes floods", "It creates dry, clear conditions by suppressing clouds", "It brings warm, moist air from the tropics", "It has no impact"], a: 1, hint: "High pressure means sinking air, which stops rain." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

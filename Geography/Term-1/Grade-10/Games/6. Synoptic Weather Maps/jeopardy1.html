@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Geography Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input {
+            width: 100%;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 2px solid #cce0ff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .hint { color: #555; font-size: 0.95rem; }
+        .hidden { display: none !important; }
+
+        @media (max-width: 800px) { .name-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-correct:hover { background: #1e7e34; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect:hover { background: #bd2130; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; animation: fadeIn 0.4s; }
+        .steal-title { color: #856404; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-steal:hover { background: #e0a800; transform: translateY(-2px); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 10 Geography Jeopardy</h1>
+        <p class="game-subtitle">Topic: Synoptic Weather Maps</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1 name" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2 name" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3 name" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4 name" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+            <p class="hint">80 unique questions covering Map Reading, Air Processes, and Climate Influences!</p>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" id="stealTitle">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const player1Cats = [
+            { name: "Air & Rain", questions: [
+                { points: 10, q: "What is the downward movement of air that causes high pressure at the surface called?", a: "Subsidence" },
+                { points: 20, q: "Does subsidence usually lead to cloudy or dry conditions?", a: "Dry conditions" },
+                { points: 30, q: "What is the meeting of air masses at low-pressure zones called?", a: "Convergence" },
+                { points: 40, q: "Why does convergence cause rainfall?", a: "It forces air to rise, cool, and condense" },
+                { points: 50, q: "Name a specific dry example of a subsidence zone in Southern Africa.", a: "The Kalahari Desert" }
+            ]},
+            { name: "Atlantic Flow", questions: [
+                { points: 10, q: "Name the cold ocean current found on the west coast of South Africa.", a: "Benguela Current" },
+                { points: 20, q: "Which desert's arid conditions are influenced by the Benguela Current?", a: "The Namib Desert" },
+                { points: 30, q: "Does a cold current usually increase or decrease rainfall on the adjacent coast?", a: "Decrease" },
+                { points: 40, q: "Which current influences the Sahara's dry climate in the north?", a: "Canary Current" },
+                { points: 50, q: "True or False: The Atlantic Ocean acts as a heat reservoir for African coastal climates.", a: "True" }
+            ]},
+            { name: "El Niño Cycle", questions: [
+                { points: 10, q: "El Niño involves the warming of surface waters in which ocean?", a: "Pacific Ocean" },
+                { points: 20, q: "During El Niño, does Southern Africa usually experience floods or droughts?", a: "Droughts" },
+                { points: 30, q: "Which part of Africa experiences increased rainfall and floods during El Niño?", a: "East Africa" },
+                { points: 40, q: "How does El Niño impact southern Africa's food security?", a: "It reduces maize production/disrupts agricultural cycles" },
+                { points: 50, q: "What is the cooling of surface waters in the Pacific called?", a: "La Niña" }
+            ]},
+            { name: "Map Basics", questions: [
+                { points: 10, q: "What are the lines of equal air pressure on a synoptic map called?", a: "Isobars" },
+                { points: 20, q: "If isobars are closely spaced, what does this indicate about the wind?", a: "Strong winds" },
+                { points: 30, q: "What letter represents a High-pressure system on a map?", a: "H" },
+                { points: 40, q: "What kind of weather is associated with a Low-pressure (L) system?", a: "Cloudy skies and potential rainfall" },
+                { points: 50, q: "In which hemisphere does air move clockwise around a Low-pressure system?", a: "Northern Hemisphere (as per the diagram logic provided)" }
+            ]}
+        ];
+
+        const player2Cats = [
+            { name: "High & Low", questions: [
+                { points: 10, q: "In the Southern Hemisphere, air moves ______ around a High-pressure cell.", a: "Anti-clockwise" },
+                { points: 20, q: "Is air rising or descending in a High-pressure system?", a: "Descending/Subsiding" },
+                { points: 30, q: "Is air rising or descending in a Low-pressure system?", a: "Rising" },
+                { points: 40, q: "Which pressure system is associated with clear skies?", a: "High-pressure (H)" },
+                { points: 50, q: "What is the isobar interval typically used on South African maps?", a: "4 hPa" }
+            ]},
+            { name: "Frontal Weather", questions: [
+                { points: 10, q: "Which front is represented by a line with triangles?", a: "Cold Front" },
+                { points: 20, q: "Do cold fronts typically bring storms or steady rain?", a: "Storms" },
+                { points: 30, q: "Which front marks advancing warm air and steady rain?", a: "Warm Front" },
+                { points: 40, q: "In South Africa, which front is often seen passing over the interior in winter maps?", a: "Cold Front" },
+                { points: 50, q: "A 'Coastal Low' is typically found ahead of which type of front?", a: "Cold Front" }
+            ]},
+            { name: "Station Models", questions: [
+                { points: 10, q: "In a weather station model, what does the number at the top left represent?", a: "Air Temperature (TT)" },
+                { points: 20, q: "What does the number at the bottom left represent?", a: "Dew Point Temperature (Td)" },
+                { points: 30, q: "If the TT and Td are very close together, is the air dry or moist?", a: "Moist/Damp" },
+                { points: 40, q: "How is a wind speed of 15 knots shown on the wind tail?", a: "One long feather and one short feather" },
+                { points: 50, q: "What does a completely shaded circle in a station model mean?", a: "8/8 Cloud cover (Overcast)" }
+            ]},
+            { name: "Winter Signs", questions: [
+                { points: 10, q: "Name a month likely found on a South African Winter synoptic map.", a: "June, July, or August" },
+                { points: 20, q: "Is there a High or Low pressure system typically over the land in winter?", a: "High-pressure (Continental High)" },
+                { points: 30, q: "Where have the South Atlantic and South Indian Highs migrated in winter?", a: "Northwards (to about 30°S)" },
+                { points: 40, q: "Does a winter map show a 'Thermal Low' over the interior?", a: "No (No heat/thermal low)" },
+                { points: 50, q: "Why do cold fronts pass over the land more easily in winter?", a: "High-pressure cells have migrated north, opening the path" }
+            ]}
+        ];
+
+        const player3Cats = [
+            { name: "Summer Signs", questions: [
+                { points: 10, q: "Name a month likely found on a South African Summer synoptic map.", a: "December, January, or February" },
+                { points: 20, q: "Which type of low-pressure system is present over the interior in summer?", a: "Thermal/Heat Low or Tropical Low" },
+                { points: 30, q: "Is there a strong High-pressure cell over the land in summer?", a: "No" },
+                { points: 40, q: "Where have the High-pressure cells migrated in summer?", a: "Southwards (to about 35°S)" },
+                { points: 50, q: "What feature 'ridges' below the Western Cape in summer due to migration?", a: "South Atlantic High" }
+            ]},
+            { name: "Indian Ocean", questions: [
+                { points: 10, q: "Name the warm current found on the east coast of Africa.", a: "Mozambique Current (or Agulhas)" },
+                { points: 20, q: "Do warm currents bring humid or dry conditions to the coast?", a: "Humid conditions" },
+                { points: 30, q: "Which ocean drives the monsoonal winds critical for East Africa?", a: "Indian Ocean" },
+                { points: 40, q: "How do oceans help regulate Africa's coastal climates?", a: "They act as heat reservoirs (absorb/release heat)" },
+                { points: 50, q: "What effect do oceans have on temperature extremes near coasts?", a: "They reduce/moderate extremes" }
+            ]},
+            { name: "Weather Symbols", questions: [
+                { points: 10, q: "What is the symbol for Fog on a synoptic map?", a: "Three horizontal lines" },
+                { points: 20, q: "What is the symbol for Snow?", a: "An asterisk (*)" },
+                { points: 30, q: "What does a comma-like symbol represent?", a: "Drizzle" },
+                { points: 40, q: "What is the symbol for a Thunderstorm?", a: "A 'pointed' arrow/lightning-like shape" },
+                { points: 50, q: "What does the symbol 'R' (or similar dot patterns) represent?", a: "Rain" }
+            ]},
+            { name: "Regional Interpretation", questions: [
+                { points: 10, q: "Which convergence zone is responsible for Africa's central rainfall?", a: "ITCZ (Intertropical Convergence Zone)" },
+                { points: 20, q: "In which season does the Western Cape receive most of its frontal rain?", a: "Winter" },
+                { points: 30, q: "What determines if air will be dry or wet on a station model?", a: "The difference between TT and Td" },
+                { points: 40, q: "Which sea moderates temperatures in Northern Africa?", a: "Mediterranean Sea" },
+                { points: 50, q: "Why is the interior of SA dry when air descends?", a: "Descending air warms and prevents cloud formation" }
+            ]}
+        ];
+
+        const player4Cats = [
+            { name: "La Niña Effects", questions: [
+                { points: 10, q: "Does La Niña involve warming or cooling of Pacific waters?", a: "Cooling" },
+                { points: 20, q: "Does Southern Africa see increased or decreased rainfall during La Niña?", a: "Increased rainfall" },
+                { points: 30, q: "What is a potential negative impact of La Niña in Southern Africa?", a: "Floods" },
+                { points: 40, q: "Does East Africa experience wetter or drier conditions during La Niña?", a: "Drier conditions" },
+                { points: 50, q: "Which cycle is considered the 'opposite' of El Niño?", a: "La Niña" }
+            ]},
+            { name: "Marine & Arid", questions: [
+                { points: 10, q: "Why is the west coast of SA so arid?", a: "Cold Benguela current suppresses moisture/rain" },
+                { points: 20, q: "Which current cools the west coast of Southern Africa?", a: "Benguela Current" },
+                { points: 30, q: "The Agulhas current is a ______ current.", a: "Warm" },
+                { points: 40, q: "What is the primary heat source for evaporation over the Indian Ocean?", a: "The Sun/Warm water" },
+                { points: 50, q: "Oceans help keep coastal winters ______ than inland winters.", a: "Milder/Warmer" }
+            ]},
+            { name: "Data Points", questions: [
+                { points: 10, q: "What unit is wind speed measured in on a synoptic map?", a: "Knots" },
+                { points: 20, q: "What is 10 knots represented by on a wind model?", a: "One long feather" },
+                { points: 30, q: "If the dew point is 18 and air temp is 20, is the air very humid?", a: "Yes (small difference)" },
+                { points: 40, q: "How is 'Overcast' cloud cover represented as a fraction?", a: "8/8" },
+                { points: 50, q: "What does the line pointing away from the station model circle show?", a: "Wind Direction" }
+            ]},
+            { name: "Map Analysis", questions: [
+                { points: 10, q: "What feature usually blocks cold fronts from reaching SA in summer?", a: "South Atlantic High migrated southwards" },
+                { points: 20, q: "Predict the weather: A station model shows 8/8 cloud and a Thunderstorm symbol.", a: "Stormy/Heavy rain" },
+                { points: 30, q: "Where is the 'Coastal Low' usually located relative to the cold front?", a: "Ahead of the cold front" },
+                { points: 40, q: "Widely spaced isobars mean ______ wind speed.", a: "Light/Low" },
+                { points: 50, q: "Explain 'Divergence' relative to a High-pressure system.", a: "Air moving away from the center at the surface" }
+            ]}
+        ];
+
+        const gameData = [player1Cats, player2Cats, player3Cats, player4Cats];
+
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalQuestion = document.getElementById('modalQuestion');
+        const modalAnswer = document.getElementById('modalAnswer');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+        const judgementArea = document.getElementById('judgementArea');
+        const activePlayerNameLabel = document.getElementById('activePlayerName');
+        const stealArea = document.getElementById('stealArea');
+        const stealButtonsContainer = document.getElementById('stealButtons');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() {
+            document.getElementById('nameSetupSection').classList.remove('hidden');
+        }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header';
+                    h.innerText = c.name;
+                    board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn';
+                        btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points;
+            activeTileButton = btn;
+            modalCategory.innerText = `${playerNames[pIdx]} | ${catName}`;
+            modalQuestion.innerText = qData.q;
+            modalAnswer.innerText = qData.a;
+            activePlayerNameLabel.innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block';
+            answerArea.style.display = 'none';
+            stealArea.style.display = 'none';
+            modal.style.display = 'flex';
+        }
+
+        function revealAnswer() {
+            btnReveal.style.display = 'none';
+            answerArea.style.display = 'block';
+            judgementArea.style.display = 'flex';
+        }
+
+        function judgeActivePlayer(correct) {
+            if (correct) {
+                scores[currentPlayerIndex] += activePointValue;
+                updateScore(currentPlayerIndex);
+                closeModal();
+            } else {
+                judgementArea.style.display = 'none';
+                showSteal();
+            }
+        }
+
+        function showSteal() {
+            stealArea.style.display = 'block';
+            stealButtonsContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button');
+                    b.className = 'btn-steal';
+                    b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    stealButtonsContainer.appendChild(b);
+                }
+            }
+            let none = document.createElement('button');
+            none.className = 'btn-incorrect';
+            none.innerText = "No one";
+            none.onclick = closeModal;
+            stealButtonsContainer.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { activeTileButton.innerText = ""; activeTileButton.disabled = true; modal.style.display = 'none'; }
+        
+        buildBoards();
+
+        function resetPlayerNames() {
+            playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`nameInput-${i}`).value = "";
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            showNameEditor();
+        }
+    </script>
+</body>
+</html>

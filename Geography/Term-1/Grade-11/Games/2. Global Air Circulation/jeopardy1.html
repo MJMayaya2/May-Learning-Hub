@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 11 Geography Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input {
+            width: 100%;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 2px solid #cce0ff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .hint { color: #555; font-size: 0.95rem; }
+        .hidden { display: none !important; }
+
+        @media (max-width: 800px) { .name-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-correct:hover { background: #1e7e34; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect:hover { background: #bd2130; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; animation: fadeIn 0.4s; }
+        .steal-title { color: #856404; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-steal:hover { background: #e0a800; transform: translateY(-2px); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 11 Geography Jeopardy</h1>
+        <p class="game-subtitle">Topic: Global Air Circulation (Chapter 2)</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+            <p class="hint">80 completely unique questions spread across all 4 players based on Chapter 2!</p>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Clue</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Correct Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Correct Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" id="stealTitle">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        // Player 1: Basic Cells & Pressure
+        const player1Cats = [
+            { name: "The Hadley Cell", questions: [
+                { points: 10, q: "What is the latitude range of the Hadley Cell?", a: "0° to 30°" },
+                { points: 20, q: "What type of energy fundamentally drives the Hadley Cell?", a: "Thermal energy (heat at the equator)" },
+                { points: 30, q: "Does air rise or sink at the equator in the Hadley Cell?", a: "Rise" },
+                { points: 40, q: "Does air rise or sink at 30° latitude?", a: "Sink" },
+                { points: 50, q: "Which global winds are part of the Hadley Cell?", a: "Trade Winds" }
+            ]},
+            { name: "The Polar Cell", questions: [
+                { points: 10, q: "Between which latitudes is the Polar Cell found?", a: "60° and 90°" },
+                { points: 20, q: "Is the Polar Cell driven by rising hot air or sinking cold air?", a: "Sinking cold air" },
+                { points: 30, q: "At what latitude does air rise in the Polar Cell?", a: "60°" },
+                { points: 40, q: "What type of pressure belt exists at 90° (the poles)?", a: "Polar High" },
+                { points: 50, q: "Which wind belt is generated by the Polar Cell?", a: "Polar Easterlies" }
+            ]},
+            { name: "Pressure Belts", questions: [
+                { points: 10, q: "What does ITCZ stand for?", a: "Intertropical Convergence Zone" },
+                { points: 20, q: "What type of pressure is found at 30° North and South?", a: "Subtropical High" },
+                { points: 30, q: "What is another common historical name for the Subtropical High belt?", a: "Horse Latitudes" },
+                { points: 40, q: "What type of pressure belt is found at 60° latitude?", a: "Subpolar Low" },
+                { points: 50, q: "Is the Equatorial Low belt associated with wet or dry conditions?", a: "Wet conditions" }
+            ]},
+            { name: "Forces of Wind", questions: [
+                { points: 10, q: "Which force drives air directly from high to low pressure?", a: "Pressure Gradient Force (PGF)" },
+                { points: 20, q: "What do we call the lines on a map that connect areas of equal air pressure?", a: "Isobars" },
+                { points: 30, q: "What do closely spaced isobars (a steep gradient) indicate about the wind?", a: "Strong/fast winds" },
+                { points: 40, q: "Wind always blows from an area of _____ pressure to _____ pressure.", a: "High to Low" },
+                { points: 50, q: "What fundamentally creates the pressure differences that cause wind?", a: "Unequal heating of the atmosphere" }
+            ]}
+        ];
+
+        // Player 2: Winds & Monsoons
+        const player2Cats = [
+            { name: "The Ferrel Cell", questions: [
+                { points: 10, q: "What is the latitude range of the Ferrel Cell?", a: "30° to 60°" },
+                { points: 20, q: "Is the Ferrel Cell considered a direct thermal cell or an indirect cell?", a: "An indirect cell" },
+                { points: 30, q: "Which wind belt is associated with the Ferrel Cell?", a: "The Westerlies" },
+                { points: 40, q: "Where does the air for the Ferrel Cell sink?", a: "30° latitude" },
+                { points: 50, q: "Where does the air for the Ferrel Cell rise?", a: "60° latitude" }
+            ]},
+            { name: "Wind Belts", questions: [
+                { points: 10, q: "Which winds blow between 0° and 30° latitude?", a: "Trade Winds" },
+                { points: 20, q: "Which winds blow between 30° and 60° latitude?", a: "The Westerlies" },
+                { points: 30, q: "Which winds blow from the poles toward 60° latitude?", a: "Polar Easterlies" },
+                { points: 40, q: "What is the famous maritime nickname for the Westerlies in the Southern Hemisphere?", a: "The Roaring Forties" },
+                { points: 50, q: "What are the high-altitude, fast-moving winds that redistribute energy globally?", a: "Jet Streams" }
+            ]},
+            { name: "Summer Monsoon", questions: [
+                { points: 10, q: "In summer, which heats up faster: the land or the ocean?", a: "The land" },
+                { points: 20, q: "Because land heats quickly in summer, what type of pressure forms over it?", a: "Low pressure" },
+                { points: 30, q: "During a summer monsoon, do winds blow from sea-to-land or land-to-sea?", a: "Sea-to-land" },
+                { points: 40, q: "Are summer monsoon winds generally moist or dry?", a: "Moist" },
+                { points: 50, q: "What is the term for moist air being forced up a mountain, causing heavy rain?", a: "Orographic lifting" }
+            ]},
+            { name: "Winter Monsoon", questions: [
+                { points: 10, q: "In winter, which cools down faster: the land or the ocean?", a: "The land" },
+                { points: 20, q: "Because the land is very cold in winter, what type of pressure forms over it?", a: "High pressure" },
+                { points: 30, q: "During a winter monsoon, do winds blow from sea-to-land or land-to-sea?", a: "Land-to-sea" },
+                { points: 40, q: "Are winter monsoon winds generally moist or dry?", a: "Dry" },
+                { points: 50, q: "Between which months does the Winter Monsoon typically occur?", a: "October to February" }
+            ]}
+        ];
+
+        // Player 3: Coriolis, Föhn & Advanced Concepts
+        const player3Cats = [
+            { name: "Coriolis Effect", questions: [
+                { points: 10, q: "What physical action of the Earth causes the Coriolis force?", a: "Earth's rotation" },
+                { points: 20, q: "In the Southern Hemisphere, which way does the Coriolis force deflect wind?", a: "To the left" },
+                { points: 30, q: "In the Northern Hemisphere, which way does the Coriolis force deflect wind?", a: "To the right" },
+                { points: 40, q: "At what latitude is the Coriolis effect zero?", a: "The Equator (0°)" },
+                { points: 50, q: "Where on Earth is the Coriolis effect at its maximum strength?", a: "The Poles (90°)" }
+            ]},
+            { name: "Föhn Winds", questions: [
+                { points: 10, q: "What are the temperature and moisture characteristics of a Föhn wind?", a: "Warm and dry" },
+                { points: 20, q: "On which side of a mountain do Föhn winds descend?", a: "The leeward side" },
+                { points: 30, q: "What physical process causes descending Föhn winds to heat up rapidly?", a: "Compression (adiabatic heating)" },
+                { points: 40, q: "In which European mountain range are Föhn winds famous?", a: "The Alps" },
+                { points: 50, q: "What natural hazard is accelerated by Föhn winds melting snow quickly?", a: "Avalanches" }
+            ]},
+            { name: "Monsoon Geography", questions: [
+                { points: 10, q: "Which southeast Indian coast is the exception and gets rain during the winter monsoon?", a: "Tamil Nadu" },
+                { points: 20, q: "Which body of water do the North-East monsoons cross to pick up moisture in winter?", a: "The Bay of Bengal" },
+                { points: 30, q: "Which massive Asian region develops a strong high-pressure system during winter?", a: "Siberia / Tibetan Plateau" },
+                { points: 40, q: "What is the primary positive result of the summer monsoon for South Asia?", a: "Massive rainfall for agriculture/water" },
+                { points: 50, q: "What nickname is given to the Winter Monsoon period due to its lack of rain?", a: "The dry season" }
+            ]},
+            { name: "Air Circulation Overview", questions: [
+                { points: 10, q: "What is the main goal of global air circulation?", a: "To distribute heat from the equator to the poles" },
+                { points: 20, q: "What percentage of global heat transfer is carried out by winds?", a: "80%" },
+                { points: 30, q: "How many major circulation cells exist in EACH hemisphere?", a: "Three" },
+                { points: 40, q: "Which region of the globe possesses a positive heat balance (energy surplus)?", a: "The Tropics / Equator" },
+                { points: 50, q: "Which region of the globe possesses a negative heat balance (energy deficit)?", a: "The Polar regions" }
+            ]}
+        ];
+
+        // Player 4: Berg Winds, Interactions & Definitions
+        const player4Cats = [
+            { name: "Berg Winds", questions: [
+                { points: 10, q: "In which country do Berg winds occur?", a: "South Africa" },
+                { points: 20, q: "In which specific mountain region are Berg winds most common?", a: "The Drakensberg region" },
+                { points: 30, q: "Why are Berg winds dangerous for farmers?", a: "They dry out crops" },
+                { points: 40, q: "What environmental disaster is a high risk during Berg winds?", a: "Veld fires" },
+                { points: 50, q: "Berg winds are the local equivalent of which European wind?", a: "Föhn winds" }
+            ]},
+            { name: "Friction & Balance", questions: [
+                { points: 10, q: "What force slows down wind speed as it moves across land?", a: "Friction" },
+                { points: 20, q: "Because friction slows wind down, what happens to the Coriolis effect?", a: "It is reduced" },
+                { points: 30, q: "Where is the force of friction highest?", a: "Near the Earth's surface" },
+                { points: 40, q: "What type of wind blows perfectly parallel to straight isobars?", a: "Geostrophic wind" },
+                { points: 50, q: "A geostrophic wind is the exact balance of which two forces?", a: "Pressure Gradient Force and Coriolis Force" }
+            ]},
+            { name: "Highs & Lows", questions: [
+                { points: 10, q: "Does rising air generally create high or low pressure at the surface?", a: "Low pressure" },
+                { points: 20, q: "Does sinking air generally create high or low pressure at the surface?", a: "High pressure" },
+                { points: 30, q: "What causes a 'thermal low' to form?", a: "Intense surface heating" },
+                { points: 40, q: "Because air rises at the ITCZ, what weather is expected there?", a: "Heavy rain / storms" },
+                { points: 50, q: "Because air sinks at the Subtropical High, what is the typical climate there?", a: "Dry / Clear / Desert-like" }
+            ]},
+            { name: "Cells & Belts Mixed", questions: [
+                { points: 10, q: "Which cell is situated exactly between the Hadley Cell and the Polar Cell?", a: "The Ferrel Cell" },
+                { points: 20, q: "Which winds converge from both hemispheres to meet at the ITCZ?", a: "The Trade Winds" },
+                { points: 30, q: "Which of the three cells is directly driven by intense heat at the equator?", a: "The Hadley Cell" },
+                { points: 40, q: "Which pressure belt is located exactly at 60° latitude?", a: "The Subpolar Low" },
+                { points: 50, q: "True or False: Monsoons are considered part of large-scale global air circulation.", a: "True" }
+            ]}
+        ];
+
+        const gameData = [player1Cats, player2Cats, player3Cats, player4Cats];
+
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalQuestion = document.getElementById('modalQuestion');
+        const modalAnswer = document.getElementById('modalAnswer');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+        const judgementArea = document.getElementById('judgementArea');
+        const activePlayerNameLabel = document.getElementById('activePlayerName');
+        const stealArea = document.getElementById('stealArea');
+        const stealButtonsContainer = document.getElementById('stealButtons');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() {
+            document.getElementById('nameSetupSection').classList.remove('hidden');
+        }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header';
+                    h.innerText = c.name;
+                    board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn';
+                        btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points;
+            activeTileButton = btn;
+            modalCategory.innerText = `${playerNames[pIdx]} | ${catName}`;
+            modalQuestion.innerText = qData.q;
+            modalAnswer.innerText = qData.a;
+            activePlayerNameLabel.innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block';
+            answerArea.style.display = 'none';
+            stealArea.style.display = 'none';
+            modal.style.display = 'flex';
+        }
+
+        function revealAnswer() {
+            btnReveal.style.display = 'none';
+            answerArea.style.display = 'block';
+            judgementArea.style.display = 'flex';
+        }
+
+        function judgeActivePlayer(correct) {
+            if (correct) {
+                scores[currentPlayerIndex] += activePointValue;
+                updateScore(currentPlayerIndex);
+                closeModal();
+            } else {
+                judgementArea.style.display = 'none';
+                showSteal();
+            }
+        }
+
+        function showSteal() {
+            stealArea.style.display = 'block';
+            stealButtonsContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button');
+                    b.className = 'btn-steal';
+                    b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    stealButtonsContainer.appendChild(b);
+                }
+            }
+            let none = document.createElement('button');
+            none.className = 'btn-incorrect';
+            none.innerText = "No one";
+            none.onclick = closeModal;
+            stealButtonsContainer.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { activeTileButton.innerText = ""; activeTileButton.disabled = true; modal.style.display = 'none'; }
+        
+        buildBoards();
+
+        function resetPlayerNames() {
+            playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`nameInput-${i}`).value = "";
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            showNameEditor();
+        }
+    </script>
+</body>
+</html>

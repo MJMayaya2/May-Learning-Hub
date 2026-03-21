@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 10 Geography: Types of Precipitation</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Precipitation Types</h1>
+        <p class="game-subtitle">Test your Grade 10 Knowledge on Rainfall! Select a category and spin.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Precipitation", a: "The falling of water or ice from a cloud to the ground." },
+                { q: "Convection Rain", a: "Rain that occurs when heated air expands, rises, cools to dew point, and forms cumulonimbus clouds." },
+                { q: "Relief Rain", a: "Rain caused when air is forced to rise up the windward side of a mountain and cools to dew point." },
+                { q: "Frontal Rain", a: "Rain that occurs when warm air is forced to rise above cold air at a boundary called a front." },
+                { q: "Rain Shadow", a: "The dry area on the leeward side of a mountain that receives very little rainfall." },
+                { q: "Windward Side", a: "The side of a mountain that faces the sea and receives the most rainfall." },
+                { q: "Leeward Side", a: "The side of a mountain that faces away from the prevailing winds and remains dry." },
+                { q: "Dew Point", a: "The temperature at which air becomes saturated and water vapour begins to condense." },
+                { q: "Frost", a: "A solid form of precipitation where water vapour condenses straight into ice because dew point is below 0°C." },
+                { q: "Black Frost", a: "A severe condition where dew point is well below freezing, causing the sap of plants to freeze and die." },
+                { q: "Cumulonimbus", a: "The large, towering clouds associated with thunderstorms and convection rain." },
+                { q: "Hail", a: "Solid precipitation formed when raindrops are carried by rising air currents into freezing altitudes." },
+                { q: "Snow", a: "Precipitation formed when water vapour condenses straight into ice crystals at temperatures below 0°C." },
+                { q: "Dew", a: "Liquid droplets formed on surfaces at night when the surface temperature drops to dew point above 0°C." },
+                { q: "Orographic Rain", a: "Another scientific term for Relief Rain, caused by the physical shape of the landscape." },
+                { q: "Saturated Air", a: "Air that contains the maximum amount of water vapour possible at its current temperature." },
+                { q: "Condensation", a: "The process of water vapour changing into liquid water or ice crystals." },
+                { q: "Freezing Point", a: "The temperature threshold (0°C) that determines if precipitation will be liquid or solid." },
+                { q: "Plateau", a: "The high, flat interior region of South Africa where convection rain is most common in summer." },
+                { q: "Rising Air Current", a: "A flow of air moving upwards, necessary for the formation of hail and cumulonimbus clouds." }
+            ],
+            'terms': [
+                { q: "The side of a mountain that receives the prevailing winds from the sea.", a: "Windward side" },
+                { q: "The dry region found on the leeward side of the Drakensberg mountains.", a: "Rain shadow" },
+                { q: "The specific type of rain common in the Western Cape during winter.", a: "Frontal rain" },
+                { q: "The type of rain that occurs on the South African plateau in the late afternoon.", a: "Convection rain" },
+                { q: "The cloud type specifically responsible for thunderstorms.", a: "Cumulonimbus" },
+                { q: "Precipitation formed from raindrops that freeze while being carried high into a cloud.", a: "Hail" },
+                { q: "The term for water vapour condensing straight into ice crystals.", a: "Snow" },
+                { q: "The temperature at which air can no longer hold all its water vapour.", a: "Dew point" },
+                { q: "The provincial region where Relief rain is very common due to the Drakensberg.", a: "KwaZulu-Natal" },
+                { q: "The form of precipitation that causes plant death when sap freezes in winter.", a: "Black frost" },
+                { q: "Liquid precipitation formed when the dew point is above 0°C.", a: "Raindrops" },
+                { q: "The season in which the South African plateau receives most of its convection rain.", a: "Summer" },
+                { q: "The name for the boundary where warm air meets cold air.", a: "Front" },
+                { q: "The physical process of air being forced to rise over a mountain.", a: "Relief / Orographic rising" },
+                { q: "The time of day when convectional thunderstorms usually occur.", a: "Late afternoon" },
+                { q: "White ice crystals that form on the ground on cold winter mornings.", a: "Frost" },
+                { q: "Liquid droplets found on grass in the morning when temperatures didn't drop below freezing.", a: "Dew" },
+                { q: "The name for the high flat land in the interior of South Africa.", a: "The Plateau" },
+                { q: "The process of air expanding, rising, and cooling due to surface heating.", a: "Convection" },
+                { q: "The specific threshold temperature required for snow or frost to form.", a: "0°C / Below freezing" }
+            ],
+            'multipleChoice': [
+                { q: "In which South African province is Frontal rain most common during winter?", options: ["A) Gauteng", "B) Western Cape", "C) Limpopo", "D) Free State"], a: "B) Western Cape" },
+                { q: "Which type of cloud is always associated with Convection rain?", options: ["A) Stratus", "B) Cirrus", "C) Cumulonimbus", "D) Altocumulus"], a: "C) Cumulonimbus" },
+                { q: "Relief rain is very common in which of these mountain regions?", options: ["A) Table Mountain", "B) Drakensberg", "C) Magaliesberg", "D) Cedarberg"], a: "B) Drakensberg" },
+                { q: "What causes air to rise in Frontal rain?", options: ["A) Heat from the sun", "B) A mountain slope", "C) Warm air rising over cold air", "D) Strong winds"], a: "C) Warm air rising over cold air" },
+                { q: "The leeward side of a mountain is usually:", options: ["A) Wet and cool", "B) Dry and warm", "C) Snowy", "D) Covered in clouds"], a: "B) Dry and warm" },
+                { q: "When does Convection rain usually occur in South Africa?", options: ["A) Winter mornings", "B) Summer afternoons", "C) Autumn nights", "D) Spring mornings"], a: "B) Summer afternoons" },
+                { q: "Hail forms when raindrops are carried high into a cloud by:", options: ["A) Gravity", "B) Rising air currents", "C) Falling snow", "D) Horizontal winds"], a: "B) Rising air currents" },
+                { q: "What happens to the air temperature as it rises up a mountain?", options: ["A) It increases", "B) It stays the same", "C) It cools to dew point", "D) It boils"], a: "C) It cools to dew point" },
+                { q: "Which of these is a liquid form of precipitation?", options: ["A) Hail", "B) Snow", "C) Raindrops", "D) Frost"], a: "C) Raindrops" },
+                { q: "Snow forms only when the dew point is:", options: ["A) Above 10°C", "B) Exactly 5°C", "C) Below 0°C", "D) Room temperature"], a: "C) Below 0°C" },
+                { q: "The 'Rain Shadow' effect is associated with which type of rainfall?", options: ["A) Frontal", "B) Convection", "C) Relief", "D) Cyclonic"], a: "C) Relief" },
+                { q: "Black frost is dangerous because it freezes:", options: ["A) The soil", "B) The plant sap", "C) The river water", "D) The roof"], a: "B) The plant sap" },
+                { q: "In Convection rain, what causes the air to rise initially?", options: ["A) The ocean", "B) Heated land", "C) A cold front", "D) A high mountain"], a: "B) Heated land" },
+                { q: "Frontal rain occurs when which two types of air masses meet?", options: ["A) Two warm masses", "B) Two cold masses", "C) Warm and Cold masses", "D) Dry and Wet masses"], a: "C) Warm and Cold masses" },
+                { q: "Which side of the mountain faces the sea in relief rainfall?", options: ["A) Leeward", "B) Windward", "C) Peak", "D) Valley"], a: "B) Windward" },
+                { q: "What is the primary characteristic of Convection rain?", options: ["A) Light drizzle", "B) Thunderstorms", "C) All-day soft rain", "D) Constant snow"], a: "B) Thunderstorms" },
+                { q: "Frost and snow are considered ________ forms of precipitation.", options: ["A) Gaseous", "B) Liquid", "C) Solid", "D) Invisible"], a: "C) Solid" },
+                { q: "Where does the moisture for Relief rain usually come from?", options: ["A) The desert", "B) The warm ocean", "C) Melting glaciers", "D) Underground"], a: "B) The warm ocean" },
+                { q: "Why is the leeward side called a rain shadow?", options: ["A) It is always dark", "B) It receives very little rain", "C) It is under the mountain", "D) It has too many trees"], a: "B) It receives very little rain" },
+                { q: "At what temperature does water vapour condense into liquid rain?", options: ["A) Below 0°C", "B) Above 0°C", "C) Exactly 100°C", "D) It never condenses"], a: "B) Above 0°C" }
+            ],
+            'trueFalse': [
+                { q: "Relief rain is also known as orographic precipitation.", options: ["True", "False"], a: "True", exp: "Both terms describe rain caused by mountains." },
+                { q: "Frontal rain is the most common type of rain on the SA interior plateau.", options: ["True", "False"], a: "False", exp: "Convection rain is most common on the plateau." },
+                { q: "The windward side of a mountain remains dry.", options: ["True", "False"], a: "False", exp: "The windward side receives the most rain; the leeward side is dry." },
+                { q: "Hail forms when raindrops freeze in rising air currents.", options: ["True", "False"], a: "True", exp: "This happens in cumulonimbus clouds." },
+                { q: "Snow forms when the dew point is above 0°C.", options: ["True", "False"], a: "False", exp: "Snow only forms when the dew point is below freezing (0°C)." },
+                { q: "Frontal rain occurs in the Western Cape during winter.", options: ["True", "False"], a: "True", exp: "This is a characteristic weather pattern for the region." },
+                { q: "Convection rain usually occurs in the early morning.", options: ["True", "False"], a: "False", exp: "It usually occurs in the late afternoon after the land has heated up." },
+                { q: "Black frost occurs when the dew point is well below freezing.", options: ["True", "False"], a: "True", exp: "It is called 'black' because it kills plants." },
+                { q: "Precipitation includes only liquid water like rain.", options: ["True", "False"], a: "False", exp: "It includes solid forms like snow and hail as well." },
+                { q: "Cumulonimbus clouds are associated with thunderstorms.", options: ["True", "False"], a: "True", exp: "These towering clouds produce intense rain and lightning." },
+                { q: "The rain shadow is found on the windward side of a mountain.", options: ["True", "False"], a: "False", exp: "It is found on the dry leeward side." },
+                { q: "Relief rain is common in the Drakensberg region of KZN.", options: ["True", "False"], a: "True", exp: "The mountains force moist sea air to rise and cool." },
+                { q: "Warm air is heavier than cold air.", options: ["True", "False"], a: "False", exp: "Warm air is lighter (less dense) and rises above cold air." },
+                { q: "Dew forms when water vapour condenses straight into ice.", options: ["True", "False"], a: "False", exp: "Dew is liquid; frost is when it turns straight to ice." },
+                { q: "Heated air expands and rises.", options: ["True", "False"], a: "True", exp: "This is the basic principle of convection." },
+                { q: "The leeward side of a mountain faces the sea.", options: ["True", "False"], a: "False", exp: "The windward side faces the sea." },
+                { q: "Frontal rain occurs at the boundary where warm and cold air meet.", options: ["True", "False"], a: "True", exp: "This boundary is called a front." },
+                { q: "Summer is the main rainfall season for the South African plateau.", options: ["True", "False"], a: "True", exp: "Convection rain happens during the hot summer months." },
+                { q: "Precipitation falls from a cloud to the ground.", options: ["True", "False"], a: "True", exp: "This is the definition of precipitation." },
+                { q: "Frozen raindrops are known as dew.", options: ["True", "False"], a: "False", exp: "Frozen raindrops are known as hail." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 11 Geography: Earth's Energy Balance</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 11 Geography: Earth's Energy Balance</h1>
+        <p class="game-subtitle">Match the concepts of heating, radiation, and energy transfer!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Latitudes & Seasons</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Axis & Revolution</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Energy Transfer</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Currents & Winds</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Regions receiving direct sunlight year-round." }, { id: 1, text: "Equatorial Regions" },
+                { id: 2, text: "Regions receiving angled sunlight spread over large areas." }, { id: 2, text: "Polar Regions" },
+                { id: 3, text: "When regions tilt toward the Sun for maximum heat." }, { id: 3, text: "Summer Solstice" },
+                { id: 4, text: "When regions tilt away from the Sun leading to cold." }, { id: 4, text: "Winter Solstice" },
+                { id: 5, text: "Occurs when day and night are of equal length." }, { id: 5, text: "Equinox" },
+                { id: 6, text: "Main driver of global weather and climatic zones." }, { id: 6, text: "Latitudinal Differences" },
+                { id: 7, text: "Sunlight spread out at a low angle near the poles." }, { id: 7, text: "Indirect Energy" },
+                { id: 8, text: "Concentrated sunlight reaching equatorial ground." }, { id: 8, text: "Direct Energy" },
+                { id: 9, text: "Supports rainforests via high evaporation/rain." }, { id: 9, text: "Equatorial Climate" },
+                { id: 10, text: "Receives varying solar energy at different points." }, { id: 10, text: "Unequal Heating" }
+            ],
+            'topic2': [
+                { id: 1, text: "The precise angle of Earth's axial tilt." }, { id: 1, text: "23.5 Degrees" },
+                { id: 2, text: "Time taken for one complete orbit around the Sun." }, { id: 2, text: "365.25 Days" },
+                { id: 3, text: "Movement of Earth around the Sun in an orbit." }, { id: 3, text: "Revolution" },
+                { id: 4, text: "Receive direct sunlight during summer solstices." }, { id: 4, text: "The Tropics" },
+                { id: 5, text: "Creates seasons and uneven energy distribution." }, { id: 5, text: "Axial Tilt" },
+                { id: 6, text: "South Hemisphere equinox occurring in September." }, { id: 6, text: "Spring Equinox" },
+                { id: 7, text: "South Hemisphere equinox occurring in March." }, { id: 7, text: "Autumn Equinox" },
+                { id: 8, text: "Varies Earth's position relative to the Sun." }, { id: 8, text: "Orbit/Revolution" },
+                { id: 9, text: "Continuous tilt regulates heat between these." }, { id: 9, text: "Hemispheres" },
+                { id: 10, text: "Stability in global climate over time." }, { id: 10, text: "Energy Balance" }
+            ],
+            'topic3': [
+                { id: 1, text: "Heat reaching Earth as solar energy waves." }, { id: 1, text: "Radiation" },
+                { id: 2, text: "Heat transfer via direct contact (land to air)." }, { id: 2, text: "Conduction" },
+                { id: 3, text: "Movement of heated air/water forming currents." }, { id: 3, text: "Convection" },
+                { id: 4, text: "Short-wave incoming solar radiation." }, { id: 4, text: "Insolation" },
+                { id: 5, text: "Long-wave outgoing radiation from Earth." }, { id: 5, text: "Terrestrial Radiation" },
+                { id: 6, text: "Gases that absorb and re-radiate infrared energy." }, { id: 6, text: "Greenhouse Gases" },
+                { id: 7, text: "Formed by rising warm air in convection cells." }, { id: 7, text: "Low Pressure" },
+                { id: 8, text: "Energy emitted by the Earth after surface warming." }, { id: 8, text: "Infrared Radiation" },
+                { id: 9, text: "Heat transfer through air/water movement." }, { id: 9, text: "Convection" },
+                { id: 10, text: "Heat balance is equal insolation vs outgoing..." }, { id: 10, text: "Radiation" }
+            ],
+            'topic4': [
+                { id: 1, text: "Warms Europe by moving tropical heat north." }, { id: 1, text: "Gulf Stream" },
+                { id: 2, text: "Cools the west coast of Southern Africa." }, { id: 2, text: "Benguela Current" },
+                { id: 3, text: "Drive equatorial heat toward higher latitudes." }, { id: 3, text: "Trade Winds" },
+                { id: 4, text: "High-altitude winds redistributing global energy." }, { id: 4, text: "Jet Streams" },
+                { id: 5, text: "Equal incoming radiation vs outgoing radiation." }, { id: 5, text: "Energy Balance" },
+                { id: 6, text: "Large-scale movements distributing global heat." }, { id: 6, text: "Ocean Currents" },
+                { id: 7, text: "Transport heat from tropical to polar regions." }, { id: 7, text: "Global Winds" },
+                { id: 8, text: "Benguela current effect on SA rainfall." }, { id: 8, text: "Reduces Rainfall" },
+                { id: 9, text: "Intertropical Convergence Zone (low pressure)." }, { id: 9, text: "ITCZ" },
+                { id: 10, text: "Events like volcanoes that disrupt heat stability." }, { id: 10, text: "Energy Disruptions" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Great job! Grade 11 Geography: Energy Balance Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

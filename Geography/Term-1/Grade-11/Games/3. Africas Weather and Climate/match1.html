@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>May Learning Hub | Memory Match</title>
+    <title>May Learning Hub | Grade 11 Geography: Africa's Weather & Climate</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
@@ -38,7 +38,6 @@
         .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
         .memory-card.flip { transform: rotateY(180deg); }
         
-        /* FONT SIZE INCREASED HERE */
         .front-face, .back-face { 
             position: absolute; 
             width: 100%; 
@@ -50,7 +49,7 @@
             justify-content: center; 
             padding: 15px; 
             text-align: center; 
-            font-size: 1.1rem; /* Increased font size */
+            font-size: 1rem; 
             line-height: 1.4; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
@@ -65,23 +64,23 @@
 <body>
 
     <nav>
-        <a href="https://mmayaya.github.io/mayhub" class="logo">May Learning Hub</a>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
         <div class="nav-links">
-            <a href="https://mmayaya.github.io/mayhub/">Home</a>
-            <a href="https://mmayaya.github.io/mayhub/about">About</a>
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
         </div>
     </nav>
 
     <header class="game-header">
-        <h1 class="game-title">March Assessment Prep</h1>
-        <p class="game-subtitle">Match the geography concepts and definitions from your assessment tasks!</p>
+        <h1 class="game-title">Grade 11 Geography: Africa's Weather</h1>
+        <p class="game-subtitle">Master subsidence, convergence, and seasonal synoptic systems!</p>
         
         <div class="category-selection">
             <div class="cat-buttons">
-                <button class="cat-btn" onclick="selectCategory('seasonal', this)">Topic 1: Seasonal Positions</button>
-                <button class="cat-btn" onclick="selectCategory('movement', this)">Topic 2: Earth Movement</button>
-                <button class="cat-btn" onclick="selectCategory('circulation', this)">Topic 3: Air Circulation</button>
-                <button class="cat-btn" onclick="selectCategory('monsoon', this)">Topic 4: Monsoon Winds</button>
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">Air Movement Basics</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Oceans & Currents</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Synoptic Symbols</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Seasonal Patterns</button>
             </div>
         </div>
 
@@ -99,53 +98,53 @@
 
     <script>
         const gameData = {
-            'seasonal': [
-                { id: 1, text: "Equinox Definition" }, { id: 1, text: "Date when day and night are of equal length." },
-                { id: 2, text: "Solstice Condition" }, { id: 2, text: "When one pole is tilted at its maximum toward the sun." },
-                { id: 3, text: "December Solstice (S. Hemisphere)" }, { id: 3, text: "South Africa experiences Summer." },
-                { id: 4, text: "June Solstice (S. Hemisphere)" }, { id: 4, text: "South Africa experiences Winter." },
-                { id: 5, text: "Ocean Currents' Role" }, { id: 5, text: "Restoring energy balance between Poles and Equator." },
-                { id: 6, text: "Direct Sun Rays @ Equator" }, { id: 6, text: "Occurs during an Equinox." },
-                { id: 7, text: "Earth's Inclination" }, { id: 7, text: "The tilt of 23.5 degrees." },
-                { id: 8, text: "Heat Transfer" }, { id: 8, text: "Movement of energy from surplus (Equator) to deficit (Poles)." },
-                { id: 9, text: "Energy Balance" }, { id: 9, text: "The equilibrium of incoming and outgoing radiation." },
-                { id: 10, text: "Seasonal Change Cause" }, { id: 10, text: "The tilt of the Earth combined with revolution." }
+            'topic1': [
+                { id: 1, text: "Downward movement of air causing high pressure and dry weather." }, { id: 1, text: "Subsidence" },
+                { id: 2, text: "Meeting of air masses at low pressure, forcing air to rise." }, { id: 2, text: "Convergence" },
+                { id: 3, text: "Example of a subsidence zone in Southern Africa." }, { id: 3, text: "Kalahari Desert" },
+                { id: 4, text: "Zone over Africa where rising air causes high rainfall." }, { id: 4, text: "ITCZ" },
+                { id: 5, text: "Effect of rising air on temperature and moisture." }, { id: 5, text: "Cooling & Condensing" },
+                { id: 6, text: "Effect of descending air on cloud formation." }, { id: 6, text: "Suppresses Clouds" },
+                { id: 7, text: "Type of pressure system found in a convergence zone." }, { id: 7, text: "Low Pressure" },
+                { id: 8, text: "Type of pressure system found in a subsidence zone." }, { id: 8, text: "High Pressure" },
+                { id: 9, text: "ITCZ stands for Intertropical..." }, { id: 9, text: "Convergence Zone" },
+                { id: 10, text: "Primary cause of dry conditions in subtropical zones." }, { id: 10, text: "Subsiding Air" }
             ],
-            'movement': [
-                { id: 1, text: "Earth Movement Identify" }, { id: 1, text: "Revolution (orbit around the Sun)." },
-                { id: 2, text: "March 21st (N. Hemisphere)" }, { id: 2, text: "Spring (Vernal) Equinox." },
-                { id: 3, text: "Summer (S. Hemisphere)" }, { id: 3, text: "When the South Pole tilts toward the Sun." },
-                { id: 4, text: "Equinox Sun Position" }, { id: 4, text: "Directly overhead (90°) at the Equator." },
-                { id: 5, text: "Equal Day/Night Dates" }, { id: 5, text: "March 21st and September 23rd." },
-                { id: 6, text: "Elliptical Orbit" }, { id: 6, text: "The oval shape of Earth's path." },
-                { id: 7, text: "Rotation" }, { id: 7, text: "Earth spinning on its axis every 24 hours." },
-                { id: 8, text: "Tropic of Capricorn" }, { id: 8, text: "23.5° South Latitude." },
-                { id: 9, text: "Tropic of Cancer" }, { id: 9, text: "23.5° North Latitude." },
-                { id: 10, text: "Aphelion" }, { id: 10, text: "When Earth is furthest from the Sun." }
+            'topic2': [
+                { id: 1, text: "Cold current flowing along Africa's west coast." }, { id: 1, text: "Benguela Current" },
+                { id: 2, text: "Warm current flowing along Africa's east coast." }, { id: 2, text: "Mozambique Current" },
+                { id: 3, text: "Current that decreases temperature and humidity." }, { id: 3, text: "Cold Currents" },
+                { id: 4, text: "Current that increases temperature and humidity." }, { id: 4, text: "Warm Currents" },
+                { id: 5, text: "Process by which warm water heats the air above it." }, { id: 5, text: "Conduction" },
+                { id: 6, text: "Relationship between water temp and evaporation rate." }, { id: 6, text: "Warmer = Higher rate" },
+                { id: 7, text: "Oceans have this type of influence on coastal temps." }, { id: 7, text: "Moderating" },
+                { id: 8, text: "Reason land heats and cools faster than the sea." }, { id: 8, text: "Lower Specific Heat" },
+                { id: 9, text: "Term for climate with hot summers and cold winters inland." }, { id: 9, text: "Continental Climate" },
+                { id: 10, text: "Term for stable, mild coastal temperatures." }, { id: 10, text: "Maritime Climate" }
             ],
-            'circulation': [
-                { id: 1, text: "Pressure at 0°" }, { id: 1, text: "Equatorial Low (Doldrums)." },
-                { id: 2, text: "Pressure at 30°S" }, { id: 2, text: "Subtropical High." },
-                { id: 3, text: "Pressure at 60°S" }, { id: 3, text: "Subpolar Low." },
-                { id: 4, text: "Pressure at 90°S" }, { id: 4, text: "Polar High." },
-                { id: 5, text: "Hadley Cell" }, { id: 5, text: "Cell located between 0° and 30°." },
-                { id: 6, text: "Ferrel Cell" }, { id: 6, text: "Cell located between 30° and 60°." },
-                { id: 7, text: "Polar Cell" }, { id: 7, text: "Cell located between 60° and 90°." },
-                { id: 8, text: "ITCZ Location" }, { id: 8, text: "Where Trade Winds converge at the Equator." },
-                { id: 9, text: "Westerlies" }, { id: 9, text: "Winds blowing between 30°S and 60°S." },
-                { id: 10, text: "Coriolis Force" }, { id: 10, text: "Deflects winds to the left in the Southern Hemisphere." }
+            'topic3': [
+                { id: 1, text: "Lines on a synoptic map connecting equal air pressure." }, { id: 1, text: "Isobars" },
+                { id: 2, text: "Indicated by isobars that are very close together." }, { id: 2, text: "Strong Winds" },
+                { id: 3, text: "The interval usually used for isobars (in hPa)." }, { id: 3, text: "4 hPa" },
+                { id: 4, text: "Weather diagram showing cloud cover, temp, and wind." }, { id: 4, text: "Station Model" },
+                { id: 5, text: "Symbol for the temperature at which air is saturated." }, { id: 5, text: "Dew Point" },
+                { id: 6, text: "Standard air pressure at sea level." }, { id: 6, text: "1013.2 hPa" },
+                { id: 7, text: "Symbol for a boundary of advancing cold air." }, { id: 7, text: "Cold Front" },
+                { id: 8, text: "Low pressure system ahead of a winter cold front." }, { id: 8, text: "Coastal Low" },
+                { id: 9, text: "Small 'feathers' on a station model represent this." }, { id: 9, text: "Wind Speed" },
+                { id: 10, text: "The central circle of a station model represents this." }, { id: 10, text: "Cloud Cover" }
             ],
-            'monsoon': [
-                { id: 1, text: "Monsoon Concept" }, { id: 1, text: "Seasonal reversal of wind direction." },
-                { id: 2, text: "Summer Monsoon" }, { id: 2, text: "Winds blow sea to land, bringing heavy rain." },
-                { id: 3, text: "Winter Monsoon" }, { id: 3, text: "Winds blow land to sea, bringing dry air." },
-                { id: 4, text: "Thermal Low" }, { id: 4, text: "Intense heating over land in summer." },
-                { id: 5, text: "NE Monsoon Reason" }, { id: 5, text: "Dry winter wind from Central Asia." },
-                { id: 6, text: "Monsoon Blessing" }, { id: 6, text: "Essential for India's agriculture (rice)." },
-                { id: 7, text: "Monsoon Curse" }, { id: 7, text: "Causes massive floods and loss of life." },
-                { id: 8, text: "India Environment Impact" }, { id: 8, text: "Seasonal lush growth vs dry dormancy." },
-                { id: 9, text: "Himalayas' Role" }, { id: 9, text: "Forces moist air up (Orographic rain)." },
-                { id: 10, text: "South West Monsoon" }, { id: 10, text: "Moist summer winds from the Indian Ocean." }
+            'topic4': [
+                { id: 1, text: "Map showing a Continental High pressure over the interior." }, { id: 1, text: "Winter Map" },
+                { id: 2, text: "Map showing a Thermal or Tropical Low over the interior." }, { id: 2, text: "Summer Map" },
+                { id: 3, text: "High pressure cells migrate here in winter (degrees)." }, { id: 3, text: "30°S (Northwards)" },
+                { id: 4, text: "High pressure cells migrate here in summer (degrees)." }, { id: 4, text: "35°S (Southwards)" },
+                { id: 5, text: "Cell that blocks cold fronts from the interior in summer." }, { id: 5, text: "South Atlantic High" },
+                { id: 6, text: "Typical season for mid-latitude cyclones to pass SA." }, { id: 6, text: "Winter" },
+                { id: 7, text: "Feature present in summer maps but absent in winter." }, { id: 7, text: "Thermal Low" },
+                { id: 8, text: "Season with clear skies and no rain on the plateau." }, { id: 8, text: "Winter" },
+                { id: 9, text: "Season with thunderstorms and high humidity inland." }, { id: 9, text: "Summer" },
+                { id: 10, text: "The South Indian High is located east of this country." }, { id: 10, text: "South Africa" }
             ]
         };
 
@@ -225,7 +224,7 @@
             secondCard.removeEventListener('click', flipCard);
             matchedPairs++;
             if (matchedPairs === (gameData[currentCategory].length / 2)) {
-                setTimeout(() => alert(`Great job, Mayaya! Assessment Prep Complete in ${moves} moves.`), 500);
+                setTimeout(() => alert(`Great job! Grade 11 Africa's Weather Revision Complete in ${moves} moves.`), 500);
             }
             resetBoard();
         }

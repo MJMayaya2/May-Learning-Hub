@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 11 Geography Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input {
+            width: 100%;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 2px solid #cce0ff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .hint { color: #555; font-size: 0.95rem; }
+        .hidden { display: none !important; }
+
+        @media (max-width: 800px) { .name-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-correct:hover { background: #1e7e34; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect:hover { background: #bd2130; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; animation: fadeIn 0.4s; }
+        .steal-title { color: #856404; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-steal:hover { background: #e0a800; transform: translateY(-2px); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 11 Geography Jeopardy</h1>
+        <p class="game-subtitle">Topic: Droughts & Desertification (Chapter 4)</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+            <p class="hint">80 questions spread across 4 unique boards. Every player gets different clues!</p>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" id="stealTitle">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        // --- PLAYER 1: Core Definitions & Natural Causes ---
+        const player1Cats = [
+            { name: "Definitions", questions: [
+                { points: 10, q: "A prolonged period of abnormally low rainfall that causes water shortages.", a: "Drought" },
+                { points: 20, q: "The process by which fertile land becomes desert.", a: "Desertification" },
+                { points: 30, q: "Type of drought involving reduced river flow and falling water tables.", a: "Hydrological Drought" },
+                { points: 40, q: "A drought that specifically impacts the supply and demand of goods.", a: "Socio-economic Drought" },
+                { points: 50, q: "The term for the degree to which a community is likely to be affected by hazards.", a: "Vulnerability" }
+            ]},
+            { name: "Nature's Role", questions: [
+                { points: 10, q: "Specific climate pattern in the Pacific that can lead to drought in Africa.", a: "El Niño" },
+                { points: 20, q: "Factor that increases evaporation and depletes water sources.", a: "High Temperatures" },
+                { points: 30, q: "Natural variation in weather patterns over long periods.", a: "Climate Variability" },
+                { points: 40, q: "Interaction between these two global systems can trigger long-term drought.", a: "Ocean and Atmosphere" },
+                { points: 50, q: "Result of prolonged dry seasons in semi-arid regions.", a: "Drought conditions" }
+            ]},
+            { name: "Land Degradation", questions: [
+                { points: 10, q: "Common environmental result of losing vegetation cover.", a: "Soil Erosion" },
+                { points: 20, q: "A major consequence of desertification on plant and animal variety.", a: "Loss of Biodiversity" },
+                { points: 30, q: "Land that can no longer be used for growing crops.", a: "Loss of Arable Land" },
+                { points: 40, q: "The term for land losing its ability to support ecosystems.", a: "Degradation" },
+                { points: 50, q: "How droughts lead to desertification in semi-arid areas.", a: "Drying of soil and loss of plant roots" }
+            ]},
+            { name: "Management A", questions: [
+                { points: 10, q: "Local strategy: Planting trees to restore vegetation.", a: "Reforestation / Afforestation" },
+                { points: 20, q: "Agricultural technique: Plowing along the curves of the land.", a: "Contour plowing" },
+                { points: 30, q: "Sustainable practice: Rotating different crops to maintain soil.", a: "Crop rotation" },
+                { points: 40, q: "The collection of rainwater in tanks for farm use.", a: "Water Harvesting" },
+                { points: 50, q: "Regional strategy: Building these to store water during wet times.", a: "Dams and Reservoirs" }
+            ]}
+        ];
+
+        // --- PLAYER 2: Human Causes & Economic Impacts ---
+        const player2Cats = [
+            { name: "The Human Factor", questions: [
+                { points: 10, q: "Cutting down forests for fuel or farmland, reducing moisture.", a: "Deforestation" },
+                { points: 20, q: "Too many animals grazing on a small patch of land.", a: "Overgrazing" },
+                { points: 30, q: "Improper farming that exhausts soil nutrients over time.", a: "Over-cultivation" },
+                { points: 40, q: "Result of excessive groundwater pumping during a drought.", a: "Depletion of water tables" },
+                { points: 50, q: "How industrial greenhouse gas emissions worsen drought.", a: "Global Warming / Climate Change" }
+            ]},
+            { name: "Economic Costs", questions: [
+                { points: 10, q: "Term for the lack of reliable access to affordable, nutritious food.", a: "Food Insecurity" },
+                { points: 20, q: "Impact on farming income when crop yields fail.", a: "Livelihood loss" },
+                { points: 30, q: "The result of widespread death of farm animals in a drought.", a: "Livestock loss" },
+                { points: 40, q: "Type of energy production that decreases when dam levels drop.", a: "Hydropower" },
+                { points: 50, q: "Specific dam mentioned that suffered reduced power due to drought.", a: "Kariba Dam" }
+            ]},
+            { name: "Types of Drought", questions: [
+                { points: 10, q: "Drought defined solely by a lack of rain over a period.", a: "Meteorological Drought" },
+                { points: 20, q: "Drought that farmers notice when soil moisture disappears.", a: "Agricultural Drought" },
+                { points: 30, q: "Drought seen when rivers and reservoirs start drying up.", a: "Hydrological Drought" },
+                { points: 40, q: "Sequence: Which type of drought usually happens FIRST?", a: "Meteorological" },
+                { points: 50, q: "Which type of drought involves rising food prices in cities?", a: "Socio-economic" }
+            ]},
+            { name: "Management B", questions: [
+                { points: 10, q: "Hillside technique: Creating steps to stop water runoff.", a: "Terracing" },
+                { points: 20, q: "Practice of leaving soil mostly undisturbed during planting.", a: "Reduced tillage" },
+                { points: 30, q: "Full name of the UN convention focused on land health.", a: "UN Convention to Combat Desertification (UNCCD)" },
+                { points: 40, q: "Global strategy: Sharing knowledge with developing nations.", a: "Technology Transfer" },
+                { points: 50, q: "Agricultural method: Growing trees and crops together.", a: "Agroforestry" }
+            ]}
+        ];
+
+        // --- PLAYER 3: Specific Regions & Social Impacts ---
+        const player3Cats = [
+            { name: "Regional Focus", questions: [
+                { points: 10, q: "African region most famously cited for desertification.", a: "The Sahel" },
+                { points: 20, q: "Developed nation that uses advanced efficient irrigation.", a: "Australia" },
+                { points: 30, q: "Specific large afforestation project in China to stop deserts.", a: "China's Green Wall" },
+                { points: 40, q: "Sahel strategy: Letting communities lead their own projects.", a: "Community-led sustainable agriculture" },
+                { points: 50, q: "Why is the Sahel so vulnerable to desertification?", a: "It is a semi-arid zone with high population pressure" }
+            ]},
+            { name: "Social Hardship", questions: [
+                { points: 10, q: "Farmers moving to cities because they can no longer farm.", a: "Rural-Urban Migration" },
+                { points: 20, q: "Potential result of people fighting over remaining grazing land.", a: "Conflict" },
+                { points: 30, q: "Social term for the inability to buy enough food.", a: "Food Insecurity" },
+                { points: 40, q: "Why are children in poor regions often more affected by drought?", a: "Malnutrition / lack of clean water" },
+                { points: 50, q: "The impact of drought on domestic water use in cities.", a: "Water Scarcity / Rationing" }
+            ]},
+            { name: "Drought Logic", questions: [
+                { points: 10, q: "True or False: A drought is just a normal dry season.", a: "False (it is abnormal/prolonged)" },
+                { points: 20, q: "Concept of how well a nation can 'cope' with a drought.", a: "Resilience / Mitigation capacity" },
+                { points: 30, q: "The relationship between high population and drought impact.", a: "Higher demand for limited resources" },
+                { points: 40, q: "Process: How overgrazing leads to more soil erosion.", a: "Roots no longer hold soil in place" },
+                { points: 50, q: "Link: Why climate change increases drought frequency.", a: "Shifting global weather and higher heat" }
+            ]},
+            { name: "Strategy Lab", questions: [
+                { points: 10, q: "Technique: Digging ponds to collect rain for livestock.", a: "Water Harvesting" },
+                { points: 20, q: "Management: Planting fast-growing trees to stop wind erosion.", a: "Afforestation" },
+                { points: 30, q: "Strategic goal: Reducing global GHG emissions.", a: "Mitigation of Climate Change" },
+                { points: 40, q: "Resource shared by developed nations to help poor farmers.", a: "Technology / Funds" },
+                { points: 50, q: "Farming method: Planting different crops in a field annually.", a: "Crop rotation" }
+            ]}
+        ];
+
+        // --- PLAYER 4: Environmental Costs & Advanced Management ---
+        const player4Cats = [
+            { name: "Nature at Risk", questions: [
+                { points: 10, q: "What happens to animal habitats during desertification?", a: "They are lost / destroyed" },
+                { points: 20, q: "How high heat affects the moisture in plants specifically.", a: "Increases Transpiration" },
+                { points: 30, q: "What happens to the quality of soil in desertified land?", a: "It becomes nutrient-poor / infertile" },
+                { points: 40, q: "The term for air being unable to hold more moisture.", a: "Saturation" },
+                { points: 50, q: "Primary reason drought kills aquatic life in rivers.", a: "Loss of flow and higher concentration of pollutants" }
+            ]},
+            { name: "Human Mistakes", questions: [
+                { points: 10, q: "Monoculture: Growing only one type of crop makes farms more _____.", a: "Vulnerable" },
+                { points: 20, q: "Removing trees for firewood specifically impacts soil _____.", a: "Moisture / Stability" },
+                { points: 30, q: "Agricultural pressure: Why over-cultivation is common.", a: "Need to feed growing populations" },
+                { points: 40, q: "Human cause: Poor maintenance of water infrastructure.", a: "Waste of existing water resources" },
+                { points: 50, q: "Why are developed nations less vulnerable to land degradation?", a: "Better resources and mitigation funds" }
+            ]},
+            { name: "Impact Tally", questions: [
+                { points: 10, q: "Impact on the national economy: Loss of export revenue from _____.", a: "Agriculture" },
+                { points: 20, q: "Social cost: The mental/physical stress of losing a farm.", a: "Livelihood stress" },
+                { points: 30, q: "Impact: Rising prices of basic staples like maize.", a: "Food inflation" },
+                { points: 40, q: "Environmental: The expansion of these dry biomes.", a: "Deserts" },
+                { points: 50, q: "Result of hydrological drought on urban water supply.", a: "Empty reservoirs / Day Zero" }
+            ]},
+            { name: "Policy & Tech", questions: [
+                { points: 10, q: "Global policy: The UNCCD aims to stop land _____.", a: "Degradation" },
+                { points: 20, q: "Modern tech: Satellites used for early _____ of drought.", a: "Warning / Monitoring" },
+                { points: 30, q: "Local management: Using organic matter to cover soil.", a: "Mulching" },
+                { points: 40, q: "Agroforestry combines crops with what?", a: "Trees" },
+                { points: 50, q: "Regional policy: Laws to prevent overgrazing in sensitive zones.", a: "Grazing management / Land use laws" }
+            ]}
+        ];
+
+        const gameData = [player1Cats, player2Cats, player3Cats, player4Cats];
+
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalQuestion = document.getElementById('modalQuestion');
+        const modalAnswer = document.getElementById('modalAnswer');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+        const judgementArea = document.getElementById('judgementArea');
+        const activePlayerNameLabel = document.getElementById('activePlayerName');
+        const stealArea = document.getElementById('stealArea');
+        const stealButtonsContainer = document.getElementById('stealButtons');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() {
+            document.getElementById('nameSetupSection').classList.remove('hidden');
+        }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header';
+                    h.innerText = c.name;
+                    board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn';
+                        btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points;
+            activeTileButton = btn;
+            modalCategory.innerText = `${playerNames[pIdx]} | ${catName}`;
+            modalQuestion.innerText = qData.q;
+            modalAnswer.innerText = qData.a;
+            activePlayerNameLabel.innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block';
+            answerArea.style.display = 'none';
+            stealArea.style.display = 'none';
+            modal.style.display = 'flex';
+        }
+
+        function revealAnswer() {
+            btnReveal.style.display = 'none';
+            answerArea.style.display = 'block';
+            judgementArea.style.display = 'flex';
+        }
+
+        function judgeActivePlayer(correct) {
+            if (correct) {
+                scores[currentPlayerIndex] += activePointValue;
+                updateScore(currentPlayerIndex);
+                closeModal();
+            } else {
+                judgementArea.style.display = 'none';
+                showSteal();
+            }
+        }
+
+        function showSteal() {
+            stealArea.style.display = 'block';
+            stealButtonsContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button');
+                    b.className = 'btn-steal';
+                    b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    stealButtonsContainer.appendChild(b);
+                }
+            }
+            let none = document.createElement('button');
+            none.className = 'btn-incorrect';
+            none.innerText = "No one";
+            none.onclick = closeModal;
+            stealButtonsContainer.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { activeTileButton.innerText = ""; activeTileButton.disabled = true; modal.style.display = 'none'; }
+        
+        buildBoards();
+
+        function resetPlayerNames() {
+            playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`nameInput-${i}`).value = "";
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            showNameEditor();
+        }
+    </script>
+</body>
+</html>

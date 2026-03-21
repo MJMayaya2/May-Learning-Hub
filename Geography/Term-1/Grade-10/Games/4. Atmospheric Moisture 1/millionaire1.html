@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Geography: Atmospheric Moisture Quiz</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .game-wrapper { display: flex; max-width: 1100px; margin: 0 auto 3rem; gap: 2rem; padding: 0 20px; width: 100%; align-items: flex-start; }
+        
+        .game-board { flex: 1; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; padding: 2rem; display: flex; flex-direction: column; }
+        
+        .lifelines { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .lifeline-btn { background: #002b5e; color: #fff; border: 2px solid #b3d4ff; padding: 0.8rem 1.5rem; border-radius: 30px; font-weight: bold; cursor: pointer; transition: all 0.3s; font-size: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .lifeline-btn:hover:not(:disabled) { background: #3385ff; transform: translateY(-2px); }
+        .lifeline-btn:disabled { background: #ccc; border-color: #aaa; color: #666; cursor: not-allowed; transform: none; box-shadow: none; text-decoration: line-through; }
+
+        .question-box { background: #004080; color: #fff; padding: 2rem; border-radius: 8px; font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .answer-btn { background: #f0f7ff; border: 2px solid #3385ff; color: #002b5e; padding: 1.2rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .answer-btn::before { content: attr(data-letter) ": "; color: #3385ff; margin-right: 0.5rem; }
+        .answer-btn:hover:not(:disabled) { background: #e6f0fa; border-color: #004080; transform: scale(1.02); }
+        
+        .answer-btn.selected { background: #ffc107; border-color: #d39e00; color: #000; }
+        .answer-btn.correct { background: #28a745 !important; border-color: #1e7e34 !important; color: #fff !important; }
+        .answer-btn.incorrect { background: #dc3545 !important; border-color: #bd2130 !important; color: #fff !important; }
+        .answer-btn.hidden { visibility: hidden; }
+
+        .prize-ladder { width: 280px; background: #001a33; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column-reverse; gap: 0.1rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 600px; overflow-y: auto; }
+        .ladder-step { display: flex; justify-content: space-between; padding: 0.2rem 0.6rem; color: #66a3ff; font-weight: bold; border-radius: 4px; transition: all 0.3s; font-size: 0.85rem; }
+        .ladder-step.active { background: #ffc107; color: #000; transform: scale(1.05); }
+        .ladder-step.passed { color: #28a745; }
+        .ladder-step.milestone { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.2); } 
+
+        #endScreen { display: none; text-align: center; padding: 3rem 1rem; }
+        #endMessage { font-size: 1.8rem; color: #004080; margin-bottom: 1rem; }
+        #endPrize { font-size: 2.5rem; color: #28a745; font-weight: bold; margin-bottom: 2rem; }
+
+        @media (max-width: 850px) {
+            .game-wrapper { flex-direction: column; }
+            .prize-ladder { width: 100%; flex-direction: row; flex-wrap: wrap; height: auto; } 
+            .answers-grid { grid-template-columns: 1fr; }
+        }
+        
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">R1,000,000 Geography Challenge</h1>
+        <p class="game-subtitle">Atmospheric Moisture & Forms of Water (Grade 10 CAPS)</p>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-board" id="gameBoard">
+            <div class="lifelines">
+                <button class="lifeline-btn" id="btn5050" onclick="use5050()">50 / 50</button>
+                <button class="lifeline-btn" id="btnHint" onclick="useHint()">Get a Hint</button>
+            </div>
+
+            <div class="question-box">
+                <span id="questionText">Loading question...</span>
+            </div>
+
+            <div class="answers-grid">
+                <button class="answer-btn" data-letter="A" id="btn0" onclick="selectAnswer(0)"></button>
+                <button class="answer-btn" data-letter="B" id="btn1" onclick="selectAnswer(1)"></button>
+                <button class="answer-btn" data-letter="C" id="btn2" onclick="selectAnswer(2)"></button>
+                <button class="answer-btn" data-letter="D" id="btn3" onclick="selectAnswer(3)"></button>
+            </div>
+        </div>
+
+        <div class="game-board" id="endScreen">
+            <h2 id="endMessage">Game Over!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Your final winnings:</p>
+            <div id="endPrize">R0</div>
+            <button class="lifeline-btn" onclick="location.reload()">New Game</button>
+        </div>
+
+        <div class="prize-ladder" id="prizeLadder"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { q: "Water in which state is described as fluid with a definite volume but no definite shape?", options: ["Gas", "Solid", "Liquid", "Plasma"], a: 2, hint: "Think of water that takes the shape of its container." },
+            { q: "At what temperature does water turn into its solid state (Ice)?", options: ["100°C", "0°C and below", "Above 25°C", "-100°C only"], a: 1, hint: "This is known as the freezing point." },
+            { q: "Which of the following is an example of water in its solid state?", options: ["Rivers", "Water vapour", "Glaciers", "Clouds"], a: 2, hint: "These are large, slow-moving masses of ice." },
+            { q: "What is water in its gas state called?", options: ["Dew", "Water vapour", "Rain", "Mist"], a: 1, hint: "It has no definite volume or shape and is found throughout the atmosphere." },
+            { q: "Most water in the atmosphere exists in which form?", options: ["Ice crystals", "Liquid droplets", "Water vapour", "Solid snow"], a: 2, hint: "Even on a clear day, this invisible gas is present." },
+            { q: "What is the term for water changing from a solid (ice) to a liquid?", options: ["Melting", "Evaporation", "Sublimation", "Freezing"], a: 0, hint: "It happens when ice absorbs heat." },
+            { q: "What is 'Evaporation'?", options: ["Gas turning to liquid", "Solid turning to gas", "Liquid turning to gas", "Liquid turning to solid"], a: 2, hint: "Think about what happens to a puddle on a hot day." },
+            { q: "What is the process where a gas turns back into a liquid?", options: ["Melting", "Condensation", "Evaporation", "Sublimation"], a: 1, hint: "This process forms clouds and dew." },
+            { q: "What occurs when a gas turns directly into a solid without becoming a liquid first?", options: ["Freezing", "Melting", "Sublimation", "Boiling"], a: 2, hint: "This is a direct change of state often seen with frost or snow crystals." },
+            { q: "What type of heat is absorbed during evaporation and released during condensation?", options: ["Sensible heat", "Latent heat", "Geothermal heat", "Radiant heat"], a: 1, hint: "This 'hidden' energy is vital for driving weather systems." },
+            { q: "In order for evaporation to take place, what must be added to the water?", options: ["Pressure", "Cooling", "Heat energy", "Salt"], a: 2, hint: "Energy is needed to break the bonds of liquid water." },
+            { q: "Which factor increases the rate of evaporation?", options: ["High humidity", "Cold temperatures", "High wind speed", "Lack of sunlight"], a: 2, hint: "Wind helps remove saturated air from the water's surface." },
+            { q: "How does high humidity affect the rate of evaporation?", options: ["Increases it", "Decreases it", "Has no effect", "Stops it completely"], a: 1, hint: "If the air is already full of moisture, it cannot take in much more." },
+            { q: "What is the definition of 'Humidity'?", options: ["The weight of the air", "The speed of the wind", "The amount of water vapour in the atmosphere", "The temperature of the ocean"], a: 2, hint: "It relates to how much moisture is in the air." },
+            { q: "How is 'Relative Humidity' usually expressed?", options: ["In kilograms", "As a percentage (%)", "In degrees Celsius", "In millibars"], a: 1, hint: "It compares the actual moisture to the maximum capacity." },
+            { q: "What does it mean when we say the atmosphere is 'Saturated'?", options: ["The air is very dry", "The air is holding the maximum amount of water vapour possible", "The air is very hot", "The air has no oxygen"], a: 1, hint: "At this point, the Relative Humidity is 100%." },
+            { q: "What is 'Dew Point'?", options: ["The time of day when it rains", "The temperature at which air becomes saturated", "The highest altitude a cloud can reach", "The freezing point of salt water"], a: 1, hint: "Below this temperature, condensation begins." },
+            { q: "What is released into the atmosphere when condensation occurs?", options: ["Carbon dioxide", "Oxygen", "Latent heat", "Dust particles"], a: 2, hint: "This energy release helps power storms and clouds." },
+            { q: "What must be present in the atmosphere for condensation to take place?", options: ["Condensation nuclei (solid particles)", "Absolute vacuum", "High pressure", "Pure nitrogen"], a: 0, hint: "Vapour needs a solid surface, like dust or salt, to cling to." },
+            { q: "Which of the following is an example of a condensation nucleus?", options: ["Water vapour", "Salt particles", "Oxygen molecules", "Sunlight"], a: 1, hint: "Other examples include dust and smoke." },
+            { q: "What is 'Condensation Level'?", options: ["The temperature of the ground", "The altitude at which condensation begins", "The depth of the ocean", "The amount of rainfall"], a: 1, hint: "It is the height where rising air cools to its dew point." },
+            { q: "Which term refers to any form of water falling from the atmosphere to the Earth's surface?", options: ["Evaporation", "Condensation", "Precipitation", "Transpiration"], a: 2, hint: "Examples include rain, snow, and hail." },
+            { q: "Which of these is an example of liquid precipitation?", options: ["Snow", "Hail", "Rain", "Frost"], a: 2, hint: "This is the most common form of water falling from the sky." },
+            { q: "Hail and snow are examples of water in which state?", options: ["Liquid", "Solid", "Gas", "Plasma"], a: 1, hint: "They have a definite volume and shape." },
+            { q: "If the air temperature increases but the amount of water vapour stays the same, what happens to Relative Humidity?", options: ["It increases", "It decreases", "It stays the same", "It doubles"], a: 1, hint: "Warm air has a larger capacity to hold moisture." },
+            { q: "What is the formula for Relative Humidity?", options: ["(Actual Humidity / Capacity) X 100", "(Capacity / Actual) X 100", "Actual Humidity + Capacity", "Temperature X 100"], a: 0, hint: "It is the ratio of what is there to what could be there." },
+            { q: "Clouds consist of which of the following?", options: ["Only water vapour", "Water droplets and/or ice particles", "Only oxygen gas", "Pure sunlight"], a: 1, hint: "They are formed by condensation or sublimation." },
+            { q: "What happens to the energy when water changes from a liquid to a solid (Freezing)?", options: ["Energy is absorbed", "Energy is released", "Energy is destroyed", "No energy change occurs"], a: 1, hint: "This is the opposite of melting." },
+            { q: "Why is water vapour important for the Earth's heat balance?", options: ["It creates gravity", "It absorbs, scatters, and reflects heat", "It makes the Earth spin", "It cools the sun"], a: 1, hint: "It acts as a greenhouse gas." },
+            { q: "Condensation can only occur if the air is...", options: ["Hot", "Dry", "Saturated", "Moving fast"], a: 2, hint: "The air must reach its maximum moisture capacity." }
+        ];
+
+        const prizes = [
+            "R100", "R200", "R300", "R500", "R1,000",
+            "R2,000", "R3,000", "R4,000", "R5,000", "R10,000",
+            "R15,000", "R20,000", "R25,000", "R30,000", "R40,000",
+            "R50,000", "R60,000", "R70,000", "R80,000", "R100,000",
+            "R150,000", "R200,000", "R250,000", "R300,000", "R400,000",
+            "R500,000", "R600,000", "R750,000", "R850,000", "R1,000,000"
+        ];
+
+        let currentLevel = 0;
+        let isWaiting = false;
+
+        const ladderContainer = document.getElementById('prizeLadder');
+        for (let i = 0; i < 30; i++) {
+            let step = document.createElement('div');
+            step.className = 'ladder-step';
+            step.id = `ladder-${i}`;
+            if ((i + 1) % 5 === 0) step.classList.add('milestone');
+            step.innerHTML = `<span>${i + 1}</span> <span>${prizes[i]}</span>`;
+            ladderContainer.appendChild(step);
+        }
+
+        function loadQuestion() {
+            isWaiting = false;
+            document.querySelectorAll('.ladder-step').forEach((el, index) => {
+                el.classList.remove('active');
+                if (index < currentLevel) el.classList.add('passed');
+            });
+            document.getElementById(`ladder-${currentLevel}`).classList.add('active');
+
+            const qData = questions[currentLevel];
+            document.getElementById('questionText').innerText = `Q${currentLevel + 1}: ${qData.q}`;
+
+            for (let i = 0; i < 4; i++) {
+                let btn = document.getElementById(`btn${i}`);
+                if (qData.options[i]) {
+                    btn.innerText = qData.options[i];
+                    btn.style.display = "block";
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.style.display = "none";
+                }
+                btn.className = 'answer-btn'; 
+                btn.disabled = false;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const qData = questions[currentLevel];
+            const correctIndex = qData.a;
+            
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`btn${i}`).disabled = true;
+            }
+
+            const selectedBtn = document.getElementById(`btn${selectedIndex}`);
+            selectedBtn.classList.add('selected');
+
+            setTimeout(() => {
+                selectedBtn.classList.remove('selected');
+
+                if (selectedIndex === correctIndex) {
+                    selectedBtn.classList.add('correct');
+                    setTimeout(() => {
+                        currentLevel++;
+                        if (currentLevel >= 30) endGame(true);
+                        else loadQuestion();
+                    }, 1000); 
+                } else {
+                    selectedBtn.classList.add('incorrect');
+                    document.getElementById(`btn${correctIndex}`).classList.add('correct');
+                    setTimeout(() => endGame(false), 2000);
+                }
+            }, 1000);
+        }
+
+        function use5050() {
+            if (isWaiting) return;
+            document.getElementById('btn5050').disabled = true;
+            const correctIndex = questions[currentLevel].a;
+            let wrongIndexes = [];
+            for(let i=0; i<questions[currentLevel].options.length; i++){
+                if(i !== correctIndex) wrongIndexes.push(i);
+            }
+            wrongIndexes.sort(() => Math.random() - 0.5);
+            document.getElementById(`btn${wrongIndexes[0]}`).classList.add('hidden');
+            if(wrongIndexes.length > 1) document.getElementById(`btn${wrongIndexes[1]}`).classList.add('hidden');
+        }
+
+        function useHint() {
+            if (isWaiting) return;
+            document.getElementById('btnHint').disabled = true;
+            alert("Geography Teacher Hint: " + questions[currentLevel].hint);
+        }
+
+        function endGame(won) {
+            document.getElementById('gameBoard').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            if (won) {
+                document.getElementById('endMessage').innerText = "Geography Legend!";
+                document.getElementById('endPrize').innerText = "R1,000,000";
+            } else {
+                document.getElementById('endMessage').innerText = "Final Winnings:";
+                document.getElementById('endPrize').innerText = currentLevel > 0 ? prizes[currentLevel - 1] : "R0";
+            }
+        }
+        loadQuestion();
+    </script>
+</body>
+</html>

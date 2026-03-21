@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Geography: Atmospheric Moisture</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* Navigation */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        
+        /* Header */
+        .game-header { text-align: center; padding: 3rem 1rem 1rem; max-width: 900px; margin: 0 auto; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        
+        /* Categories */
+        .category-selection { margin-bottom: 2.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+
+        .controls { display: none; justify-content: center; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .move-counter { font-size: 1.2rem; font-weight: bold; color: #004080; background: #fff; padding: 0.6rem 1.8rem; border-radius: 50px; border: 2px solid #3385ff; }
+        .restart-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.7rem 1.8rem; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; border-bottom: 3px solid #004080; }
+
+        /* Memory Grid */
+        .memory-game { display: none; width: 100%; max-width: 1200px; margin: 0 auto 4rem; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 0 20px; perspective: 1000px; }
+        
+        @media (max-width: 950px) { .memory-game { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 650px) { .memory-game { grid-template-columns: repeat(2, 1fr); } }
+
+        .memory-card { position: relative; width: 100%; aspect-ratio: 1 / 1.2; transform-style: preserve-3d; transition: transform 0.5s; cursor: pointer; }
+        .memory-card.flip { transform: rotateY(180deg); }
+        
+        .front-face, .back-face { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 1rem; 
+            line-height: 1.4; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .front-face { background: #004080; color: #fff; font-size: 2.5rem; border: 3px solid #3385ff; font-weight: bold; }
+        .back-face { background: #fff; color: #002b5e; transform: rotateY(180deg); border: 3px solid #004080; font-weight: 700; }
+        .memory-card.matched .back-face { background: #d4edda; border-color: #28a745; color: #155724; }
+
+        footer { text-align: center; padding: 1.5rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 10 Geography: Atmospheric Moisture</h1>
+        <p class="game-subtitle">Match the states of water, humidity formulas, and condensation concepts!</p>
+        
+        <div class="category-selection">
+            <div class="cat-buttons">
+                <button class="cat-btn" onclick="selectCategory('topic1', this)">States of Water</button>
+                <button class="cat-btn" onclick="selectCategory('topic2', this)">Phase Changes & Heat</button>
+                <button class="cat-btn" onclick="selectCategory('topic3', this)">Humidity & Relative Humidity</button>
+                <button class="cat-btn" onclick="selectCategory('topic4', this)">Dew Point & Rain</button>
+            </div>
+        </div>
+
+        <div class="controls" id="gameControls">
+            <div class="move-counter">Moves: <span id="moves">0</span></div>
+            <button class="restart-btn" onclick="initGame()">Restart Level</button>
+        </div>
+    </header>
+
+    <main class="memory-game" id="gameBoard"></main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'topic1': [
+                { id: 1, text: "Fluid with definite volume but no definite shape." }, { id: 1, text: "Liquid Water" },
+                { id: 2, text: "State of water with definite volume and definite shape." }, { id: 2, text: "Solid Water (Ice)" },
+                { id: 3, text: "Gaseous state of water with no definite volume or shape." }, { id: 3, text: "Water Vapour" },
+                { id: 4, text: "Examples: Snow, hail, and glaciers." }, { id: 4, text: "Solid Water" },
+                { id: 5, text: "They consist of liquid water and ice particles." }, { id: 5, text: "Clouds" },
+                { id: 6, text: "Main form of water found in the atmosphere." }, { id: 6, text: "Gas Water" },
+                { id: 7, text: "Water Vapour can absorb, scatter, and do this to heat." }, { id: 7, text: "Reflect" },
+                { id: 8, text: "Water turns solid when temperature is below this." }, { id: 8, text: "Freezing Point" },
+                { id: 9, text: "Liquid water takes the shape of its..." }, { id: 9, text: "Container" },
+                { id: 10, text: "Water exists in three of these in the atmosphere." }, { id: 10, text: "States" }
+            ],
+            'topic2': [
+                { id: 1, text: "Process where liquid water turns into water vapour." }, { id: 1, text: "Evaporation" },
+                { id: 2, text: "Process where water vapour turns into liquid water." }, { id: 2, text: "Condensation" },
+                { id: 3, text: "Heat energy released when condensation occurs." }, { id: 3, text: "Latent Heat" },
+                { id: 4, text: "Solids like dust or salt needed for condensation." }, { id: 4, text: "Condensation Nuclei" },
+                { id: 5, text: "Condition required for condensation to take place." }, { id: 5, text: "Saturated Atmosphere" },
+                { id: 6, text: "Evaporation takes energy from the environment, causing..." }, { id: 6, text: "Cooling" },
+                { id: 7, text: "Example of a surface where condensation occurs." }, { id: 7, text: "Windows" },
+                { id: 8, text: "Water vapour must do this to reach dew point." }, { id: 8, text: "Cool down" },
+                { id: 9, text: "Latent heat is often called this kind of heat." }, { id: 9, text: "Hidden Heat" },
+                { id: 10, text: "Phase change that adds moisture to the air." }, { id: 10, text: "Evaporation" }
+            ],
+            'topic3': [
+                { id: 1, text: "Amount of water vapour in air at a particular time." }, { id: 1, text: "Humidity" },
+                { id: 2, text: "Amount of vapour expressed as a percentage of capacity." }, { id: 2, text: "Relative Humidity" },
+                { id: 3, text: "The limit to the amount of water vapour air can hold." }, { id: 3, text: "Humidity Capacity" },
+                { id: 4, text: "Air that is holding its maximum capacity of vapour." }, { id: 4, text: "Saturated Air" },
+                { id: 5, text: "Formula: (Actual Humidity X 100) / Capacity." }, { id: 5, text: "RH Calculation" },
+                { id: 6, text: "Relative humidity is always expressed as a..." }, { id: 6, text: "Percentage" },
+                { id: 7, text: "Warm air has a higher humidity..." }, { id: 7, text: "Capacity" },
+                { id: 8, text: "When Relative Humidity is 100%, the air is..." }, { id: 8, text: "Saturated" },
+                { id: 9, text: "Concept relating vapour to air temperature." }, { id: 9, text: "Relative Humidity" },
+                { id: 10, text: "Actual amount of water vapour in the air." }, { id: 10, text: "Absolute Humidity" }
+            ],
+            'topic4': [
+                { id: 1, text: "Temperature at which air becomes saturated." }, { id: 1, text: "Dew Point" },
+                { id: 2, text: "Altitude at which condensation begins." }, { id: 2, text: "Condensation Level" },
+                { id: 3, text: "Deposition of water from atmosphere to surface." }, { id: 3, text: "Precipitation" },
+                { id: 4, text: "Examples: Rain, snow, and hail." }, { id: 4, text: "Precipitation types" },
+                { id: 5, text: "To reach dew point, air must do this." }, { id: 5, text: "Cool" },
+                { id: 6, text: "Condensation begins when the air is 100%..." }, { id: 6, text: "Saturated" },
+                { id: 7, text: "Liquid precipitation." }, { id: 7, text: "Rain" },
+                { id: 8, text: "Solid precipitation that falls from clouds." }, { id: 8, text: "Snow or Hail" },
+                { id: 9, text: "Where precipitation comes from." }, { id: 9, text: "The Atmosphere" },
+                { id: 10, text: "Deposition of water on Earth's surface." }, { id: 10, text: "Precipitation" }
+            ]
+        };
+
+        const gameBoard = document.getElementById('gameBoard');
+        const movesDisplay = document.getElementById('moves');
+        const gameControls = document.getElementById('gameControls');
+        
+        let currentCategory = null;
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matchedPairs = 0;
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            gameControls.style.display = 'flex';
+            gameBoard.style.display = 'grid';
+            initGame();
+        }
+
+        function initGame() {
+            gameBoard.innerHTML = '';
+            moves = 0;
+            matchedPairs = 0;
+            movesDisplay.innerText = moves;
+            hasFlippedCard = false;
+            lockBoard = false;
+
+            const categoryData = gameData[currentCategory];
+            const shuffledCards = [...categoryData].sort(() => 0.5 - Math.random());
+
+            shuffledCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.classList.add('memory-card');
+                cardElement.dataset.pairId = card.id;
+                
+                cardElement.innerHTML = `
+                    <div class="front-face">?</div>
+                    <div class="back-face">${card.text}</div>
+                `;
+                
+                cardElement.addEventListener('click', flipCard);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flip');
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+            isMatch ? disableCards() : unflipCards();
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            matchedPairs++;
+            if (matchedPairs === (gameData[currentCategory].length / 2)) {
+                setTimeout(() => alert(`Fantastic! Grade 10 Atmospheric Moisture Revision Complete in ${moves} moves.`), 500);
+            }
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flip');
+                secondCard.classList.remove('flip');
+                resetBoard();
+            }, 1200);
+        }
+
+        function resetBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+    </script>
+</body>
+</html>

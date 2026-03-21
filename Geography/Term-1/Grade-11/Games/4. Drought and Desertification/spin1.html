@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 11 Geography: Droughts & Desertification</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Droughts & Desertification</h1>
+        <p class="game-subtitle">Test your Grade 11 Environmental Knowledge! Select a category and spin.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Drought", a: "A prolonged period of abnormally low rainfall, leading to water shortages that affect agriculture and ecosystems." },
+                { q: "Desertification", a: "The process by which fertile land becomes desert, typically as a result of drought, deforestation, or inappropriate agriculture." },
+                { q: "Deforestation", a: "The removal of trees and vegetation, which reduces soil protection and leads to increased erosion." },
+                { q: "Overgrazing", a: "Allowing too many animals to graze on a piece of land, leading to the destruction of vegetation and soil compaction." },
+                { q: "Soil Erosion", a: "The wearing away of the top layer of soil by water or wind, often accelerated by human activity." },
+                { q: "Food Insecurity", a: "A state where people lack reliable access to enough affordable, nutritious food due to crop failure." },
+                { q: "Rural-urban Migration", a: "The movement of people from the countryside to cities, often because farming livelihoods are lost to drought." },
+                { q: "Mitigation", a: "Action taken to reduce the severity or impact of environmental challenges like droughts." },
+                { q: "Afforestation", a: "The process of planting trees in an area where there were none before to combat desertification." },
+                { q: "Sustainable Farming", a: "Farming practices like crop rotation and reduced tillage that maintain soil health and water." },
+                { q: "Water Harvesting", a: "The collection of rainwater in tanks or ponds for later agricultural or domestic use." },
+                { q: "Climate Variability", a: "Changes in weather patterns, such as El Niño, that can reduce rainfall over extended periods." },
+                { q: "Vulnerability", a: "The degree to which a community is susceptible to the negative impacts of drought or desertification." },
+                { q: "Reforestation", a: "Planting trees to restore vegetation in areas where forests have been cut down." },
+                { q: "UNCCD", a: "United Nations Convention to Combat Desertification; an international agreement to address land degradation." },
+                { q: "Contour Plowing", a: "Plowing along the curves of the land to prevent soil erosion from water runoff." },
+                { q: "Aquifer Depletion", a: "The exhaustion of underground water sources due to over-extraction during dry periods." },
+                { q: "Famine", a: "Extreme scarcity of food, often a direct result of prolonged droughts in vulnerable regions." },
+                { q: "Arid Region", a: "A geographic area characterized by a severe lack of available water, to the extent of hindering plant life." },
+                { q: "Crop Rotation", a: "The practice of growing different types of crops in the same area in sequential seasons to improve soil health." }
+            ],
+            'terms': [
+                { q: "The weather phenomenon in the Pacific that can trigger extended dry periods in Southern Africa.", a: "El Niño" },
+                { q: "The process of fertile land turning into desert, often seen in the Sahel region.", a: "Desertification" },
+                { q: "A regional strategy involving building dams to store water for dry seasons.", a: "Water Conservation" },
+                { q: "Large-scale afforestation project in China to stop desert expansion.", a: "China's Green Wall" },
+                { q: "The movement of people from farms to cities after losing livelihoods to drought.", a: "Rural-urban migration" },
+                { q: "The local strategy of planting trees to improve water retention in soil.", a: "Reforestation" },
+                { q: "Farming technique where soil is plowed along the natural curves of the slope.", a: "Contour plowing" },
+                { q: "A global initiative to share knowledge and resources to improve soil management.", a: "Technology Transfer" },
+                { q: "The African region specifically mentioned as a victim of expanding desertification.", a: "The Sahel" },
+                { q: "Economic impact caused by the loss of crops and livestock during a dry period.", a: "Loss of income / GDP decrease" },
+                { q: "Type of farming practice that includes reducing tillage to maintain soil health.", a: "Sustainable farming" },
+                { q: "Human cause of desertification involving the removal of forests for timber or fuel.", a: "Deforestation" },
+                { q: "Collecting rainwater in tanks for agricultural use.", a: "Water harvesting" },
+                { q: "International agreement focused specifically on combating land degradation.", a: "UNCCD" },
+                { q: "Condition where poor communities have limited resources to handle environmental disasters.", a: "Vulnerability" },
+                { q: "Natural cause of drought involving high rates of water loss to the air.", a: "High temperatures / Evaporation" },
+                { q: "Human cause of desertification involving too many livestock on one patch of land.", a: "Overgrazing" },
+                { q: "The destruction of homes and infrastructure is an impact of what extreme weather often following drought?", a: "Floods" },
+                { q: "What happens to biodiversity when ecosystems are destroyed by desertification?", a: "Loss of biodiversity" },
+                { q: "A country mentioned for using water-efficient irrigation to mitigate drought effects.", a: "Australia" }
+            ],
+            'multipleChoice': [
+                { q: "Which of the following is a NATURAL cause of drought?", options: ["A) Deforestation", "B) El Niño", "C) Overgrazing", "D) Poor irrigation"], a: "B) El Niño" },
+                { q: "The Sahel region is primarily affected by:", options: ["A) Tropical cyclones", "B) Desertification", "C) Tsunami", "D) Volcanic eruptions"], a: "B) Desertification" },
+                { q: "What is an economic impact of prolonged drought?", options: ["A) Increase in biodiversity", "B) Higher crop yields", "C) Loss of income for farmers", "D) Lower food prices"], a: "C) Loss of income for farmers" },
+                { q: "Which local strategy helps prevent soil erosion on slopes?", options: ["A) Water harvesting", "B) Contour plowing", "C) Deforestation", "D) Urbanization"], a: "B) Contour plowing" },
+                { q: "What does 'UNCCD' stand for?", options: ["A) UN Center for Climate Data", "B) UN Convention to Combat Desertification", "C) Union of Concerned Coastal Designers", "D) Universal Council for Crop Development"], a: "B) UN Convention to Combat Desertification" },
+                { q: "Which human activity leads to soil compaction and loss of vegetation?", options: ["A) Afforestation", "B) Overgrazing", "C) Crop rotation", "D) Sustainable farming"], a: "B) Overgrazing" },
+                { q: "Why are poor communities more vulnerable to droughts?", options: ["A) They have more dams", "B) Limited resources and infrastructure", "C) They live in cities", "D) They use better technology"], a: "B) Limited resources and infrastructure" },
+                { q: "Which large-scale project is located in China to combat desertification?", options: ["A) The Great Wall", "B) China's Green Wall", "C) Three Gorges Dam", "D) The Silk Road"], a: "B) China's Green Wall" },
+                { q: "Rural-urban migration is often caused by farmers losing their:", options: ["A) Livelihoods", "B) Cars", "C) Passports", "D) Internet access"], a: "A) Livelihoods" },
+                { q: "High temperatures cause drought by increasing:", options: ["A) Rainfall", "B) Evaporation rates", "C) Soil nutrients", "D) Cloud cover"], a: "B) Evaporation rates" },
+                { q: "Which of these is a GLOBAL strategy to manage desertification?", options: ["A) Contour plowing", "B) Rainwater tanks", "C) International Agreements", "D) Building small ponds"], a: "C) International Agreements" },
+                { q: "What is the result of saltwater leaking into fresh drinking water?", options: ["A) Afforestation", "B) Salination", "C) Desertification", "D) Subsidence"], a: "B) Salination" },
+                { q: "What happens to food security during a severe drought?", options: ["A) It improves", "B) It is threatened", "C) It stays constant", "D) It becomes cheaper"], a: "B) It is threatened" },
+                { q: "Which regional strategy involves building dams and reservoirs?", options: ["A) Water Conservation", "B) Deforestation", "C) Overgrazing", "D) Urban sprawl"], a: "A) Water Conservation" },
+                { q: "Deforestation leads to desertification because it:", options: ["A) Increases rain", "B) Protects the soil", "C) Increases soil erosion", "D) Cools the air"], a: "C) Increases soil erosion" },
+                { q: "What is 'water harvesting'?", options: ["A) Buying water from shops", "B) Collecting rainwater in tanks", "C) Using water for swimming", "D) Melting ice caps"], a: "B) Collecting rainwater in tanks" },
+                { q: "Which country is noted for water-efficient irrigation systems?", options: ["A) Brazil", "B) Australia", "C) Russia", "D) Canada"], a: "B) Australia" },
+                { q: "What is a major environmental impact of desertification?", options: ["A) Loss of biodiversity", "B) More fertile soil", "C) Increased forest cover", "D) Cleaner air"], a: "A) Loss of biodiversity" },
+                { q: "The primary focus of the UNCCD is to combat:", options: ["A) Space junk", "B) Land degradation", "C) Ocean plastic", "D) Noise pollution"], a: "B) Land degradation" },
+                { q: "Reduced hydropower (like at Kariba Dam) is a result of:", options: ["A) Too much rain", "B) Water Scarcity", "C) Wind storms", "D) Snow"], a: "B) Water Scarcity" }
+            ],
+            'trueFalse': [
+                { q: "Drought is a prolonged period of abnormally high rainfall.", options: ["True", "False"], a: "False", exp: "It is a period of abnormally low rainfall." },
+                { q: "Overgrazing is a human cause of desertification.", options: ["True", "False"], a: "True", exp: "It leads to vegetation loss and soil damage." },
+                { q: "El Niño can cause reduced rainfall over extended periods.", options: ["True", "False"], a: "True", exp: "It is a natural cause of climate variability." },
+                { q: "Desertification results in the loss of arable land.", options: ["True", "False"], a: "True", exp: "Fertile land turns into desert, preventing farming." },
+                { q: "Afforestation is the removal of trees to create farms.", options: ["True", "False"], a: "False", exp: "Afforestation is the planting of trees to combat degradation." },
+                { q: "Rural-urban migration increases during prolonged droughts.", options: ["True", "False"], a: "True", exp: "Farmers move to cities when their livelihoods fail." },
+                { q: "Contour plowing helps to increase soil erosion.", options: ["True", "False"], a: "False", exp: "It helps to prevent soil erosion." },
+                { q: "Poor communities are less vulnerable to environmental challenges.", options: ["True", "False"], a: "False", exp: "They are more vulnerable due to limited resources." },
+                { q: "The Sahel region is a case study for desertification combat.", options: ["True", "False"], a: "True", exp: "Community-led projects are active in this region." },
+                { q: "Water harvesting involves collecting rainwater for domestic use.", options: ["True", "False"], a: "True", exp: "It is an effective local management strategy." },
+                { q: "Droughts have no impact on food security.", options: ["True", "False"], a: "False", exp: "They directly threaten food security through crop failure." },
+                { q: "International agreements are a global strategy for management.", options: ["True", "False"], a: "True", exp: "Initiatives like the UNCCD are global efforts." },
+                { q: "Deforestation helps protect the soil from wind and water.", options: ["True", "False"], a: "False", exp: "Removing trees exposes the soil to erosion." },
+                { q: "High evaporation rates can trigger drought conditions.", options: ["True", "False"], a: "True", exp: "Increased temperatures deplete water sources." },
+                { q: "Technology transfer involves sharing knowledge to improve water management.", options: ["True", "False"], a: "True", exp: "It is a key global strategy." },
+                { q: "Loss of biodiversity is an impact of desertification.", options: ["True", "False"], a: "True", exp: "Ecosystems are destroyed as fertile land vanishes." },
+                { q: "Developing nations have better access to technology for mitigation.", options: ["True", "False"], a: "False", exp: "Developed nations typically have better access." },
+                { q: "Dams and reservoirs are used for regional water conservation.", options: ["True", "False"], a: "True", exp: "They store water for use during dry periods." },
+                { q: "Soil compaction is a result of overgrazing.", options: ["True", "False"], a: "True", exp: "Too many animals trample the ground." },
+                { q: "Drought only affects the farming industry.", options: ["True", "False"], a: "False", exp: "It affects ecosystems, domestic water, and energy production too." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

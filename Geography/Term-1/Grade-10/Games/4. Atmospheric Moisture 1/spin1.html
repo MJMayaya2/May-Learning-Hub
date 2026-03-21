@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub | Grade 10 Geography: Atmospheric Moisture</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-container { max-width: 900px; margin: 3rem auto; padding: 2rem; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border-top: 6px solid #3385ff; text-align: center; }
+        .game-title { color: #004080; font-size: 2.5rem; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .game-subtitle { color: #555; margin-bottom: 2rem; font-size: 1.1rem; }
+        .category-selection { margin-bottom: 2rem; }
+        .category-selection h2 { color: #004080; margin-bottom: 1rem; font-size: 1.5rem; }
+        .cat-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .cat-btn { background-color: #f0f4f8; border: 2px solid #004080; color: #004080; padding: 0.8rem 1.5rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .cat-btn:hover, .cat-btn.active { background-color: #004080; color: #fff; transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,64,128,0.2); }
+        #wheelArea { display: none; margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed #ccc; animation: fadeIn 0.5s ease; }
+        #activeCategoryTitle { color: #3385ff; margin-bottom: 1.5rem; font-size: 1.8rem; }
+        .wheel-wrapper { position: relative; width: 380px; height: 380px; margin: 0 auto 2rem; border-radius: 50%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 22px solid transparent; border-right: 22px solid transparent; border-top: 55px solid #e60000; z-index: 10; filter: drop-shadow(0 6px 6px rgba(0,0,0,0.5)); }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 15px solid #001a33; position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: inset 0 0 30px rgba(0,0,0,0.7), inset 0 0 0 6px rgba(255,255,255,0.3); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: radial-gradient(circle, #e6f0fa, #80b3ff); border-radius: 50%; border: 5px solid #001a33; box-shadow: 0 4px 10px rgba(0,0,0,0.6); z-index: 6; }
+        .wheel-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        .wheel-labels { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .label { position: absolute; top: 50%; left: 50%; transform-origin: 0 0; font-weight: bold; color: #fff; font-size: 0.95rem; text-shadow: 1px 1px 4px rgba(0,0,0,0.9); }
+        .spin-btn { background-color: #3385ff; color: #fff; border: none; padding: 1rem 3rem; font-size: 1.5rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(51,133,255,0.4); margin-bottom: 1rem; border-bottom: 4px solid #004080; }
+        .question-card { display: none; margin-top: 2rem; padding: 2rem; background-color: #f0f7ff; border: 2px solid #b3d4ff; border-radius: 8px; text-align: center; animation: fadeIn 0.5s ease; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        .q-number-tag { display: inline-block; background: #004080; color: #fff; padding: 0.5rem 1.5rem; border-radius: 30px; font-size: 1.1rem; margin-bottom: 1rem; font-weight: bold; text-transform: uppercase; box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
+        .question-text { font-size: 1.5rem; color: #333; margin-bottom: 1.5rem; font-weight: 500; }
+        .mc-options { display: flex; flex-direction: column; gap: 0.8rem; max-width: 450px; margin: 0 auto 1.5rem; }
+        .option-btn { background: #fff; border: 2px solid #b3d4ff; padding: 1rem; font-size: 1.1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-weight: 500; color: #004080; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .option-btn.correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724 !important; }
+        .option-btn.incorrect { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24 !important; }
+        .reveal-btn { background-color: #3385ff; color: #fff; border: none; padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .answer-text { display: none; font-size: 1.2rem; color: #333; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #b3d4ff; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <main class="game-container">
+        <h1 class="game-title">Geography Quiz: Atmospheric Moisture</h1>
+        <p class="game-subtitle">Test your Grade 10 Knowledge! Select a category and spin the wheel.</p>
+
+        <div class="category-selection">
+            <h2>Step 1: Choose a Category</h2>
+            <div class="cat-buttons" id="catButtons">
+                <button class="cat-btn" onclick="selectCategory('definitions', this)">Definitions</button>
+                <button class="cat-btn" onclick="selectCategory('terms', this)">Name the Term</button>
+                <button class="cat-btn" onclick="selectCategory('multipleChoice', this)">Multiple Choice</button>
+                <button class="cat-btn" onclick="selectCategory('trueFalse', this)">True or False</button>
+            </div>
+        </div>
+
+        <div id="wheelArea">
+            <h2 id="activeCategoryTitle">Category: None</h2>
+            
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-bg" id="wheelBg"></div>
+                    <div class="wheel-labels" id="wheelLabels"></div>
+                </div>
+            </div>
+
+            <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN THE WHEEL</button>
+            <p id="remainingCount" style="color: #666; font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold;">20 questions remaining</p>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number-tag" id="qNumberTag">Question #</div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="mc-options" id="mcOptions"></div>
+                
+                <button class="reveal-btn" id="revealBtn" onclick="revealAnswer()">Reveal Answer</button>
+                <div class="answer-text" id="answerText"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const gameData = {
+            'definitions': [
+                { q: "Condensation", a: "The process when water vapour changes from a gas into liquid form." },
+                { q: "Latent Heat", a: "The energy absorbed or released during a change in the state of water." },
+                { q: "Humidity", a: "The actual amount of water vapour present in the atmosphere at a particular time." },
+                { q: "Precipitation", a: "The deposition of water in either liquid or solid state on the Earth's surface from the atmosphere." },
+                { q: "Dew Point", a: "The specific temperature at which air becomes saturated and condensation begins." },
+                { q: "Evaporation", a: "The process by which liquid water changes into a gas state called water vapour." },
+                { q: "Relative Humidity", a: "The amount of water vapour in the air expressed as a percentage of its total capacity at a given temperature." },
+                { q: "Condensation Nuclei", a: "Solid particles like dust, smoke, or salt that water vapour joins to during condensation." },
+                { q: "Saturated Air", a: "Air that contains the maximum amount of water vapour it can hold at a specific temperature." },
+                { q: "Condensation Level", a: "The specific altitude in the atmosphere where condensation begins to occur." },
+                { q: "Freezing Point", a: "The temperature threshold (0°C) below which liquid water turns into a solid state." },
+                { q: "Latent Heat of Condensation", a: "The energy released into the atmosphere when water vapour joins to form liquid droplets." },
+                { q: "Latent Heat of Evaporation", a: "The energy absorbed by water molecules to change from a liquid to a gas state." },
+                { q: "Solid State of Water", a: "Water that has a definite volume and a definite shape, such as ice or snow." },
+                { q: "Liquid State of Water", a: "A fluid state of water with a definite volume but no definite shape." },
+                { q: "Gas State of Water", a: "Water in the form of vapour with no definite volume or shape." },
+                { q: "Vapour Capacity", a: "The limit or maximum amount of water vapour that the air can hold at a certain temperature." },
+                { q: "Deposition", a: "The general term for water falling to the surface, including rain, hail, and snow." },
+                { q: "Saturation", a: "The state of the atmosphere when it can no longer hold any more water vapour." },
+                { q: "Hydrological Cycle energy", a: "Atmospheric heating provides the energy needed to drive the water cycle." }
+            ],
+            'terms': [
+                { q: "The invisible form of water found in the atmosphere.", a: "Water Vapour" },
+                { q: "Energy that is 'hidden' and released during condensation.", a: "Latent Heat" },
+                { q: "A liquid form of precipitation.", a: "Rain" },
+                { q: "Solid forms of precipitation consisting of ice particles.", a: "Hail or Snow" },
+                { q: "The percentage value used to describe the air's moisture content.", a: "Relative Humidity" },
+                { q: "Large masses of solid water found in polar regions or high mountains.", a: "Glaciers" },
+                { q: "Solid substances like salt or smoke required for clouds to form.", a: "Condensation Nuclei" },
+                { q: "The state of the atmosphere when Relative Humidity is 100%.", a: "Saturated" },
+                { q: "The temperature at which 100% saturation is reached.", a: "Dew Point" },
+                { q: "The height above the ground where clouds start to form.", a: "Condensation Level" },
+                { q: "Large collections of water droplets and ice particles in the sky.", a: "Clouds" },
+                { q: "The process that changes water from liquid to gas.", a: "Evaporation" },
+                { q: "The state of water that has a definite volume and takes the shape of its container.", a: "Liquid" },
+                { q: "The property of water vapour that allows it to absorb, scatter, and reflect heat.", a: "Gas state" },
+                { q: "Small solid particles in the air that provide a surface for condensation.", a: "Nuclei" },
+                { q: "The process that turns gas into liquid on a cold window.", a: "Condensation" },
+                { q: "The amount of water vapour the air can hold at a specific temperature.", a: "Capacity" },
+                { q: "Water in its solid state that has a definite shape.", a: "Ice" },
+                { q: "What is released into the air when water vapour condenses?", a: "Latent Heat" },
+                { q: "The general name for rain, hail, and snow falling from the sky.", a: "Precipitation" }
+            ],
+            'multipleChoice': [
+                { q: "In which state does water have no definite volume or shape?", options: ["A) Liquid", "B) Solid", "C) Gas (Vapour)", "D) Plasma"], a: "C) Gas (Vapour)" },
+                { q: "What happens to latent heat during the process of condensation?", options: ["A) It is absorbed", "B) It is destroyed", "C) It is released", "D) It stays the same"], a: "C) It is released" },
+                { q: "Which of the following is required for condensation to take place?", options: ["A) Saturated air", "B) Freezing air", "C) Very dry air", "D) Vacuum"], a: "A) Saturated air" },
+                { q: "Relative Humidity is expressed as a:", options: ["A) Degree Celsius", "B) Percentage", "C) Millimetre", "D) Metre"], a: "B) Percentage" },
+                { q: "What is the name for the altitude where condensation begins?", options: ["A) Dew Point", "B) Condensation Level", "C) Sea Level", "D) Tropopause"], a: "B) Condensation Level" },
+                { q: "Which state of water includes glaciers and hail?", options: ["A) Liquid", "B) Gas", "C) Solid", "D) Vapour"], a: "C) Solid" },
+                { q: "What are 'condensation nuclei'?", options: ["A) Water droplets", "B) Solid particles like dust", "C) Gas molecules", "D) Cloud layers"], a: "B) Solid particles like dust" },
+                { q: "When air reaches its Dew Point, it is said to be:", options: ["A) Dry", "B) Saturated", "C) Evaporated", "D) Freezing"], a: "B) Saturated" },
+                { q: "Evaporation involves water changing from:", options: ["A) Solid to Gas", "B) Gas to Liquid", "C) Liquid to Gas", "D) Solid to Liquid"], a: "C) Liquid to Gas" },
+                { q: "What does water vapour do in the atmosphere regarding heat?", options: ["A) Only reflects it", "B) Absorbs, scatters, and reflects", "C) It has no effect", "D) Only absorbs it"], a: "B) Absorbs, scatters, and reflects" },
+                { q: "At what temperature does air reach its freezing point?", options: ["A) 100°C", "B) 32°C", "C) 0°C", "D) -10°C"], a: "C) 0°C" },
+                { q: "Clouds consist of:", options: ["A) Only gas", "B) Liquid droplets and ice particles", "C) Only ice", "D) Only water vapour"], a: "B) Liquid droplets and ice particles" },
+                { q: "If actual humidity stays the same but capacity increases, Relative Humidity will:", options: ["A) Increase", "B) Decrease", "C) Stay the same", "D) Reach 100%"], a: "B) Decrease" },
+                { q: "What drives the energy for evaporation in the water cycle?", options: ["A) Gravity", "B) Atmospheric heating", "C) Ocean currents", "D) Wind"], a: "B) Atmospheric heating" },
+                { q: "Which of these is a form of precipitation?", options: ["A) Clouds", "B) Water Vapour", "C) Hail", "D) Dust"], a: "C) Hail" },
+                { q: "Condensation begins when air is cooled and reaches:", options: ["A) Freezing point", "B) Boiling point", "C) Dew point", "D) The ground"], a: "C) Dew point" },
+                { q: "What happens to water molecules during evaporation?", options: ["A) They release heat", "B) They absorb energy", "C) They turn into ice", "D) They slow down"], a: "B) They absorb energy" },
+                { q: "The amount of water vapour the air can hold depends on:", options: ["A) Air pressure", "B) Temperature", "C) Longitude", "D) Time of day"], a: "B) Temperature" },
+                { q: "Which term describes the actual amount of moisture in the air?", options: ["A) Capacity", "B) Humidity", "C) Relative Humidity", "D) Precipitation"], a: "B) Humidity" },
+                { q: "Condensation nuclei can be made of:", options: ["A) Only dust", "B) Salt, smoke, and dust", "C) Only water", "D) Pure oxygen"], a: "B) Salt, smoke, and dust" }
+            ],
+            'trueFalse': [
+                { q: "Water vapour has a definite volume and shape.", options: ["True", "False"], a: "False", exp: "Gas state water has no definite volume or shape." },
+                { q: "Latent heat is released when water changes from gas to liquid.", options: ["True", "False"], a: "True", exp: "This happens during condensation." },
+                { q: "Condensation can only take place if the atmosphere is saturated.", options: ["True", "False"], a: "True", exp: "Air must be 100% full of vapour or cooled to dew point." },
+                { q: "Precipitation only refers to liquid water falling as rain.", options: ["True", "False"], a: "False", exp: "It also includes solid states like snow and hail." },
+                { q: "Solid water (ice) occurs at temperatures above freezing.", options: ["True", "False"], a: "False", exp: "It occurs at temperatures below the freezing point." },
+                { q: "Relative Humidity is expressed as a percentage.", options: ["True", "False"], a: "True", exp: "It is the ratio of actual humidity to capacity." },
+                { q: "Water vapour absorbs, scatters, and reflects heat.", options: ["True", "False"], a: "True", exp: "It plays a key role in atmospheric heating." },
+                { q: "Condensation nuclei are gas particles.", options: ["True", "False"], a: "False", exp: "They are solid substances like dust, smoke, and salt." },
+                { q: "The dew point is a measure of altitude.", options: ["True", "False"], a: "False", exp: "The dew point is a temperature; condensation level is an altitude." },
+                { q: "Liquid water takes the shape of its container.", options: ["True", "False"], a: "True", exp: "It has a definite volume but no definite shape." },
+                { q: "Latent heat is absorbed during evaporation.", options: ["True", "False"], a: "True", exp: "Energy is needed to change liquid to gas." },
+                { q: "Clouds consist of water in its liquid state as well as ice particles.", options: ["True", "False"], a: "True", exp: "This depends on the temperature in the cloud." },
+                { q: "There is no limit to the amount of water vapour the air can hold.", options: ["True", "False"], a: "False", exp: "Air has a vapour capacity that depends on temperature." },
+                { q: "Snow and glaciers are examples of water in its solid state.", options: ["True", "False"], a: "True", exp: "They have a definite volume and shape." },
+                { q: "Atmospheric moisture is mainly in the form of liquid droplets.", options: ["True", "False"], a: "False", exp: "It is mainly in the form of water vapour (gas)." },
+                { q: "Saturated air has a Relative Humidity of 100%.", options: ["True", "False"], a: "True", exp: "At this point, condensation begins." },
+                { q: "Condensation can occur without solid particles in the air.", options: ["True", "False"], a: "False", exp: "It requires condensation nuclei to provide a surface." },
+                { q: "The capacity of air to hold water vapour increases as it gets warmer.", options: ["True", "False"], a: "True", exp: "Warm air can hold more moisture than cold air." },
+                { q: "The water cycle is driven by atmospheric heating.", options: ["True", "False"], a: "True", exp: "Heat provides the energy for evaporation." },
+                { q: "Dew point is the temperature at which air becomes saturated.", options: ["True", "False"], a: "True", exp: "Condensation starts at this temperature." }
+            ]
+        };
+
+        const totalQuestions = 20; 
+        const sliceAngle = 360 / totalQuestions;
+        let currentCategoryKey = null;
+        let currentRotation = 0;
+        let currentQuestionData = null;
+        let targetQuestionIndex = null;
+
+        let availableQuestions = {
+            'definitions': Array.from({length: totalQuestions}, (_, i) => i),
+            'terms': Array.from({length: totalQuestions}, (_, i) => i),
+            'multipleChoice': Array.from({length: totalQuestions}, (_, i) => i),
+            'trueFalse': Array.from({length: totalQuestions}, (_, i) => i)
+        };
+
+        const sliceColors = ["#0055ff", "#0088ff", "#00bfff", "#0044cc"];
+
+        function buildWheel() {
+            const wheelBg = document.getElementById('wheelBg');
+            const wheelLabels = document.getElementById('wheelLabels');
+            let gradientParts = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                let startAngle = i * sliceAngle;
+                let endAngle = (i + 1) * sliceAngle;
+                let color = sliceColors[i % sliceColors.length];
+                gradientParts.push(`${color} ${startAngle}deg ${endAngle}deg`);
+
+                let label = document.createElement('div');
+                label.className = 'label';
+                let textRotation = startAngle + (sliceAngle / 2) - 90;
+                label.style.transform = `rotate(${textRotation}deg) translate(145px, -50%)`;
+                label.innerText = i + 1;
+                wheelLabels.appendChild(label);
+            }
+            wheelBg.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+        }
+
+        buildWheel();
+
+        function selectCategory(categoryKey, btnElement) {
+            currentCategoryKey = categoryKey;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('wheelArea').style.display = 'block';
+            document.getElementById('activeCategoryTitle').innerText = `Category: ${btnElement.innerText}`;
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('remainingCount').innerText = `${availableQuestions[categoryKey].length} questions remaining`;
+            currentRotation = 0;
+            document.getElementById('wheel').style.transform = `rotate(0deg)`;
+        }
+
+        function spinWheel() {
+            const spinBtn = document.getElementById('spinBtn');
+            const wheel = document.getElementById('wheel');
+            const questionCard = document.getElementById('questionCard');
+            let available = availableQuestions[currentCategoryKey];
+            
+            if (available.length === 0) {
+                alert(`Resetting ${currentCategoryKey}!`);
+                availableQuestions[currentCategoryKey] = Array.from({length: totalQuestions}, (_, i) => i);
+                available = availableQuestions[currentCategoryKey];
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "SPINNING...";
+            questionCard.style.display = 'none';
+
+            let randomArrIndex = Math.floor(Math.random() * available.length);
+            targetQuestionIndex = available[randomArrIndex];
+            available.splice(randomArrIndex, 1);
+            document.getElementById('remainingCount').innerText = `${available.length} questions remaining`;
+
+            let sliceCenterAngle = (targetQuestionIndex * sliceAngle) + (sliceAngle / 2);
+            let targetDegree = 360 - sliceCenterAngle;
+            let currentBase = Math.ceil(currentRotation / 360) * 360; 
+            currentRotation = currentBase + 1800 + targetDegree;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                spinBtn.disabled = false;
+                spinBtn.innerText = "SPIN AGAIN";
+                currentQuestionData = gameData[currentCategoryKey][targetQuestionIndex];
+                displayQuestion(targetQuestionIndex + 1, currentQuestionData);
+            }, 4000);
+        }
+
+        function displayQuestion(questionNumber, data) {
+            document.getElementById('qNumberTag').innerText = `Question #${questionNumber}`;
+            document.getElementById('questionText').innerText = data.q;
+            const mcOptions = document.getElementById('mcOptions');
+            const revealBtn = document.getElementById('revealBtn');
+            const answerText = document.getElementById('answerText');
+            mcOptions.innerHTML = "";
+            answerText.style.display = "none";
+            
+            if (currentCategoryKey === 'multipleChoice' || currentCategoryKey === 'trueFalse') {
+                revealBtn.style.display = "none"; 
+                mcOptions.style.display = "flex";
+                data.options.forEach(opt => {
+                    let btn = document.createElement("button");
+                    btn.className = "option-btn";
+                    btn.innerText = opt;
+                    btn.onclick = () => checkInteractiveAnswer(btn, opt);
+                    mcOptions.appendChild(btn);
+                });
+            } else {
+                mcOptions.style.display = "none";
+                revealBtn.style.display = "inline-block";
+                answerText.innerHTML = `<strong>Answer:</strong> ${data.a}`;
+            }
+            document.getElementById('questionCard').style.display = "block";
+        }
+
+        function checkInteractiveAnswer(clickedBtn, selectedText) {
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+            const isCorrect = (selectedText === currentQuestionData.a || selectedText.startsWith(currentQuestionData.a.charAt(0)));
+            const answerTextDiv = document.getElementById('answerText');
+            if (isCorrect) {
+                clickedBtn.classList.add('correct');
+                answerTextDiv.innerHTML = `<div style="color: green; font-weight: bold;">Correct!</div> ${currentQuestionData.exp || ''}`;
+            } else {
+                clickedBtn.classList.add('incorrect');
+                answerTextDiv.innerHTML = `<div style="color: red; font-weight: bold;">Incorrect!</div> The correct answer was: ${currentQuestionData.a}. ${currentQuestionData.exp || ''}`;
+            }
+            answerTextDiv.style.display = "block";
+        }
+
+        function revealAnswer() {
+            document.getElementById('revealBtn').style.display = "none";
+            document.getElementById('answerText').style.display = "block";
+        }
+    </script>
+</body>
+</html>

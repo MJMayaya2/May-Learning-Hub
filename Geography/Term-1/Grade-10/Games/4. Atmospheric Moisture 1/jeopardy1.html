@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Learning Hub | Grade 10 Geography Jeopardy</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #fff; font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        .nav-links a { color: #cce0ff; text-decoration: none; margin-left: 1.5rem; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; text-decoration: underline; }
+        .game-header { text-align: center; padding: 2rem 1rem 1rem; }
+        .game-title { color: #004080; font-size: 2.2rem; margin-bottom: 0.5rem; }
+        .game-subtitle { color: #555; margin-bottom: 1.5rem; font-size: 1.1rem; }
+
+        .name-setup { max-width: 1000px; margin: 0 auto 1rem; padding: 0 10px; }
+        .name-box {
+            background: #ffffff;
+            border: 2px solid #b3d4ff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .name-box h2 { color: #002b5e; font-size: 1.2rem; }
+        .name-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+        .name-input {
+            width: 100%;
+            padding: 0.7rem 0.8rem;
+            border-radius: 10px;
+            border: 2px solid #cce0ff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .name-input:focus { border-color: #3385ff; }
+        .name-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+        .btn-save { background: #28a745; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-save:hover { background: #1e7e34; }
+        .btn-edit { background: #004080; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: none; }
+        .btn-edit:hover { background: #3385ff; }
+        .btn-reset { background: #dc3545; color: #fff; border: none; padding: 0.75rem 1rem; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #bd2130; }
+
+        .hint { color: #555; font-size: 0.95rem; }
+        .hidden { display: none !important; }
+
+        @media (max-width: 800px) { .name-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        .player-tabs { display: flex; justify-content: center; gap: 0.5rem; max-width: 1000px; margin: 0 auto 1.5rem; padding: 0 10px; flex-wrap: wrap; }
+        .tab-btn { flex: 1; min-width: 100px; background: #e6f0fa; color: #004080; border: 2px solid #b3d4ff; padding: 0.8rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tab-btn:hover { background: #cce0ff; }
+        .tab-btn.active { background: #3385ff; color: #fff; border-color: #002b5e; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(51,133,255,0.3); }
+
+        .carousel-container { width: 100%; overflow: hidden; padding-bottom: 3rem; }
+        .carousel-track { display: flex; width: 400%; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .player-slide { width: 25%; padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+        .score-board { background: #002b5e; color: #fff; display: inline-block; padding: 0.8rem 2.5rem; border-radius: 30px; font-size: 1.6rem; font-weight: bold; border: 4px solid #3385ff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 2rem; transition: all 0.3s; }
+        .score-board span { color: #ffc107; }
+
+        .jeopardy-board { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #001a33; padding: 8px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-header { background: #004080; color: #fff; text-align: center; font-weight: bold; padding: 1rem 0.5rem; font-size: 1.1rem; border-radius: 6px; border-bottom: 4px solid #3385ff; display: flex; align-items: center; justify-content: center; min-height: 80px; text-transform: uppercase; }
+        .point-btn { background: #3385ff; color: #fff; font-size: 1.6rem; font-weight: bold; border: none; padding: 1.5rem 0; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 0 10px rgba(0,0,0,0.2); }
+        .point-btn:hover:not(:disabled) { background: #1a75ff; transform: scale(0.96); }
+        .point-btn:disabled { background: #002b5e; color: #001a33; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,26,51,0.9); align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.3s; padding: 1rem; }
+        .modal-content { background: #fff; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 600px; width: 100%; border-top: 8px solid #004080; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 1.5rem; }
+        .modal-category { color: #3385ff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-question { font-size: 1.6rem; color: #002b5e; font-weight: bold; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .modal-answer-area { display: none; border-top: 2px dashed #ccc; padding-top: 1.5rem; }
+        .modal-answer { font-size: 1.4rem; color: #28a745; font-weight: bold; margin-bottom: 1.5rem; }
+        .btn-reveal { background: #004080; color: #fff; border: none; padding: 1rem 2rem; font-size: 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-reveal:hover { background: #3385ff; }
+        .judgement-area { display: flex; flex-direction: column; gap: 1rem; }
+        .judgement-buttons { display: flex; gap: 1rem; }
+        .btn-correct { flex: 1; background: #28a745; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-correct:hover { background: #1e7e34; }
+        .btn-incorrect { flex: 1; background: #dc3545; color: #fff; border: none; padding: 1rem; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-incorrect:hover { background: #bd2130; }
+
+        .steal-area { display: none; background: #fff3cd; border: 2px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; animation: fadeIn 0.4s; }
+        .steal-title { color: #856404; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
+        .steal-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+        .btn-steal { flex: 1; min-width: 100px; background: #ffc107; color: #000; border: none; padding: 0.8rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-steal:hover { background: #e0a800; transform: translateY(-2px); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        footer { text-align: center; padding: 1rem; background-color: #002b5e; color: #fff; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="../../../../../index.html" class="logo">May Learning Hub</a>
+        <div class="nav-links">
+            <a href="../../../../../index.html">Home</a>
+            <a href="../../../../../about.html">About</a>
+        </div>
+    </nav>
+
+    <header class="game-header">
+        <h1 class="game-title">Grade 10 Geography Jeopardy</h1>
+        <p class="game-subtitle">Topic: Atmospheric Moisture</p>
+    </header>
+
+    <section class="name-setup" id="nameSetupSection">
+        <div class="name-box">
+            <h2>Enter Player Names</h2>
+            <div class="name-grid">
+                <input class="name-input" id="nameInput-0" type="text" maxlength="20" placeholder="Player 1 name" />
+                <input class="name-input" id="nameInput-1" type="text" maxlength="20" placeholder="Player 2 name" />
+                <input class="name-input" id="nameInput-2" type="text" maxlength="20" placeholder="Player 3 name" />
+                <input class="name-input" id="nameInput-3" type="text" maxlength="20" placeholder="Player 4 name" />
+            </div>
+            <div class="name-actions">
+                <button class="btn-save" id="btnSaveNames" onclick="savePlayerNames()">Save Names</button>
+                <button class="btn-edit" id="btnEditNames" onclick="showNameEditor()">Edit Names</button>
+                <button class="btn-reset" onclick="resetPlayerNames()">Reset</button>
+            </div>
+            <p class="hint">80 unique questions spread across all players based on the document!</p>
+        </div>
+    </section>
+
+    <div class="player-tabs">
+        <button class="tab-btn active" id="tab-0" onclick="switchPlayer(0)">Player 1</button>
+        <button class="tab-btn" id="tab-1" onclick="switchPlayer(1)">Player 2</button>
+        <button class="tab-btn" id="tab-2" onclick="switchPlayer(2)">Player 3</button>
+        <button class="tab-btn" id="tab-3" onclick="switchPlayer(3)">Player 4</button>
+    </div>
+
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <div class="player-slide">
+                <div class="score-board"><span id="label-0">Player 1</span>: <span id="score-0">0</span></div>
+                <div class="jeopardy-board" id="board-0"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-1">Player 2</span>: <span id="score-1">0</span></div>
+                <div class="jeopardy-board" id="board-1"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-2">Player 3</span>: <span id="score-2">0</span></div>
+                <div class="jeopardy-board" id="board-2"></div>
+            </div>
+            <div class="player-slide">
+                <div class="score-board"><span id="label-3">Player 4</span>: <span id="score-3">0</span></div>
+                <div class="jeopardy-board" id="board-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="questionModal">
+        <div class="modal-content">
+            <div class="modal-category" id="modalCategory">Category</div>
+            <div class="modal-question" id="modalQuestion">Question</div>
+            <button class="btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+            <div class="modal-answer-area" id="answerArea">
+                <div class="modal-answer" id="modalAnswer">Answer</div>
+                <div class="judgement-area" id="judgementArea">
+                    <p>Did <strong id="activePlayerName">Player</strong> get it right?</p>
+                    <div class="judgement-buttons">
+                        <button class="btn-incorrect" onclick="judgeActivePlayer(false)">Wrong</button>
+                        <button class="btn-correct" onclick="judgeActivePlayer(true)">Correct!</button>
+                    </div>
+                </div>
+                <div class="steal-area" id="stealArea">
+                    <div class="steal-title" id="stealTitle">STEAL OPPORTUNITY!</div>
+                    <div class="steal-buttons" id="stealButtons"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer><p>&copy; 2026 May Learning Hub. All rights reserved.</p></footer>
+
+    <script>
+        const player1Cats = [
+            { name: "Forms of Water", questions: [
+                { points: 10, q: "Does liquid water have a definite shape?", a: "No (it takes the shape of its container)" },
+                { points: 20, q: "At what point does water turn into a solid state (ice)?", a: "Freezing point (below 0°C)" },
+                { points: 30, q: "What is the common name for water in its gas state?", a: "Water vapour" },
+                { points: 40, q: "Name a solid state of water mentioned in the document besides ice.", a: "Snow, hail, or glaciers" },
+                { points: 50, q: "In what form is water mainly found in the atmosphere?", a: "Water vapour" }
+            ]},
+            { name: "Evaporation Speed", questions: [
+                { points: 10, q: "Define the process of evaporation.", a: "Change in state from a liquid to a gas" },
+                { points: 20, q: "What heat energy does water keep as it rises during evaporation?", a: "Latent heat" },
+                { points: 30, q: "Name one of the three factors affecting evaporation speed.", a: "Air temperature, Water vapour in air, or Wind speed" },
+                { points: 40, q: "How does high wind speed affect the rate of evaporation?", a: "It increases the speed" },
+                { points: 50, q: "How does air temperature affect evaporation?", a: "Higher temperature increases evaporation speed" }
+            ]},
+            { name: "Condensation Facts", questions: [
+                { points: 10, q: "Define the process of condensation.", a: "Water vapour joining/condensing from gas to liquid form" },
+                { points: 20, q: "What happens to latent heat during condensation?", a: "It is released" },
+                { points: 30, q: "What must the state of the atmosphere be for condensation to occur?", a: "Saturated" },
+                { points: 40, q: "On what type of substances (solid or liquid) does condensation take place in the air?", a: "Solid substances" },
+                { points: 50, q: "What is the collective term for dust, smoke, and salt particles in the air?", a: "Condensation nuclei" }
+            ]},
+            { name: "Moisture Concepts", questions: [
+                { points: 10, q: "What term refers to the amount of water vapour in the atmosphere at a particular time?", a: "Humidity" },
+                { points: 20, q: "In what unit (e.g. degrees, percentage) is Relative Humidity expressed?", a: "Percentage (%)" },
+                { points: 30, q: "What is the temperature at which air becomes saturated called?", a: "Dew point" },
+                { points: 40, q: "What is the deposition of water in liquid or solid state on Earth's surface called?", a: "Precipitation" },
+                { points: 50, q: "Name three examples of precipitation.", a: "Rain, snow, and hail" }
+            ]}
+        ];
+
+        const player2Cats = [
+            { name: "Liquid, Solid, Gas", questions: [
+                { points: 10, q: "What state of water has a definite volume but no definite shape?", a: "Liquid water" },
+                { points: 20, q: "True or False: Clouds consist only of water in its liquid state.", a: "False (can also contain ice particles)" },
+                { points: 30, q: "Does water vapour have a definite volume?", a: "No" },
+                { points: 40, q: "What three things does water vapour do with heat in the atmosphere?", a: "Absorbs, scatters, and reflects" },
+                { points: 50, q: "Water in its solid state has a definite volume and a definite ____.", a: "Shape" }
+            ]},
+            { name: "Factors & Heat", questions: [
+                { points: 10, q: "Which process is the change from liquid state to gas state?", a: "Evaporation" },
+                { points: 20, q: "What energy is kept by rising water vapour?", a: "Latent heat" },
+                { points: 30, q: "How does the amount of water vapour already in the air affect evaporation speed?", a: "More vapour in air slows down evaporation" },
+                { points: 40, q: "High air temperature means ____ evaporation speed.", a: "Higher / Increased" },
+                { points: 50, q: "Which factor involving air movement speeds up evaporation?", a: "Wind speed" }
+            ]},
+            { name: "Becoming Saturated", questions: [
+                { points: 10, q: "What process is the opposite of evaporation?", a: "Condensation" },
+                { points: 20, q: "What is released when water vapour turns back into liquid?", a: "Latent heat" },
+                { points: 30, q: "For condensation to occur, air must cool and reach ____.", a: "Dew point" },
+                { points: 40, q: "Name a solid condensation nucleus found in the atmosphere starting with 'S'.", a: "Smoke or Salt particles" },
+                { points: 50, q: "What is the specific altitude at which condensation begins called?", a: "Condensation level" }
+            ]},
+            { name: "Types of Drops", questions: [
+                { points: 10, q: "What refers to water vapour amount in air relative to temperature?", a: "Relative humidity" },
+                { points: 20, q: "Is rain a liquid or solid state of precipitation?", a: "Liquid state" },
+                { points: 30, q: "At what point does air reach its limit for water vapour?", a: "Saturation" },
+                { points: 40, q: "When air is saturated, what process begins?", a: "Condensation" },
+                { points: 50, q: "What is the term for water falling from the atmosphere to the surface?", a: "Precipitation" }
+            ]}
+        ];
+
+        const player3Cats = [
+            { name: "State Properties", questions: [
+                { points: 10, q: "What state of water turns to ice?", a: "Solid water" },
+                { points: 20, q: "Does water vapour have a definite shape?", a: "No" },
+                { points: 30, q: "Water in the atmosphere is mainly in which form?", a: "Water vapour" },
+                { points: 40, q: "What allows liquid water to take the shape of its container?", a: "It is fluid / Has no definite shape" },
+                { points: 50, q: "Where temperatures are below freezing, clouds contain ____ particles.", a: "Ice" }
+            ]},
+            { name: "The Hydro-Cycle", questions: [
+                { points: 10, q: "What is the change from gas into liquid called?", a: "Condensation" },
+                { points: 20, q: "Which process involves water changing from liquid to gas?", a: "Evaporation" },
+                { points: 30, q: "What is 'Run off' in the hydrological cycle?", a: "Water flowing over the land surface" },
+                { points: 40, q: "What type of heat is released into the air during condensation?", a: "Latent heat" },
+                { points: 50, q: "What is the general name for rain, snow, and hail?", a: "Precipitation" }
+            ]},
+            { name: "Dew Point & Nuclei", questions: [
+                { points: 10, q: "At what temperature does air reach saturation?", a: "Dew point" },
+                { points: 20, q: "What are the solid particles required for condensation called?", a: "Condensation nuclei" },
+                { points: 30, q: "Give an example of a condensation nucleus mentioned in the text.", a: "Dust, Smoke, or Salt" },
+                { points: 40, q: "True or False: Condensation can take place without any solids present.", a: "False (solid substances/nuclei must be present)" },
+                { points: 50, q: "When air cools to its dew point, ____ begins.", a: "Condensation" }
+            ]},
+            { name: "Relative Humidity", questions: [
+                { points: 10, q: "What is Relative Humidity a percentage of?", a: "Water vapour capacity / Amount air can hold" },
+                { points: 20, q: "Does air temperature affect how much water vapour it can hold?", a: "Yes" },
+                { points: 30, q: "Is humidity a measure of liquid water or water vapour?", a: "Water vapour" },
+                { points: 40, q: "What is the term for the altitude where condensation starts?", a: "Condensation level" },
+                { points: 50, q: "If actual humidity is equal to water vapour capacity, what is the RH?", a: "100%" }
+            ]}
+        ];
+
+        const player4Cats = [
+            { name: "Water Vapour & Air", questions: [
+                { points: 10, q: "True or False: Water vapour has a definite volume.", a: "False" },
+                { points: 20, q: "Water vapour ____, ____, and ____ heat in the atmosphere.", a: "Absorbs, scatters, and reflects" },
+                { points: 30, q: "What is the fluid state of water called?", a: "Liquid water" },
+                { points: 40, q: "Solid water has both a definite volume and a definite ____.", a: "Shape" },
+                { points: 50, q: "Ice, snow, and hail are all forms of ____ state water.", a: "Solid" }
+            ]},
+            { name: "Heat in the Air", questions: [
+                { points: 10, q: "What kind of heat is released when air condenses?", a: "Latent heat" },
+                { points: 20, q: "Which process uses heat energy to change liquid to gas?", a: "Evaporation" },
+                { points: 30, q: "What energy does rising water vapour keep?", a: "Latent heat" },
+                { points: 40, q: "Is evaporation faster or slower in windy conditions?", a: "Faster" },
+                { points: 50, q: "How does the amount of vapour in the air affect the speed of evaporation?", a: "Decreases speed (more vapour slows it down)" }
+            ]},
+            { name: "Saturation Altitude", questions: [
+                { points: 10, q: "What is the 'Condensation level'?", a: "The altitude at which condensation begins" },
+                { points: 20, q: "Air must ____ to reach its dew point.", a: "Cool" },
+                { points: 30, q: "Besides cooling, what must be present in the atmosphere for condensation?", a: "Condensation nuclei" },
+                { points: 40, q: "Name a solid substance condensation nuclei starting with 'D'.", a: "Dust" },
+                { points: 50, q: "Saturation means the air is holding its ____ amount of vapour.", a: "Maximum / Limit" }
+            ]},
+            { name: "Precipitation Rules", questions: [
+                { points: 10, q: "Is hail an example of liquid or solid precipitation?", a: "Solid precipitation" },
+                { points: 20, q: "What is the general term for deposition of water from the air?", a: "Precipitation" },
+                { points: 30, q: "Name the temperature at which condensation begins.", a: "Dew point" },
+                { points: 40, q: "Does humidity refer to water on the ground or in the air?", a: "In the air (atmosphere)" },
+                { points: 50, q: "Relative Humidity is a percentage comparison to air ____.", a: "Temperature / Capacity" }
+            ]}
+        ];
+
+        const gameData = [player1Cats, player2Cats, player3Cats, player4Cats];
+
+        let currentPlayerIndex = 0;
+        let scores = [0, 0, 0, 0];
+        let activePointValue = 0;
+        let activeTileButton = null;
+        let playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+
+        const carouselTrack = document.getElementById('carouselTrack');
+        const modal = document.getElementById('questionModal');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalQuestion = document.getElementById('modalQuestion');
+        const modalAnswer = document.getElementById('modalAnswer');
+        const answerArea = document.getElementById('answerArea');
+        const btnReveal = document.getElementById('btnReveal');
+        const judgementArea = document.getElementById('judgementArea');
+        const activePlayerNameLabel = document.getElementById('activePlayerName');
+        const stealArea = document.getElementById('stealArea');
+        const stealButtonsContainer = document.getElementById('stealButtons');
+
+        function savePlayerNames() {
+            for (let i = 0; i < 4; i++) {
+                const val = document.getElementById(`nameInput-${i}`).value.trim();
+                if (val) playerNames[i] = val;
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            document.getElementById('nameSetupSection').classList.add('hidden');
+            document.getElementById('btnEditNames').style.display = 'inline-block';
+        }
+
+        function showNameEditor() {
+            document.getElementById('nameSetupSection').classList.remove('hidden');
+        }
+
+        function buildBoards() {
+            for (let p = 0; p < 4; p++) {
+                const board = document.getElementById(`board-${p}`);
+                board.innerHTML = '';
+                const cats = gameData[p];
+                cats.forEach(c => {
+                    let h = document.createElement('div');
+                    h.className = 'category-header';
+                    h.innerText = c.name;
+                    board.appendChild(h);
+                });
+                for (let r = 0; r < 5; r++) {
+                    cats.forEach(c => {
+                        let btn = document.createElement('button');
+                        btn.className = 'point-btn';
+                        btn.innerText = c.questions[r].points;
+                        btn.onclick = () => openQuestion(c.name, c.questions[r], btn, p);
+                        board.appendChild(btn);
+                    });
+                }
+            }
+        }
+
+        function switchPlayer(idx) {
+            currentPlayerIndex = idx;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${idx}`).classList.add('active');
+            carouselTrack.style.transform = `translateX(-${idx * 25}%)`;
+        }
+
+        function openQuestion(catName, qData, btn, pIdx) {
+            if (pIdx !== currentPlayerIndex) return;
+            activePointValue = qData.points;
+            activeTileButton = btn;
+            modalCategory.innerText = `${playerNames[pIdx]} | ${catName}`;
+            modalQuestion.innerText = qData.q;
+            modalAnswer.innerText = qData.a;
+            activePlayerNameLabel.innerText = playerNames[pIdx];
+            btnReveal.style.display = 'block';
+            answerArea.style.display = 'none';
+            stealArea.style.display = 'none';
+            modal.style.display = 'flex';
+        }
+
+        function revealAnswer() {
+            btnReveal.style.display = 'none';
+            answerArea.style.display = 'block';
+            judgementArea.style.display = 'flex';
+        }
+
+        function judgeActivePlayer(correct) {
+            if (correct) {
+                scores[currentPlayerIndex] += activePointValue;
+                updateScore(currentPlayerIndex);
+                closeModal();
+            } else {
+                judgementArea.style.display = 'none';
+                showSteal();
+            }
+        }
+
+        function showSteal() {
+            stealArea.style.display = 'block';
+            stealButtonsContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                if (i !== currentPlayerIndex) {
+                    let b = document.createElement('button');
+                    b.className = 'btn-steal';
+                    b.innerText = playerNames[i];
+                    b.onclick = () => { scores[i] += Math.floor(activePointValue/2); updateScore(i); closeModal(); };
+                    stealButtonsContainer.appendChild(b);
+                }
+            }
+            let none = document.createElement('button');
+            none.className = 'btn-incorrect';
+            none.innerText = "No one";
+            none.onclick = closeModal;
+            stealButtonsContainer.appendChild(none);
+        }
+
+        function updateScore(i) { document.getElementById(`score-${i}`).innerText = scores[i]; }
+        function closeModal() { activeTileButton.innerText = ""; activeTileButton.disabled = true; modal.style.display = 'none'; }
+        
+        buildBoards();
+
+        function resetPlayerNames() {
+            playerNames = ["Player 1", "Player 2", "Player 3", "Player 4"];
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`nameInput-${i}`).value = "";
+                document.getElementById(`tab-${i}`).innerText = playerNames[i];
+                document.getElementById(`label-${i}`).innerText = playerNames[i];
+            }
+            showNameEditor();
+        }
+    </script>
+</body>
+</html>
