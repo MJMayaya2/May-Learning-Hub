@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | May Learning Hub</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .auth-card h2 { color: #002b5e; margin-bottom: 1.5rem; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 10px; transition: 0.3s; }
+        .btn-primary { background: #004080; color: white; }
+        .btn-google { background: white; color: #555; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .divider { margin: 20px 0; color: #888; position: relative; }
+        .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #ddd; }
+        .divider::before { left: 0; } .divider::after { right: 0; }
+    </style>
+</head>
+<body>
+
+<div class="auth-card">
+    <h2>May Learning Hub</h2>
+    <p>Sign in to access activities</p>
+    
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="password" id="password" placeholder="Password">
+    <button id="emailLogin" class="btn btn-primary">Sign In</button>
+
+    <div class="divider">OR</div>
+
+    <button id="googleLogin" class="btn btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18" alt="">
+        Sign in with Google
+    </button>
+    
+    <p style="margin-top:20px; font-size: 0.9rem;">New here? <a href="signup.html" style="color:#004080;">Create an account</a></p>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    // Your Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyApyOAfcEB8nGc-B3IO4X8wIl-nVi3nKeo",
+        authDomain: "maylearninghub.firebaseapp.com",
+        projectId: "maylearninghub",
+        storageBucket: "maylearninghub.firebasestorage.app",
+        messagingSenderId: "237875455146",
+        appId: "1:237875455146:web:21310d33b56664d669dcd3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // Redirection Logic
+    const handleRedirect = () => {
+        const nextURL = sessionStorage.getItem('redirectURL') || 'index.html';
+        sessionStorage.removeItem('redirectURL');
+        window.location.href = nextURL;
+    };
+
+    // Email Login
+    document.getElementById('emailLogin').onclick = async () => {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            handleRedirect();
+        } catch (err) { alert(err.message); }
+    };
+
+    // Google Login
+    document.getElementById('googleLogin').onclick = async () => {
+        try {
+            await signInWithPopup(auth, provider);
+            handleRedirect();
+        } catch (err) { alert(err.message); }
+    };
+</script>
+</body>
+</html>

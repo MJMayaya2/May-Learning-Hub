@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-8GCWSKNDL7"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -828,6 +827,15 @@
             color: #fff;
         }
 
+        .footer-note h4 {
+            color: #fff;
+        }
+
+        .footer-note p {
+            color: #d4e3f7;
+            font-size: 0.94rem;
+        }
+
         .footer-bottom {
             text-align: center;
             padding: 1rem 20px;
@@ -855,10 +863,6 @@
         }
 
         @media (max-width: 768px) {
-            .auth-layout,
-            .auth-row {
-                grid-template-columns: 1fr;
-            }
             nav {
                 padding: 1rem;
                 flex-wrap: wrap;
@@ -979,110 +983,6 @@
                 transition: none !important;
             }
         }
-    
-
-        .auth-panel {
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            padding: 2rem;
-            margin: 0 auto 2rem;
-        }
-
-        .auth-layout {
-            display: grid;
-            grid-template-columns: 1.3fr 0.9fr;
-            gap: 1.5rem;
-            align-items: start;
-        }
-
-        .auth-form {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .auth-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .auth-field label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.45rem;
-            color: #002b5e;
-        }
-
-        .auth-field input {
-            width: 100%;
-            padding: 0.85rem 0.95rem;
-            border: 1px solid #cdd9ea;
-            border-radius: 10px;
-            font: inherit;
-            background: #f9fbff;
-        }
-
-        .auth-field small {
-            display: block;
-            margin-top: 0.4rem;
-            color: #5b6b7f;
-        }
-
-        .auth-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-top: 0.25rem;
-        }
-
-        .btn-google {
-            background: #fff;
-            color: #1f1f1f;
-            border: 1px solid #d6dbe5;
-        }
-
-        .btn-google:hover {
-            background: #f4f7fb;
-        }
-
-        .auth-status {
-            min-height: 1.25rem;
-            margin-top: 0.5rem;
-            font-weight: 600;
-        }
-
-        .auth-status.success { color: #0a7a33; }
-        .auth-status.error { color: #c62828; }
-
-        .auth-card {
-            background: linear-gradient(180deg, #f7fbff, #eef5ff);
-            border: 1px solid #d9e7fb;
-            border-radius: 16px;
-            padding: 1.2rem;
-        }
-
-        .auth-card h3 {
-            color: #002b5e;
-            margin-bottom: 0.7rem;
-        }
-
-        .auth-card p {
-            margin-bottom: 0.7rem;
-        }
-
-        .auth-user-box {
-            background: #fff;
-            border: 1px solid #d9e7fb;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-
-        .auth-user-box p {
-            margin-bottom: 0.45rem;
-        }
-
     </style>
 </head>
 <body>
@@ -1097,8 +997,7 @@
         <div class="nav-links" id="navLinks">
             <a href="index.html" class="active">Home</a>
             <a href="about.html">About</a>
-            <a href="#account">Account</a>
-                <a href="#feedback">Feedback</a>
+            <a href="#feedback">Feedback</a>
             <a href="suppdown.html">App &amp; Support</a>
         </div>
     </nav>
@@ -1116,7 +1015,6 @@
                 </p>
                 <div class="hero-actions">
                     <a href="#subjects" class="btn btn-primary">Start Learning</a>
-                    <a href="#account" class="btn btn-secondary">Create Account</a>
                     <a href="#feedback" class="btn btn-secondary">Send Feedback</a>
                 </div>
             </div>
@@ -1299,68 +1197,6 @@
             <a href="suppdown.html" class="btn btn-primary">Go to App &amp; Support</a>
         </section>
 
-
-        <section class="auth-panel" id="account" aria-labelledby="account-title">
-            <h2 class="section-title" id="account-title">Create an Account or Sign In</h2>
-            <p class="section-subtitle">
-                Use your email and password to create an account, or continue quickly with Google.
-            </p>
-
-            <div class="auth-layout">
-                <div>
-                    <form class="auth-form" id="authForm">
-                        <div class="auth-row">
-                            <div class="auth-field">
-                                <label for="authName">Full Name</label>
-                                <input type="text" id="authName" placeholder="Enter your full name">
-                                <small>Optional for email sign-up, useful for your profile name.</small>
-                            </div>
-
-                            <div class="auth-field">
-                                <label for="authEmail">Email Address</label>
-                                <input type="email" id="authEmail" placeholder="Enter your email" required>
-                            </div>
-                        </div>
-
-                        <div class="auth-row">
-                            <div class="auth-field">
-                                <label for="authPassword">Password</label>
-                                <input type="password" id="authPassword" placeholder="Create or enter password" required>
-                                <small>Use at least 6 characters.</small>
-                            </div>
-
-                            <div class="auth-field">
-                                <label for="authConfirmPassword">Confirm Password</label>
-                                <input type="password" id="authConfirmPassword" placeholder="Confirm password for sign-up">
-                                <small>Needed when creating a new account.</small>
-                            </div>
-                        </div>
-
-                        <div class="auth-actions">
-                            <button type="button" class="btn btn-dark" id="signUpBtn">Create Account</button>
-                            <button type="button" class="btn btn-primary" id="signInBtn">Sign In</button>
-                            <button type="button" class="btn btn-google" id="googleSignInBtn">Sign In with Google</button>
-                            <button type="button" class="btn btn-secondary" id="signOutBtn" style="display:none;">Sign Out</button>
-                        </div>
-
-                        <div id="authStatus" class="auth-status" aria-live="polite"></div>
-                    </form>
-                </div>
-
-                <div class="auth-card">
-                    <h3>Account Features</h3>
-                    <p>Create an account with email and password, or use your Google account for faster sign-in.</p>
-                    <p>When a user is signed in, their status appears below.</p>
-
-                    <div class="auth-user-box" id="authUserBox">
-                        <p><strong>Status:</strong> <span id="authStateText">Not signed in</span></p>
-                        <p><strong>Name:</strong> <span id="authUserName">-</span></p>
-                        <p><strong>Email:</strong> <span id="authUserEmail">-</span></p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section class="feedback-panel" id="feedback" aria-labelledby="feedback-title">
             <h2 class="section-title" id="feedback-title">Feedback, Support, or Resource Requests</h2>
             <p class="section-subtitle">
@@ -1505,7 +1341,53 @@
         </div>
     </footer>
 
-    <script>
+    <script type="module">
+        // --- 1. FIREBASE SETUP ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApyOAfcEB8nGc-B3IO4X8wIl-nVi3nKeo",
+            authDomain: "maylearninghub.firebaseapp.com",
+            projectId: "maylearninghub",
+            storageBucket: "maylearninghub.firebasestorage.app",
+            messagingSenderId: "237875455146",
+            appId: "1:237875455146:web:21310d33b56664d669dcd3",
+            measurementId: "G-LJMFCM44TQ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+
+        let currentUser = null;
+
+        // Keep track of the user's login state
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+        });
+
+        // --- 2. GLOBAL CLICK INTERCEPTOR (THE GATEKEEPER) ---
+        document.addEventListener('click', (e) => {
+            // Find if a link was clicked
+            const link = e.target.closest('a');
+            
+            // If the link is for "Activities", check if user is logged in
+            if (link && link.href.includes('/Activities/')) {
+                if (!currentUser) {
+                    e.preventDefault(); // Stop the user from going to the link
+                    
+                    // Save where they wanted to go
+                    sessionStorage.setItem('redirectURL', link.href);
+                    
+                    alert("Please sign in to access Activities!");
+                    window.location.href = 'signin.html';
+                }
+            }
+        });
+
+        // --- 3. EXISTING SITE LOGIC ---
         const navToggle = document.getElementById('navToggle');
         const navLinks = document.getElementById('navLinks');
 
@@ -1690,147 +1572,6 @@
             } catch (error) {
                 formStatus.className = 'form-status error';
                 formStatus.textContent = 'Connection problem. Please try again later or use the WhatsApp button.';
-            }
-        });
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
-        import {
-            getAuth,
-            GoogleAuthProvider,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signInWithPopup,
-            onAuthStateChanged,
-            signOut,
-            updateProfile
-        } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyApyOAfcEB8nGc-B3IO4X8wIl-nVi3nKeo",
-            authDomain: "maylearninghub.firebaseapp.com",
-            projectId: "maylearninghub",
-            storageBucket: "maylearninghub.firebasestorage.app",
-            messagingSenderId: "237875455146",
-            appId: "1:237875455146:web:21310d33b56664d669dcd3",
-            measurementId: "G-LJMFCM44TQ"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        getAnalytics(app);
-
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        const authName = document.getElementById('authName');
-        const authEmail = document.getElementById('authEmail');
-        const authPassword = document.getElementById('authPassword');
-        const authConfirmPassword = document.getElementById('authConfirmPassword');
-        const signUpBtn = document.getElementById('signUpBtn');
-        const signInBtn = document.getElementById('signInBtn');
-        const googleSignInBtn = document.getElementById('googleSignInBtn');
-        const signOutBtn = document.getElementById('signOutBtn');
-        const authStatus = document.getElementById('authStatus');
-        const authStateText = document.getElementById('authStateText');
-        const authUserName = document.getElementById('authUserName');
-        const authUserEmail = document.getElementById('authUserEmail');
-
-        function setAuthMessage(message, type = '') {
-            authStatus.className = `auth-status ${type}`.trim();
-            authStatus.textContent = message;
-        }
-
-        function getEmailPasswordValues() {
-            return {
-                name: authName.value.trim(),
-                email: authEmail.value.trim(),
-                password: authPassword.value,
-                confirmPassword: authConfirmPassword.value
-            };
-        }
-
-        signUpBtn.addEventListener('click', async () => {
-            const { name, email, password, confirmPassword } = getEmailPasswordValues();
-
-            if (!email || !password) {
-                setAuthMessage('Please enter your email and password.', 'error');
-                return;
-            }
-
-            if (password.length < 6) {
-                setAuthMessage('Password must be at least 6 characters long.', 'error');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                setAuthMessage('Passwords do not match.', 'error');
-                return;
-            }
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-                if (name) {
-                    await updateProfile(userCredential.user, { displayName: name });
-                }
-
-                setAuthMessage('Account created successfully.', 'success');
-                authPassword.value = '';
-                authConfirmPassword.value = '';
-            } catch (error) {
-                setAuthMessage(error.message, 'error');
-            }
-        });
-
-        signInBtn.addEventListener('click', async () => {
-            const { email, password } = getEmailPasswordValues();
-
-            if (!email || !password) {
-                setAuthMessage('Please enter your email and password.', 'error');
-                return;
-            }
-
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                setAuthMessage('Signed in successfully.', 'success');
-                authPassword.value = '';
-                authConfirmPassword.value = '';
-            } catch (error) {
-                setAuthMessage(error.message, 'error');
-            }
-        });
-
-        googleSignInBtn.addEventListener('click', async () => {
-            try {
-                await signInWithPopup(auth, provider);
-                setAuthMessage('Signed in with Google successfully.', 'success');
-            } catch (error) {
-                setAuthMessage(error.message, 'error');
-            }
-        });
-
-        signOutBtn.addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-                setAuthMessage('You have signed out.', 'success');
-            } catch (error) {
-                setAuthMessage(error.message, 'error');
-            }
-        });
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                authStateText.textContent = 'Signed in';
-                authUserName.textContent = user.displayName || '-';
-                authUserEmail.textContent = user.email || '-';
-                signOutBtn.style.display = 'inline-block';
-            } else {
-                authStateText.textContent = 'Not signed in';
-                authUserName.textContent = '-';
-                authUserEmail.textContent = '-';
-                signOutBtn.style.display = 'none';
             }
         });
     </script>
