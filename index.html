@@ -11,114 +11,178 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="May Learning Hub provides CAPS-aligned notes, educational games, activities, and revision support for Social Sciences, Geography, and Life Sciences learners and teachers.">
+    <meta name="description" content="May Learning Hub provides CAPS-aligned notes, educational games, and revision support.">
     <meta name="theme-color" content="#002b5e">
-    <meta property="og:title" content="May Learning Hub | Home">
-    <meta property="og:description" content="CAPS-aligned notes, games, and activities for learners and teachers.">
-    <meta property="og:type" content="website">
-    <title>Learning Hub | Home</title>
+    <title>May Learning Hub | Home</title>
+
     <style>
-        /* [YOUR EXISTING STYLES PRESERVED] */
+        /* --- ORIGINAL STYLES --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; }
         img { max-width: 100%; display: block; }
 
-        /* NEW: Account Creation Styling to match your theme */
-        .auth-panel {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border-top: 5px solid #25d366; /* Green for "Success/New" */
-        }
-        .auth-form {
-            display: grid;
-            gap: 1rem;
-            max-width: 500px;
-        }
-        .auth-field label {
-            display: block;
-            font-weight: 600;
-            color: #003a75;
-            margin-bottom: 0.35rem;
-        }
-        .auth-field input {
-            width: 100%;
-            border: 1px solid #b8d1f0;
-            border-radius: 8px;
-            padding: 0.8rem;
-            font-size: 1rem;
-        }
-        #authStatus {
-            margin-top: 1rem;
-            padding: 0.8rem;
-            border-radius: 8px;
-            display: none;
-        }
-        
-        /* REST OF YOUR ORIGINAL STYLES */
-        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.12); opacity: 0; animation: slideInDown 0.6s ease-out forwards; }
-        .logo { color: #fff; font-size: 1.45rem; font-weight: bold; text-decoration: none; white-space: nowrap; }
+        /* Animations */
+        @keyframes slideInDown { 0% { opacity: 0; transform: translateY(-30px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+        /* Navigation & Layout */
+        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.12); animation: slideInDown 0.6s ease-out forwards; }
+        .logo { color: #fff; font-size: 1.45rem; font-weight: bold; text-decoration: none; }
         .nav-links { display: flex; align-items: center; gap: 1rem; }
-        .nav-links a { color: #cce0ff; text-decoration: none; font-weight: 500; padding: 0.45rem 0.7rem; border-radius: 6px; }
-        header { background: linear-gradient(135deg, #004080, #0059b3); color: #fff; padding: 3rem 1rem 2.5rem; text-align: center; }
+        .nav-links a { color: #cce0ff; text-decoration: none; font-weight: 500; padding: 0.45rem 0.7rem; border-radius: 6px; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; background-color: rgba(255,255,255,0.08); }
+        .nav-toggle { display: none; background: transparent; border: none; color: #fff; font-size: 1.6rem; cursor: pointer; }
+
+        header { background: linear-gradient(135deg, #004080, #0059b3); color: #fff; padding: 3rem 1rem; text-align: center; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .btn { display: inline-block; padding: 0.8rem 1.1rem; border-radius: 8px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
-        .btn-primary { background: #fff; color: #004080; }
-        .btn-dark { background: #002b5e; color: #fff; }
-        /* (Shortened for brevity - keep all your original CSS here) */
+
+        /* --- AUTH SECTION STYLES --- */
+        .auth-panel { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 2rem; margin: -2rem auto 2rem; max-width: 550px; position: relative; z-index: 10; border-top: 5px solid #3385ff; animation: fadeInUp 0.8s ease-out forwards; }
+        .auth-form { display: grid; gap: 1.2rem; }
+        .auth-field label { display: block; font-weight: 600; color: #003a75; margin-bottom: 0.4rem; font-size: 0.95rem; }
+        .auth-field input { width: 100%; border: 1px solid #b8d1f0; border-radius: 8px; padding: 0.85rem; font-size: 1rem; background: #fbfdff; }
+        .auth-status { margin-top: 1rem; padding: 1rem; border-radius: 8px; font-size: 0.95rem; display: none; text-align: center; }
+        .auth-status.success { background: #e9f9ee; color: #116b36; border: 1px solid #bde8c9; }
+        .auth-status.error { background: #fff1f1; color: #a32222; border: 1px solid #f2c3c3; }
+        .google-btn { background: #fff; border: 1px solid #dadce0; color: #3c4043; display: flex; align-items: center; gap: 10px; justify-content: center; width: 100%; margin-top: 1rem; font-weight: 500; cursor: pointer; border-radius: 8px; padding: 0.8rem; transition: background 0.2s; }
+        .google-btn:hover { background: #f8f9fa; }
+
+        /* --- EXISTING UI COMPONENTS --- */
+        .btn { display: inline-block; text-decoration: none; font-weight: 600; border-radius: 8px; padding: 0.8rem 1.2rem; transition: 0.2s; border: none; cursor: pointer; }
+        .btn-dark { background-color: #004080; color: #fff; }
+        .btn-dark:hover { background-color: #003468; }
+        .section-title { font-size: 1.8rem; color: #003a75; margin-bottom: 0.5rem; }
+        .section-subtitle { color: #555; margin-bottom: 1.5rem; }
+
+        /* Search & Subject Cards (Simplified for display) */
+        .search-panel, .intro-panel, .feedback-panel { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .subject-card { background: #fff; border-radius: 10px; border-top: 5px solid #3385ff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }
+        .subject-header { background: #e6f0fa; padding: 1.5rem; text-align: center; }
+        details { padding: 0.8rem; border-bottom: 1px solid #eee; }
+        summary { font-weight: bold; color: #00509e; cursor: pointer; }
+
+        footer { background: #002b5e; color: #fff; padding: 2rem 1rem; margin-top: 3rem; text-align: center; }
+
+        @media (max-width: 768px) { .nav-toggle { display: block; } .nav-links { display: none; width: 100%; flex-direction: column; } .nav-links.show { display: flex; } }
     </style>
 </head>
 <body>
 
-    <nav aria-label="Main navigation">
+    <nav>
         <a href="index.html" class="logo">May Learning Hub</a>
-        <div class="nav-links">
+        <button class="nav-toggle" id="navToggle">☰</button>
+        <div class="nav-links" id="navLinks">
             <a href="index.html" class="active">Home</a>
-            <a href="#signup">Create Account</a>
+            <a href="#subjects">Subjects</a>
             <a href="#feedback">Feedback</a>
+            <a href="suppdown.html">Support</a>
         </div>
     </nav>
 
     <header>
-        <h1>Welcome to May Learning Hub</h1>
-        <p>Teachers and learners, finally on the same page.</p>
+        <div class="container">
+            <h1>Welcome to May Learning Hub</h1>
+            <p style="color: #c7deff; font-style: italic;">Teachers and learners, finally on the same page.</p>
+        </div>
     </header>
 
     <div class="container">
-        <section id="signup" class="auth-panel">
-            <h2 class="section-title">Join the Hub</h2>
-            <p class="section-subtitle">Create an account to save your progress and access exclusive resources.</p>
-            
-            <form id="signUpForm" class="auth-form">
+        <section id="auth-section" class="auth-panel">
+            <div id="auth-header">
+                <h2 class="section-title" id="auth-title">Login to Learning Hub</h2>
+                <p class="section-subtitle">Enter your details to access your dashboard.</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="auth-field">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="email@example.com" required>
+                </div>
+                <div class="auth-field">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-dark">Sign In</button>
+                <p style="text-align: center; font-size: 0.9rem;">
+                    New here? <a href="javascript:void(0)" onclick="toggleAuth(true)">Create an account</a>
+                </p>
+            </form>
+
+            <form id="signUpForm" class="auth-form" style="display: none;">
                 <div class="auth-field">
                     <label for="regEmail">Email Address</label>
-                    <input type="email" id="regEmail" placeholder="you@school.com" required>
+                    <input type="email" id="regEmail" placeholder="your@email.com" required>
                 </div>
                 <div class="auth-field">
-                    <label for="regPassword">Password</label>
-                    <input type="password" id="regPassword" placeholder="Minimum 6 characters" required>
+                    <label for="regPassword">Create Password</label>
+                    <input type="password" id="regPassword" minlength="6" required>
                 </div>
-                <button type="submit" class="btn btn-dark">Create Account</button>
+                <button type="submit" class="btn btn-dark">Register</button>
+                <p style="text-align: center; font-size: 0.9rem;">
+                    Already have an account? <a href="javascript:void(0)" onclick="toggleAuth(false)">Login instead</a>
+                </p>
             </form>
-            <div id="authStatus"></div>
+
+            <div style="margin: 1.5rem 0; text-align: center; color: #888; position: relative;">
+                <span style="background: #fff; padding: 0 10px; position: relative; z-index: 1;">OR</span>
+                <div style="position: absolute; top: 50%; left: 0; width: 100%; border-top: 1px solid #ddd;"></div>
+            </div>
+
+            <button id="googleBtn" class="google-btn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
+                Continue with Google
+            </button>
+
+            <div id="authStatus" class="auth-status"></div>
         </section>
 
         <section id="subjects">
-            </section>
+            <h2 class="section-title">Browse Resources</h2>
+            <div class="subjects-grid">
+                <div class="subject-card">
+                    <div class="subject-header"><h2>Social Sciences</h2><p>Grades 8–9</p></div>
+                    <div id="social-sciences-content"></div>
+                </div>
+                <div class="subject-card">
+                    <div class="subject-header"><h2>Geography</h2><p>Grades 10–12</p></div>
+                    <div id="geography-content"></div>
+                </div>
+                <div class="subject-card">
+                    <div class="subject-header"><h2>Life Sciences</h2><p>Grades 10–12</p></div>
+                    <div id="life-sciences-content"></div>
+                </div>
+            </div>
+        </section>
 
-        <section id="feedback">
-            </section>
+        <section id="feedback" class="feedback-panel">
+            <h2 class="section-title">Feedback & Support</h2>
+            <form id="feedbackForm" action="https://formspree.io/f/mwvrrwrd" method="POST" class="auth-form">
+                <input type="text" name="Name" placeholder="Full Name" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
+                <input type="email" name="Email" placeholder="Email" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
+                <textarea name="Message" placeholder="How can we help?" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; min-height: 100px;"></textarea>
+                <button type="submit" class="btn btn-dark">Send Message</button>
+            </form>
+        </section>
     </div>
 
-    <script type="module">
-        // Import the Firebase functions
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    <footer>
+        <p>&copy; 2026 May Learning Hub. Built for Teachers & Learners.</p>
+    </footer>
 
-        // Your Firebase configuration
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { 
+            getAuth, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signInWithPopup, 
+            GoogleAuthProvider,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyApyOAfcEB8nGc-B3IO4X8wIl-nVi3nKeo",
             authDomain: "maylearninghub.firebaseapp.com",
@@ -129,44 +193,96 @@
             measurementId: "G-LJMFCM44TQ"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
-        // Handle Account Creation
-        const signUpForm = document.getElementById('signUpForm');
         const authStatus = document.getElementById('authStatus');
 
-        signUpForm.addEventListener('submit', (e) => {
+        // Helper: Auth Success & Redirect
+        function notify(message, isError = false) {
+            authStatus.style.display = 'block';
+            authStatus.className = isError ? 'auth-status error' : 'auth-status success';
+            authStatus.textContent = message;
+            if (!isError) {
+                setTimeout(() => { window.location.href = "index.html"; }, 2000);
+            }
+        }
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-
-            // Clear previous status
-            authStatus.style.display = 'none';
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Success
-                    authStatus.style.display = 'block';
-                    authStatus.style.backgroundColor = '#e9f9ee';
-                    authStatus.style.color = '#116b36';
-                    authStatus.textContent = "Account created successfully! Welcome to the Hub.";
-                    signUpForm.reset();
-                })
-                .catch((error) => {
-                    // Error
-                    authStatus.style.display = 'block';
-                    authStatus.style.backgroundColor = '#fff1f1';
-                    authStatus.style.color = '#a32222';
-                    authStatus.textContent = "Error: " + error.message;
-                });
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            signInWithEmailAndPassword(auth, email, pass)
+                .then(() => notify("Logged in! Redirecting..."))
+                .catch(err => notify(err.message, true));
         });
+
+        // Sign Up
+        document.getElementById('signUpForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPassword').value;
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then(() => notify("Account created! Redirecting..."))
+                .catch(err => notify(err.message, true));
+        });
+
+        // Google Auth
+        document.getElementById('googleBtn').addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then(() => notify("Signed in with Google!"))
+                .catch(err => notify(err.message, true));
+        });
+
+        // Check if user is already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('auth-header').innerHTML = `<h2 class="section-title">Welcome back!</h2><p>You are logged in as ${user.email}</p>`;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('signUpForm').style.display = 'none';
+                document.getElementById('googleBtn').style.display = 'none';
+                document.querySelector('.auth-panel').style.borderTopColor = '#25d366';
+            }
+        });
+
+        // UI Toggle function attached to window for HTML access
+        window.toggleAuth = (isSignUp) => {
+            document.getElementById('loginForm').style.display = isSignUp ? 'none' : 'grid';
+            document.getElementById('signUpForm').style.display = isSignUp ? 'grid' : 'none';
+            document.getElementById('auth-title').textContent = isSignUp ? "Create Hub Account" : "Login to Learning Hub";
+        };
     </script>
 
     <script>
-        // Keep your existing navToggle and search logic here...
+        /* --- ORIGINAL NAVIGATION & CONTENT LOGIC --- */
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+        navToggle.addEventListener('click', () => navLinks.classList.toggle('show'));
+
+        const subjectsData = [
+            { id: 'social-sciences-content', name: 'Social Sciences', path: 'Social-Sciences', grades: [8, 9] },
+            { id: 'geography-content', name: 'Geography', path: 'Geography', grades: [10, 11, 12] },
+            { id: 'life-sciences-content', name: 'Life Sciences', path: 'Life-Sciences', grades: [10, 11, 12] }
+        ];
+
+        subjectsData.forEach(subject => {
+            const container = document.getElementById(subject.id);
+            let html = '';
+            subject.grades.forEach(grade => {
+                html += `<details><summary>Grade ${grade}</summary>`;
+                for (let t = 1; t <= 4; t++) {
+                    html += `<div style="padding-left:1rem; margin:0.5rem 0;"><strong>Term ${t}</strong>
+                        <ul style="list-style:none; padding: 0.5rem 0;">
+                            <li><a href="${subject.path}/Term-${t}/Grade-${grade}/Notes/notes.html">📝 Notes</a></li>
+                        </ul></div>`;
+                }
+                html += `</details>`;
+            });
+            container.innerHTML = html;
+        });
     </script>
+
 </body>
 </html>
