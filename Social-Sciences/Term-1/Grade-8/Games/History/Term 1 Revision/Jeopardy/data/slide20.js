@@ -1,0 +1,5 @@
+(function(){var loadHandler=window['sl_{37FB42AF-920A-4D87-9596-09897A6F3D02}'];loadHandler&&loadHandler(19, '<div id="spr0_3321b8"><div id="spr1_3321b8" class="kern slide"><img id="img3_3321b8" src="data/img8.png" width="1280px" height="720px" alt="" style="left:0px;top:0px;"/><div id="spr3_3321b8" aria-label="Ein Bild, das Frau, Schild enthält.\
+\
+Automatisch generierte Beschreibung" role="group"><div id="spr4_3321b8"><img id="img0_3321b8" src="data/img6.png" width="1280" height="720" alt=""/></div></div><div id="spr5_3321b8" aria-label="Ein Bild, das Zeichnung enthält.\
+\
+Automatisch generierte Beschreibung" role="group" style="left:287.197px;top:-23.206px;"><div id="spr6_3321b8"><img id="img1_3321b8" src="data/img7.png" width="790" height="788" alt="" style="left:-0.15px;top:-0.019px;"/></div></div></div><div id="spr2_3321b8" class="kern slide"><div id="spr7_3321b8" style="left:9.075px;top:0.135px;"><img id="img2_3321b8" src="data/img93.png" width="1262" height="720" alt="" style="left:-0.075px;top:-0.067px;"/></div></div></div>', '{"s":[]}');})();
