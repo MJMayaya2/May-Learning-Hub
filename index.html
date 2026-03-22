@@ -1,187 +1,1712 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8GCWSKNDL7"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-8GCWSKNDL7');
-    </script>
-    
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8GCWSKNDL7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-8GCWSKNDL7');
+</script>
+	
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="May Learning Hub provides CAPS-aligned notes, educational games, and revision support.">
+    <meta name="description" content="May Learning Hub provides CAPS-aligned notes, educational games, activities, and revision support for Social Sciences, Geography, and Life Sciences learners and teachers.">
     <meta name="theme-color" content="#002b5e">
-    <title>May Learning Hub | Home</title>
-
+    <meta property="og:title" content="May Learning Hub | Home">
+    <meta property="og:description" content="CAPS-aligned notes, games, and activities for learners and teachers.">
+    <meta property="og:type" content="website">
+    <title>Learning Hub | Home</title>
     <style>
-        /* --- ORIGINAL STYLES --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; line-height: 1.6; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
         img { max-width: 100%; display: block; }
 
-        /* Animations */
-        @keyframes slideInDown { 0% { opacity: 0; transform: translateY(-30px); } 100% { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+        a:focus-visible,
+        button:focus-visible,
+        summary:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid #66a3ff;
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
 
-        /* Navigation & Layout */
-        nav { background-color: #002b5e; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.12); animation: slideInDown 0.6s ease-out forwards; }
-        .logo { color: #fff; font-size: 1.45rem; font-weight: bold; text-decoration: none; }
-        .nav-links { display: flex; align-items: center; gap: 1rem; }
-        .nav-links a { color: #cce0ff; text-decoration: none; font-weight: 500; padding: 0.45rem 0.7rem; border-radius: 6px; transition: 0.3s; }
-        .nav-links a:hover, .nav-links a.active { color: #fff; background-color: rgba(255,255,255,0.08); }
-        .nav-toggle { display: none; background: transparent; border: none; color: #fff; font-size: 1.6rem; cursor: pointer; }
+        @keyframes slideInLeft {
+            0% { opacity: 0; transform: translateX(-100px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
 
-        header { background: linear-gradient(135deg, #004080, #0059b3); color: #fff; padding: 3rem 1rem; text-align: center; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        @keyframes slideInRight {
+            0% { opacity: 0; transform: translateX(50px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
 
-        /* --- AUTH SECTION STYLES --- */
-        .auth-panel { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 2rem; margin: -2rem auto 2rem; max-width: 550px; position: relative; z-index: 10; border-top: 5px solid #3385ff; animation: fadeInUp 0.8s ease-out forwards; }
-        .auth-form { display: grid; gap: 1.2rem; }
-        .auth-field label { display: block; font-weight: 600; color: #003a75; margin-bottom: 0.4rem; font-size: 0.95rem; }
-        .auth-field input { width: 100%; border: 1px solid #b8d1f0; border-radius: 8px; padding: 0.85rem; font-size: 1rem; background: #fbfdff; }
-        .auth-status { margin-top: 1rem; padding: 1rem; border-radius: 8px; font-size: 0.95rem; display: none; text-align: center; }
-        .auth-status.success { background: #e9f9ee; color: #116b36; border: 1px solid #bde8c9; }
-        .auth-status.error { background: #fff1f1; color: #a32222; border: 1px solid #f2c3c3; }
-        .google-btn { background: #fff; border: 1px solid #dadce0; color: #3c4043; display: flex; align-items: center; gap: 10px; justify-content: center; width: 100%; margin-top: 1rem; font-weight: 500; cursor: pointer; border-radius: 8px; padding: 0.8rem; transition: background 0.2s; }
-        .google-btn:hover { background: #f8f9fa; }
+        @keyframes slideInDown {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
 
-        /* --- EXISTING UI COMPONENTS --- */
-        .btn { display: inline-block; text-decoration: none; font-weight: 600; border-radius: 8px; padding: 0.8rem 1.2rem; transition: 0.2s; border: none; cursor: pointer; }
-        .btn-dark { background-color: #004080; color: #fff; }
-        .btn-dark:hover { background-color: #003468; }
-        .section-title { font-size: 1.8rem; color: #003a75; margin-bottom: 0.5rem; }
-        .section-subtitle { color: #555; margin-bottom: 1.5rem; }
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
 
-        /* Search & Subject Cards (Simplified for display) */
-        .search-panel, .intro-panel, .feedback-panel { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-        .subject-card { background: #fff; border-radius: 10px; border-top: 5px solid #3385ff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }
-        .subject-header { background: #e6f0fa; padding: 1.5rem; text-align: center; }
-        details { padding: 0.8rem; border-bottom: 1px solid #eee; }
-        summary { font-weight: bold; color: #00509e; cursor: pointer; }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
 
-        footer { background: #002b5e; color: #fff; padding: 2rem 1rem; margin-top: 3rem; text-align: center; }
+        @keyframes pulseGlowRed {
+            0% {
+                box-shadow: 0 0 0 rgba(255, 59, 59, 0), 0 5px 14px rgba(0,0,0,0.08);
+            }
+            50% {
+                box-shadow: 0 0 18px rgba(255, 59, 59, 0.35), 0 8px 18px rgba(0,0,0,0.12);
+            }
+            100% {
+                box-shadow: 0 0 0 rgba(255, 59, 59, 0), 0 5px 14px rgba(0,0,0,0.08);
+            }
+        }
 
-        @media (max-width: 768px) { .nav-toggle { display: block; } .nav-links { display: none; width: 100%; flex-direction: column; } .nav-links.show { display: flex; } }
+        nav {
+            background-color: #002b5e;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+            opacity: 0;
+            animation: slideInDown 0.6s ease-out forwards;
+        }
+
+        .logo {
+            color: #fff;
+            font-size: 1.45rem;
+            font-weight: bold;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #cce0ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s, background-color 0.3s;
+            padding: 0.45rem 0.7rem;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.08);
+            text-decoration: none;
+        }
+
+        header {
+            background: linear-gradient(135deg, #004080, #0059b3);
+            color: #fff;
+            padding: 3rem 1rem 2.5rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .header-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            background: #fff;
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            animation: slideInLeft 0.8s ease-out 0.2s forwards;
+        }
+
+        .logo-fallback {
+            width: 120px;
+            height: 120px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: #fff;
+            color: #004080;
+            border-radius: 50%;
+            padding: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            animation: slideInLeft 0.8s ease-out 0.2s forwards;
+        }
+
+        .header-text {
+            text-align: left;
+            max-width: 700px;
+            opacity: 0;
+            animation: slideInRight 0.8s ease-out 0.4s forwards;
+        }
+
+        .header-text h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .motto {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: #c7deff;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+
+        .header-text p.instructions {
+            font-size: 1.05rem;
+            color: #e6f0fa;
+            margin-bottom: 1rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0.8rem 1.1rem;
+            transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: #fff;
+            color: #004080;
+        }
+
+        .btn-primary:hover {
+            background-color: #eaf3ff;
+        }
+
+        .btn-secondary {
+            background-color: rgba(255,255,255,0.12);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .btn-dark {
+            background-color: #004080;
+            color: #fff;
+        }
+
+        .btn-dark:hover {
+            background-color: #003468;
+        }
+
+        .btn-whatsapp {
+            background-color: #25d366;
+            color: #fff;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #1fb65a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #003a75;
+            margin-bottom: 0.35rem;
+        }
+
+        .section-subtitle {
+            color: #555;
+            margin-bottom: 1.1rem;
+        }
+
+        .intro-panel {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.2rem;
+            border-left: 4px solid #3385ff;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.3s forwards;
+        }
+
+        .intro-panel p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .intro-panel p + p {
+            margin-top: 0.45rem;
+        }
+
+        .trust-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.8rem;
+        }
+
+        .trust-card {
+            background: #f7fbff;
+            border: 1px solid #d9e9ff;
+            border-radius: 9px;
+            padding: 0.8rem 0.9rem;
+        }
+
+        .trust-card h3 {
+            color: #004080;
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+            line-height: 1.3;
+        }
+
+        .trust-card p {
+            font-size: 0.88rem;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .whats-new-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .whats-new-panel {
+            background: linear-gradient(135deg, #ff4d4d, #ff2a2a, #ff6b6b);
+            border: 2px solid #ff1a1a;
+            border-radius: 12px;
+            padding: 0.75rem 0.85rem;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.08);
+            opacity: 0;
+            animation:
+                fadeInUp 0.8s ease-out 0.38s forwards,
+                pulseGlowRed 2.6s ease-in-out 1.6s infinite;
+            position: relative;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .whats-new-panel::before {
+            content: "✨";
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .whats-new-header {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-bottom: 0.45rem;
+            flex-wrap: wrap;
+            padding-right: 1rem;
+        }
+
+        .whats-new-title {
+            font-size: 1.05rem;
+            color: #fff;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .whats-new-subtitle {
+            color: #ffe5e5;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .whats-new-list {
+            list-style: none;
+            display: grid;
+            gap: 0.42rem;
+        }
+
+        .whats-new-list li a {
+            display: block;
+            text-decoration: none;
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-left: 4px solid #ffffff;
+            color: #fff;
+            border-radius: 8px;
+            padding: 0.5rem 0.65rem;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            line-height: 1.25;
+            font-size: 0.93rem;
+        }
+
+        .whats-new-list li a:hover {
+            background: rgba(255,255,255,0.28);
+            transform: translateX(4px);
+        }
+
+        .new-tag {
+            display: inline-block;
+            background: #fff;
+            color: #e60000;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.12rem 0.42rem;
+            border-radius: 999px;
+            margin-right: 0.35rem;
+            letter-spacing: 0.3px;
+            vertical-align: middle;
+        }
+
+        .whats-new-meta {
+            display: block;
+            margin-top: 0.08rem;
+            font-size: 0.76rem;
+            color: #ffe3e3;
+        }
+
+        .search-panel,
+        .feedback-panel {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            padding: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.45s forwards;
+        }
+
+        .search-bar {
+            display: block;
+            width: 100%;
+        }
+
+        .search-bar input {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            height: 52px;
+            padding: 0.85rem 1rem;
+            border: 1px solid #b8d1f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #fbfdff;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .search-help,
+        .feedback-help {
+            margin-top: 0.7rem;
+            font-size: 0.92rem;
+            color: #666;
+        }
+
+        .search-results {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-results ul {
+            list-style: none;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .search-results li a {
+            display: block;
+            background: #f4f9ff;
+            color: #004080;
+            text-decoration: none;
+            border: 1px solid #d8e8fb;
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            word-break: break-word;
+        }
+
+        .search-results li a:hover {
+            background: #e9f3ff;
+        }
+
+        .result-meta {
+            display: block;
+            font-size: 0.88rem;
+            color: #5d6c7c;
+            margin-top: 0.2rem;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .subject-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 5px solid #3385ff;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .subject-card:nth-child(1) { animation-delay: 0.6s; }
+        .subject-card:nth-child(2) { animation-delay: 0.8s; }
+        .subject-card:nth-child(3) { animation-delay: 1s; }
+
+        .subject-header {
+            background-color: #e6f0fa;
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid #b3d4ff;
+        }
+
+        .subject-header h2 {
+            color: #004080;
+            font-size: 1.4rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .subject-header p {
+            font-size: 0.92rem;
+            color: #5d6c7c;
+        }
+
+        details {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        details[open] {
+            background-color: #fafbfc;
+        }
+
+        summary {
+            font-weight: bold;
+            font-size: 1.15rem;
+            color: #00509e;
+            cursor: pointer;
+            list-style: none;
+            padding: 0.5rem 0;
+        }
+
+        summary::-webkit-details-marker { display: none; }
+
+        summary::before {
+            content: "▶ ";
+            font-size: 0.9em;
+            color: #3385ff;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .term-section {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .term-section h4 {
+            color: #555;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 0.2rem;
+        }
+
+        .content-links {
+            list-style-type: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .content-links li a {
+            display: block;
+            text-decoration: none;
+            color: #004080;
+            background-color: #f0f7ff;
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            border-left: 3px solid transparent;
+        }
+
+        .content-links li a:hover {
+            background-color: #e6f0fa;
+            border-left: 3px solid #3385ff;
+            padding-left: 1.2rem;
+        }
+
+        .icon-notes::before { content: "📝 "; }
+        .icon-games::before { content: "🎮 "; }
+        .icon-activities::before { content: "🛠️ "; }
+
+        .feature-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .feature-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border-left: 5px solid #3385ff;
+        }
+
+        .feature-box h3 {
+            color: #004080;
+            margin-bottom: 0.4rem;
+            font-size: 1rem;
+        }
+
+        .feature-box p {
+            color: #5d6c7c;
+            font-size: 0.95rem;
+        }
+
+        .cta-panel {
+            background: linear-gradient(135deg, #003a75, #004f9f);
+            color: #fff;
+            border-radius: 14px;
+            padding: 1.8rem;
+            margin: 2rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-panel h2 {
+            margin-bottom: 0.3rem;
+            font-size: 1.5rem;
+        }
+
+        .cta-panel p {
+            color: #dbe9ff;
+            max-width: 700px;
+        }
+
+        .feedback-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .feedback-form-wrap {
+            background: #f9fcff;
+            border: 1px solid #dcecff;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .feedback-form {
+            display: grid;
+            gap: 0.95rem;
+        }
+
+        .feedback-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.9rem;
+        }
+
+        .feedback-field label {
+            display: block;
+            font-weight: 600;
+            color: #003a75;
+            margin-bottom: 0.35rem;
+            font-size: 0.95rem;
+        }
+
+        .feedback-field input,
+        .feedback-field select,
+        .feedback-field textarea {
+            width: 100%;
+            border: 1px solid #b8d1f0;
+            border-radius: 8px;
+            padding: 0.8rem 0.9rem;
+            font-size: 0.96rem;
+            background: #fff;
+            color: #333;
+        }
+
+        .feedback-field textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .feedback-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .form-status {
+            margin-top: 0.7rem;
+            padding: 0.8rem 0.9rem;
+            border-radius: 8px;
+            font-size: 0.94rem;
+            display: none;
+        }
+
+        .form-status.success {
+            display: block;
+            background: #e9f9ee;
+            color: #116b36;
+            border: 1px solid #bde8c9;
+        }
+
+        .form-status.error {
+            display: block;
+            background: #fff1f1;
+            color: #a32222;
+            border: 1px solid #f2c3c3;
+        }
+
+        .feedback-side {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .feedback-card {
+            background: #f7fbff;
+            border: 1px solid #d9e9ff;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .feedback-card h3 {
+            color: #004080;
+            margin-bottom: 0.4rem;
+            font-size: 1rem;
+        }
+
+        .feedback-card p {
+            color: #5d6c7c;
+            font-size: 0.94rem;
+        }
+
+        .feedback-card .mini-list {
+            list-style: none;
+            display: grid;
+            gap: 0.45rem;
+            margin-top: 0.6rem;
+        }
+
+        .feedback-card .mini-list li {
+            color: #4d6073;
+            font-size: 0.93rem;
+        }
+
+        .feedback-card .mini-list li::before {
+            content: "• ";
+            color: #3385ff;
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: #002b5e;
+            color: #fff;
+            margin-top: 3rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1.4s forwards;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px 1.3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .footer-brand h3,
+        .footer-links h4,
+        .footer-note h4 {
+            margin-bottom: 0.6rem;
+        }
+
+        .footer-brand p,
+        .footer-note p {
+            color: #d4e3f7;
+            font-size: 0.94rem;
+        }
+
+        .footer-links a {
+            display: block;
+            color: #d4e3f7;
+            text-decoration: none;
+            margin-bottom: 0.45rem;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding: 1rem 20px;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            color: #d4e3f7;
+            font-size: 0.92rem;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media (max-width: 900px) {
+            .feedback-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auth-layout,
+            .auth-row {
+                grid-template-columns: 1fr;
+            }
+            nav {
+                padding: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .nav-toggle {
+                display: block;
+                margin-left: auto;
+            }
+
+            .nav-links {
+                width: 100%;
+                display: none;
+                flex-direction: column;
+                align-items: flex-start;
+                padding-top: 0.5rem;
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .header-content {
+                text-align: center;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-text {
+                text-align: center;
+            }
+
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .whats-new-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-panel,
+            .feedback-panel {
+                padding: 1rem;
+            }
+
+            .search-bar {
+                width: 100%;
+            }
+
+            .search-bar input {
+                width: 100%;
+                min-width: 0;
+                max-width: 100%;
+                height: 46px;
+                font-size: 0.95rem;
+                padding: 0.75rem 0.9rem;
+            }
+
+            .search-help,
+            .feedback-help {
+                font-size: 0.88rem;
+            }
+
+            .feedback-row {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-panel {
+                text-align: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 14px;
+            }
+
+            .intro-panel {
+                padding: 0.9rem 1rem;
+            }
+
+            .search-panel,
+            .feedback-panel {
+                padding: 0.9rem;
+            }
+
+            .search-bar input {
+                height: 44px;
+                font-size: 0.92rem;
+                border-radius: 7px;
+                padding: 0.7rem 0.85rem;
+            }
+
+            .search-help,
+            .feedback-help {
+                font-size: 0.84rem;
+                line-height: 1.4;
+            }
+
+            .section-title {
+                font-size: 1.45rem;
+            }
+
+            .whats-new-title {
+                font-size: 0.98rem;
+            }
+
+            .whats-new-subtitle {
+                font-size: 0.78rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    
+
+        .auth-panel {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin: 0 auto 2rem;
+        }
+
+        .auth-layout {
+            display: grid;
+            grid-template-columns: 1.3fr 0.9fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .auth-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .auth-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .auth-field label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.45rem;
+            color: #002b5e;
+        }
+
+        .auth-field input {
+            width: 100%;
+            padding: 0.85rem 0.95rem;
+            border: 1px solid #cdd9ea;
+            border-radius: 10px;
+            font: inherit;
+            background: #f9fbff;
+        }
+
+        .auth-field small {
+            display: block;
+            margin-top: 0.4rem;
+            color: #5b6b7f;
+        }
+
+        .auth-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .btn-google {
+            background: #fff;
+            color: #1f1f1f;
+            border: 1px solid #d6dbe5;
+        }
+
+        .btn-google:hover {
+            background: #f4f7fb;
+        }
+
+        .auth-status {
+            min-height: 1.25rem;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .auth-status.success { color: #0a7a33; }
+        .auth-status.error { color: #c62828; }
+
+        .auth-card {
+            background: linear-gradient(180deg, #f7fbff, #eef5ff);
+            border: 1px solid #d9e7fb;
+            border-radius: 16px;
+            padding: 1.2rem;
+        }
+
+        .auth-card h3 {
+            color: #002b5e;
+            margin-bottom: 0.7rem;
+        }
+
+        .auth-card p {
+            margin-bottom: 0.7rem;
+        }
+
+        .auth-user-box {
+            background: #fff;
+            border: 1px solid #d9e7fb;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .auth-user-box p {
+            margin-bottom: 0.45rem;
+        }
+
     </style>
 </head>
 <body>
 
-    <nav>
+    <nav aria-label="Main navigation">
         <a href="index.html" class="logo">May Learning Hub</a>
-        <button class="nav-toggle" id="navToggle">☰</button>
+
+        <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle navigation menu">
+            ☰
+        </button>
+
         <div class="nav-links" id="navLinks">
             <a href="index.html" class="active">Home</a>
-            <a href="#subjects">Subjects</a>
-            <a href="#feedback">Feedback</a>
-            <a href="suppdown.html">Support</a>
+            <a href="about.html">About</a>
+            <a href="#account">Account</a>
+                <a href="#feedback">Feedback</a>
+            <a href="suppdown.html">App &amp; Support</a>
         </div>
     </nav>
 
     <header>
-        <div class="container">
-            <h1>Welcome to May Learning Hub</h1>
-            <p style="color: #c7deff; font-style: italic;">Teachers and learners, finally on the same page.</p>
+        <div class="header-content">
+            <img src="May Learning Hub Logo.jpg" alt="May Learning Hub Logo" class="header-logo" id="siteLogo">
+            <div class="logo-fallback" id="logoFallback" aria-hidden="true">May<br>Learning<br>Hub</div>
+
+            <div class="header-text">
+                <h1>Welcome to May Learning Hub</h1>
+                <p class="motto">Teachers and learners, finally on the same page.</p>
+                <p class="instructions">
+                    Explore CAPS-aligned notes, educational games, and classroom activities for Social Sciences, Geography, and Life Sciences.
+                </p>
+                <div class="hero-actions">
+                    <a href="#subjects" class="btn btn-primary">Start Learning</a>
+                    <a href="#account" class="btn btn-secondary">Create Account</a>
+                    <a href="#feedback" class="btn btn-secondary">Send Feedback</a>
+                </div>
+            </div>
         </div>
     </header>
 
     <div class="container">
-        <section id="auth-section" class="auth-panel">
-            <div id="auth-header">
-                <h2 class="section-title" id="auth-title">Login to Learning Hub</h2>
-                <p class="section-subtitle">Enter your details to access your dashboard.</p>
-            </div>
 
-            <form id="loginForm" class="auth-form">
-                <div class="auth-field">
-                    <label for="loginEmail">Email Address</label>
-                    <input type="email" id="loginEmail" placeholder="email@example.com" required>
-                </div>
-                <div class="auth-field">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn btn-dark">Sign In</button>
-                <p style="text-align: center; font-size: 0.9rem;">
-                    New here? <a href="javascript:void(0)" onclick="toggleAuth(true)">Create an account</a>
-                </p>
-            </form>
+        <section class="intro-panel" aria-labelledby="intro-title">
+            <h2 class="section-title" id="intro-title">Built for Real Classroom Learning</h2>
+            <p>
+                May Learning Hub is designed to support both teachers and learners with structured subject content, engaging revision tools, and accessible classroom resources.
+            </p>
 
-            <form id="signUpForm" class="auth-form" style="display: none;">
-                <div class="auth-field">
-                    <label for="regEmail">Email Address</label>
-                    <input type="email" id="regEmail" placeholder="your@email.com" required>
+            <div class="trust-points">
+                <div class="trust-card">
+                    <h3>CAPS-Friendly Structure</h3>
+                    <p>Organised by subject, grade, and term for easier classroom use and revision.</p>
                 </div>
-                <div class="auth-field">
-                    <label for="regPassword">Create Password</label>
-                    <input type="password" id="regPassword" minlength="6" required>
+                <div class="trust-card">
+                    <h3>Teacher-Created</h3>
+                    <p>Designed with practical school needs in mind, not just for looks.</p>
                 </div>
-                <button type="submit" class="btn btn-dark">Register</button>
-                <p style="text-align: center; font-size: 0.9rem;">
-                    Already have an account? <a href="javascript:void(0)" onclick="toggleAuth(false)">Login instead</a>
-                </p>
-            </form>
-
-            <div style="margin: 1.5rem 0; text-align: center; color: #888; position: relative;">
-                <span style="background: #fff; padding: 0 10px; position: relative; z-index: 1;">OR</span>
-                <div style="position: absolute; top: 50%; left: 0; width: 100%; border-top: 1px solid #ddd;"></div>
-            </div>
-
-            <button id="googleBtn" class="google-btn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
-                Continue with Google
-            </button>
-
-            <div id="authStatus" class="auth-status"></div>
-        </section>
-
-        <section id="subjects">
-            <h2 class="section-title">Browse Resources</h2>
-            <div class="subjects-grid">
-                <div class="subject-card">
-                    <div class="subject-header"><h2>Social Sciences</h2><p>Grades 8–9</p></div>
-                    <div id="social-sciences-content"></div>
+                <div class="trust-card">
+                    <h3>Notes + Games + Activities</h3>
+                    <p>One place for core learning content and interactive support material.</p>
                 </div>
-                <div class="subject-card">
-                    <div class="subject-header"><h2>Geography</h2><p>Grades 10–12</p></div>
-                    <div id="geography-content"></div>
-                </div>
-                <div class="subject-card">
-                    <div class="subject-header"><h2>Life Sciences</h2><p>Grades 10–12</p></div>
-                    <div id="life-sciences-content"></div>
+                <div class="trust-card">
+                    <h3>Growing Learning Platform</h3>
+                    <p>Ready to expand with more topics, app support, and subject resources over time.</p>
                 </div>
             </div>
         </section>
 
-        <section id="feedback" class="feedback-panel">
-            <h2 class="section-title">Feedback & Support</h2>
-            <form id="feedbackForm" action="https://formspree.io/f/mwvrrwrd" method="POST" class="auth-form">
-                <input type="text" name="Name" placeholder="Full Name" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
-                <input type="email" name="Email" placeholder="Email" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px;">
-                <textarea name="Message" placeholder="How can we help?" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; min-height: 100px;"></textarea>
-                <button type="submit" class="btn btn-dark">Send Message</button>
-            </form>
+        <section class="whats-new-grid" aria-label="Latest updates">
+            <section class="whats-new-panel" aria-labelledby="whats-new-notes-title">
+                <div class="whats-new-header">
+                    <h2 class="whats-new-title" id="whats-new-notes-title">What’s New — Notes / Presentations</h2>
+                    <p class="whats-new-subtitle">Fresh presentations and newly added lesson content.</p>
+                </div>
+
+                <ul class="whats-new-list">
+                    <li>
+                        <a href="Life-Sciences/Term-1/Grade-11/Notes/notes.html">
+                            <span class="new-tag">NEW</span>
+                            Life Sciences Grade 11 Term 1 Presentation
+                            <span class="whats-new-meta">Latest presentation added for Life Sciences.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Social-Sciences/Term-1/Grade-9/Notes/notes.html">
+                            <span class="new-tag">NEW</span>
+                            Social Sciences Grade 9 Term 1 Presentation
+                            <span class="whats-new-meta">Freshly added Social Sciences presentation.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Life-Sciences/Term-1/Grade-10/Notes/notes.html">
+                            <span class="new-tag">NEW</span>
+                            Life Sciences Grade 10 Term 1 Presentation
+                            <span class="whats-new-meta">Latest presentation for Grade 10 Life Sciences.</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="whats-new-panel" aria-labelledby="whats-new-games-title">
+                <div class="whats-new-header">
+                    <h2 class="whats-new-title" id="whats-new-games-title">What’s New — Games</h2>
+                    <p class="whats-new-subtitle">Fresh interactive games and revision activities.</p>
+                </div>
+
+                <ul class="whats-new-list">
+                    <li>
+                        <a href="Geography/Term-1/Grade-10/Games/games.html">
+                            <span class="new-tag">NEW</span>
+                            Geography Grade 10 Term 1 Game
+                            <span class="whats-new-meta">New interactive revision game for Geography learners.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Social-Sciences/Term-1/Grade-8/Games/games.html">
+                            <span class="new-tag">NEW</span>
+                            Social Sciences Grade 8 Term 1 Game
+                            <span class="whats-new-meta">Fresh Social Sciences game for active recall and practice.</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Geography/Term-1/Grade-11/Games/games.html">
+                            <span class="new-tag">NEW</span>
+                            Geography Grade 11 Term 1 Game
+                            <span class="whats-new-meta">Newly added Geography interactive games.</span>
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </section>
+
+        <section class="search-panel" aria-labelledby="search-title">
+            <h2 class="section-title" id="search-title">Quick Search</h2>
+            <p class="section-subtitle">Search by subject, grade, term, or content type.</p>
+
+            <div class="search-bar">
+                <label for="siteSearch" class="sr-only">Search site content</label>
+                <input
+                    type="text"
+                    id="siteSearch"
+                    placeholder="Try: Geography Grade 12 Term 1 Notes"
+                    autocomplete="off"
+                >
+            </div>
+            <p class="search-help">Examples: “Social Sciences Grade 8 Games”, “Life Sciences Term 3 Activities”, “Geography Notes”.</p>
+
+            <div class="search-results" id="searchResults" aria-live="polite">
+                <ul id="searchResultsList"></ul>
+            </div>
+        </section>
+
+        <section class="feature-strip" aria-label="Site highlights">
+            <div class="feature-box">
+                <h3>📝 Notes Hub</h3>
+                <p>Clear learning material organised by term and grade.</p>
+            </div>
+            <div class="feature-box">
+                <h3>🎮 Interactive Games</h3>
+                <p>Learning made more memorable through play and revision challenges.</p>
+            </div>
+            <div class="feature-box">
+                <h3>🛠️ Classroom Activities</h3>
+                <p>Useful tasks for practice, teaching support, and guided learning.</p>
+            </div>
+            <div class="feature-box">
+                <h3>📚 Built to Grow</h3>
+                <p>Prepared for future expansion with more topics, app support, and subject resources.</p>
+            </div>
+        </section>
+
+        <section id="subjects" aria-labelledby="subjects-title">
+            <h2 class="section-title" id="subjects-title">Browse by Subject, Grade, and Term</h2>
+            <p class="section-subtitle">
+                Select your subject below to access notes, games, and activities...
+            </p>
+
+            <main class="subjects-grid" id="subjectsGrid">
+
+                <section class="subject-card">
+                    <div class="subject-header">
+                        <h2>Social Sciences</h2>
+                        <p>Grades 8–9</p>
+                    </div>
+                    <div class="subject-body" id="social-sciences-content"></div>
+                </section>
+
+                <section class="subject-card">
+                    <div class="subject-header">
+                        <h2>Geography</h2>
+                        <p>Grades 10–12</p>
+                    </div>
+                    <div class="subject-body" id="geography-content"></div>
+                </section>
+
+                <section class="subject-card">
+                    <div class="subject-header">
+                        <h2>Life Sciences</h2>
+                        <p>Grades 10–12</p>
+                    </div>
+                    <div class="subject-body" id="life-sciences-content"></div>
+                </section>
+
+            </main>
+        </section>
+
+        <section class="cta-panel" aria-labelledby="cta-title">
+            <div>
+                <h2 id="cta-title">Need help or want to explore the learning app?</h2>
+                <p>
+                    Visit the support section for guidance, help with using the site, and information about the learning app.
+                </p>
+            </div>
+            <a href="suppdown.html" class="btn btn-primary">Go to App &amp; Support</a>
+        </section>
+
+
+        <section class="auth-panel" id="account" aria-labelledby="account-title">
+            <h2 class="section-title" id="account-title">Create an Account or Sign In</h2>
+            <p class="section-subtitle">
+                Use your email and password to create an account, or continue quickly with Google.
+            </p>
+
+            <div class="auth-layout">
+                <div>
+                    <form class="auth-form" id="authForm">
+                        <div class="auth-row">
+                            <div class="auth-field">
+                                <label for="authName">Full Name</label>
+                                <input type="text" id="authName" placeholder="Enter your full name">
+                                <small>Optional for email sign-up, useful for your profile name.</small>
+                            </div>
+
+                            <div class="auth-field">
+                                <label for="authEmail">Email Address</label>
+                                <input type="email" id="authEmail" placeholder="Enter your email" required>
+                            </div>
+                        </div>
+
+                        <div class="auth-row">
+                            <div class="auth-field">
+                                <label for="authPassword">Password</label>
+                                <input type="password" id="authPassword" placeholder="Create or enter password" required>
+                                <small>Use at least 6 characters.</small>
+                            </div>
+
+                            <div class="auth-field">
+                                <label for="authConfirmPassword">Confirm Password</label>
+                                <input type="password" id="authConfirmPassword" placeholder="Confirm password for sign-up">
+                                <small>Needed when creating a new account.</small>
+                            </div>
+                        </div>
+
+                        <div class="auth-actions">
+                            <button type="button" class="btn btn-dark" id="signUpBtn">Create Account</button>
+                            <button type="button" class="btn btn-primary" id="signInBtn">Sign In</button>
+                            <button type="button" class="btn btn-google" id="googleSignInBtn">Sign In with Google</button>
+                            <button type="button" class="btn btn-secondary" id="signOutBtn" style="display:none;">Sign Out</button>
+                        </div>
+
+                        <div id="authStatus" class="auth-status" aria-live="polite"></div>
+                    </form>
+                </div>
+
+                <div class="auth-card">
+                    <h3>Account Features</h3>
+                    <p>Create an account with email and password, or use your Google account for faster sign-in.</p>
+                    <p>When a user is signed in, their status appears below.</p>
+
+                    <div class="auth-user-box" id="authUserBox">
+                        <p><strong>Status:</strong> <span id="authStateText">Not signed in</span></p>
+                        <p><strong>Name:</strong> <span id="authUserName">-</span></p>
+                        <p><strong>Email:</strong> <span id="authUserEmail">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="feedback-panel" id="feedback" aria-labelledby="feedback-title">
+            <h2 class="section-title" id="feedback-title">Feedback, Support, or Resource Requests</h2>
+            <p class="section-subtitle">
+                Learners, teachers, and parents can use this section to send feedback, report issues, or request learning resources.
+            </p>
+
+            <div class="feedback-layout">
+                <div class="feedback-form-wrap">
+                    <form
+                        class="feedback-form"
+                        id="feedbackForm"
+                        action="https://formspree.io/f/mwvrrwrd"
+                        method="POST"
+                    >
+                        <div class="feedback-row">
+                            <div class="feedback-field">
+                                <label for="fullName">Full Name</label>
+                                <input type="text" id="fullName" name="Full Name" placeholder="Enter your name" required>
+                            </div>
+
+                            <div class="feedback-field">
+                                <label for="emailAddress">Email Address</label>
+                                <input type="email" id="emailAddress" name="Email" placeholder="Enter your email" required>
+                            </div>
+                        </div>
+
+                        <div class="feedback-row">
+                            <div class="feedback-field">
+                                <label for="userRole">I am a...</label>
+                                <select id="userRole" name="Role" required>
+                                    <option value="">Select one</option>
+                                    <option value="Learner">Learner</option>
+                                    <option value="Teacher">Teacher</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="feedback-field">
+                                <label for="requestType">Request Type</label>
+                                <select id="requestType" name="Request Type" required>
+                                    <option value="">Select one</option>
+                                    <option value="General Feedback">General Feedback</option>
+                                    <option value="Report Broken Link">Report Broken Link</option>
+                                    <option value="Request Notes">Request Notes</option>
+                                    <option value="Request Game">Request Game</option>
+                                    <option value="Request Activity">Request Activity</option>
+                                    <option value="Support Help">Support Help</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="feedback-field">
+                            <label for="messageSubject">Subject</label>
+                            <input type="text" id="messageSubject" name="Subject" placeholder="Short title for your message" required>
+                        </div>
+
+                        <div class="feedback-field">
+                            <label for="messageBody">Message</label>
+                            <textarea id="messageBody" name="Message" placeholder="Write your message here..." required></textarea>
+                        </div>
+
+                        <input type="hidden" name="_subject" value="New May Learning Hub Feedback Form Submission">
+
+                        <div class="feedback-actions">
+                            <button type="submit" class="btn btn-dark">Send Message</button>
+                            <a
+                                href="https://api.whatsapp.com/send/?phone=%2B27684480856&text&type=phone_number&app_absent=0"
+                                class="btn btn-whatsapp"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Quick Help on WhatsApp
+                            </a>
+                        </div>
+
+                        <div id="formStatus" class="form-status" aria-live="polite"></div>
+                    </form>
+
+                    <p class="feedback-help">
+                        Triple C: Comment, Critique or Complement
+                    </p>
+                </div>
+
+                <div class="feedback-side">
+                    <div class="feedback-card">
+                        <h3>What can users send here?</h3>
+                        <p>This form can be used for more than just general comments.</p>
+                        <ul class="mini-list">
+                            <li>Request a missing topic or grade</li>
+                            <li>Report broken pages or links</li>
+                            <li>Ask for notes, games, or activities</li>
+                            <li>Send support questions about the app or site</li>
+                        </ul>
+                    </div>
+
+                    <div class="feedback-card">
+                        <h3>Easy Ways to Get Support</h3>
+                        <p>
+                            Use the feedback form or WhatsApp button to ask for help, report a problem, or request learning material for your subject and grade.
+                        </p>
+                    </div>
+
+                    <div class="feedback-card">
+                        <h3>Helpful Note</h3>
+                        <p>
+                            Be as specific as possible when sending a request. Include the <strong>subject</strong>, <strong>grade</strong>, <strong>term</strong>, and whether you need <strong>notes</strong>, a <strong>game</strong>, or an <strong>activity</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 
     <footer>
-        <p>&copy; 2026 May Learning Hub. Built for Teachers & Learners.</p>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>May Learning Hub</h3>
+                <p>
+                    A growing learning platform for teachers and learners, designed to make notes, games, and activities easier to access and use.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="#feedback">Feedback</a>
+                <a href="suppdown.html">App &amp; Support</a>
+            </div>
+
+            <div class="footer-note">
+                <h4>Site Note</h4>
+                <p>
+                    Content is organised by subject, grade, and term to support structured classroom learning, revision, and app-based access.
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 May Learning Hub. All rights reserved.</p>
+        </div>
     </footer>
 
+    <script>
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', () => {
+            const isOpen = navLinks.classList.toggle('show');
+            navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        const siteLogo = document.getElementById('siteLogo');
+        const logoFallback = document.getElementById('logoFallback');
+
+        siteLogo.addEventListener('error', function () {
+            this.style.display = 'none';
+            logoFallback.style.display = 'flex';
+        });
+
+        const subjectsData = [
+            {
+                id: 'social-sciences-content',
+                subjectName: 'Social Sciences',
+                basePath: 'Social-Sciences',
+                grades: [8, 9]
+            },
+            {
+                id: 'geography-content',
+                subjectName: 'Geography',
+                basePath: 'Geography',
+                grades: [10, 11, 12]
+            },
+            {
+                id: 'life-sciences-content',
+                subjectName: 'Life Sciences',
+                basePath: 'Life-Sciences',
+                grades: [10, 11, 12]
+            }
+        ];
+
+        const searchableLinks = [];
+
+        function createTermLinks(subjectName, basePath, grade, term) {
+            const items = [
+                {
+                    label: 'Notes',
+                    className: 'icon-notes',
+                    type: 'Notes',
+                    href: `${basePath}/Term-${term}/Grade-${grade}/Notes/notes.html`
+                },
+                {
+                    label: 'Games',
+                    className: 'icon-games',
+                    type: 'Games',
+                    href: `${basePath}/Term-${term}/Grade-${grade}/Games/games.html`
+                },
+                {
+                    label: 'Activities',
+                    className: 'icon-activities',
+                    type: 'Activities',
+                    href: `${basePath}/Term-${term}/Grade-${grade}/Activities/activities.html`
+                }
+            ];
+
+            items.forEach(item => {
+                searchableLinks.push({
+                    subject: subjectName,
+                    grade: grade,
+                    term: term,
+                    type: item.type,
+                    label: `${subjectName} Grade ${grade} Term ${term} ${item.type}`,
+                    href: item.href
+                });
+            });
+
+            return items.map(item => `
+                <li>
+                    <a href="${item.href}" class="${item.className}">
+                        ${item.label}
+                    </a>
+                </li>
+            `).join('');
+        }
+
+        function buildSubjectContent(subject) {
+            const container = document.getElementById(subject.id);
+            let html = '';
+
+            subject.grades.forEach(grade => {
+                html += `<details><summary>Grade ${grade}</summary>`;
+
+                for (let term = 1; term <= 4; term++) {
+                    html += `
+                        <div class="term-section">
+                            <h4>Term ${term}</h4>
+                            <ul class="content-links">
+                                ${createTermLinks(subject.subjectName, subject.basePath, grade, term)}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                html += `</details>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        subjectsData.forEach(buildSubjectContent);
+
+        const siteSearch = document.getElementById('siteSearch');
+        const searchResults = document.getElementById('searchResults');
+        const searchResultsList = document.getElementById('searchResultsList');
+
+        function renderSearchResults(results, query) {
+            if (!query.trim()) {
+                searchResults.classList.remove('active');
+                searchResultsList.innerHTML = '';
+                return;
+            }
+
+            if (results.length === 0) {
+                searchResults.classList.add('active');
+                searchResultsList.innerHTML = `
+                    <li>
+                        <a href="javascript:void(0)">
+                            No matches found
+                            <span class="result-meta">Try searching by subject, grade, term, or type such as Notes, Games, or Activities.</span>
+                        </a>
+                    </li>
+                `;
+                return;
+            }
+
+            searchResults.classList.add('active');
+            searchResultsList.innerHTML = results.slice(0, 12).map(result => `
+                <li>
+                    <a href="${result.href}">
+                        ${result.label}
+                        <span class="result-meta">${result.subject} • Grade ${result.grade} • Term ${result.term} • ${result.type}</span>
+                    </a>
+                </li>
+            `).join('');
+        }
+
+        siteSearch.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+
+            const filtered = searchableLinks.filter(item => {
+                const haystack = `${item.subject} grade ${item.grade} term ${item.term} ${item.type} ${item.label}`.toLowerCase();
+                return haystack.includes(query);
+            });
+
+            renderSearchResults(filtered, query);
+        });
+
+        const feedbackForm = document.getElementById('feedbackForm');
+        const formStatus = document.getElementById('formStatus');
+
+        feedbackForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            formStatus.className = 'form-status';
+            formStatus.textContent = '';
+
+            const formData = new FormData(feedbackForm);
+
+            try {
+                const response = await fetch(feedbackForm.action, {
+                    method: feedbackForm.method,
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    feedbackForm.reset();
+                    formStatus.className = 'form-status success';
+                    formStatus.textContent = 'Thank you. Your message has been sent successfully.';
+                } else {
+                    formStatus.className = 'form-status error';
+                    formStatus.textContent = 'Sorry, something went wrong while sending your message. Please try again.';
+                }
+            } catch (error) {
+                formStatus.className = 'form-status error';
+                formStatus.textContent = 'Connection problem. Please try again later or use the WhatsApp button.';
+            }
+        });
+    </script>
+
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            signInWithPopup, 
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
+        import {
+            getAuth,
             GoogleAuthProvider,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signInWithPopup,
+            onAuthStateChanged,
+            signOut,
+            updateProfile
+        } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyApyOAfcEB8nGc-B3IO4X8wIl-nVi3nKeo",
@@ -194,93 +1719,119 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        getAnalytics(app);
+
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
+        const authName = document.getElementById('authName');
+        const authEmail = document.getElementById('authEmail');
+        const authPassword = document.getElementById('authPassword');
+        const authConfirmPassword = document.getElementById('authConfirmPassword');
+        const signUpBtn = document.getElementById('signUpBtn');
+        const signInBtn = document.getElementById('signInBtn');
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+        const signOutBtn = document.getElementById('signOutBtn');
         const authStatus = document.getElementById('authStatus');
+        const authStateText = document.getElementById('authStateText');
+        const authUserName = document.getElementById('authUserName');
+        const authUserEmail = document.getElementById('authUserEmail');
 
-        // Helper: Auth Success & Redirect
-        function notify(message, isError = false) {
-            authStatus.style.display = 'block';
-            authStatus.className = isError ? 'auth-status error' : 'auth-status success';
+        function setAuthMessage(message, type = '') {
+            authStatus.className = `auth-status ${type}`.trim();
             authStatus.textContent = message;
-            if (!isError) {
-                setTimeout(() => { window.location.href = "index.html"; }, 2000);
-            }
         }
 
-        // Login
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPassword').value;
-            signInWithEmailAndPassword(auth, email, pass)
-                .then(() => notify("Logged in! Redirecting..."))
-                .catch(err => notify(err.message, true));
-        });
+        function getEmailPasswordValues() {
+            return {
+                name: authName.value.trim(),
+                email: authEmail.value.trim(),
+                password: authPassword.value,
+                confirmPassword: authConfirmPassword.value
+            };
+        }
 
-        // Sign Up
-        document.getElementById('signUpForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPassword').value;
-            createUserWithEmailAndPassword(auth, email, pass)
-                .then(() => notify("Account created! Redirecting..."))
-                .catch(err => notify(err.message, true));
-        });
+        signUpBtn.addEventListener('click', async () => {
+            const { name, email, password, confirmPassword } = getEmailPasswordValues();
 
-        // Google Auth
-        document.getElementById('googleBtn').addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .then(() => notify("Signed in with Google!"))
-                .catch(err => notify(err.message, true));
-        });
+            if (!email || !password) {
+                setAuthMessage('Please enter your email and password.', 'error');
+                return;
+            }
 
-        // Check if user is already logged in
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('auth-header').innerHTML = `<h2 class="section-title">Welcome back!</h2><p>You are logged in as ${user.email}</p>`;
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('signUpForm').style.display = 'none';
-                document.getElementById('googleBtn').style.display = 'none';
-                document.querySelector('.auth-panel').style.borderTopColor = '#25d366';
+            if (password.length < 6) {
+                setAuthMessage('Password must be at least 6 characters long.', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                setAuthMessage('Passwords do not match.', 'error');
+                return;
+            }
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+                if (name) {
+                    await updateProfile(userCredential.user, { displayName: name });
+                }
+
+                setAuthMessage('Account created successfully.', 'success');
+                authPassword.value = '';
+                authConfirmPassword.value = '';
+            } catch (error) {
+                setAuthMessage(error.message, 'error');
             }
         });
 
-        // UI Toggle function attached to window for HTML access
-        window.toggleAuth = (isSignUp) => {
-            document.getElementById('loginForm').style.display = isSignUp ? 'none' : 'grid';
-            document.getElementById('signUpForm').style.display = isSignUp ? 'grid' : 'none';
-            document.getElementById('auth-title').textContent = isSignUp ? "Create Hub Account" : "Login to Learning Hub";
-        };
-    </script>
+        signInBtn.addEventListener('click', async () => {
+            const { email, password } = getEmailPasswordValues();
 
-    <script>
-        /* --- ORIGINAL NAVIGATION & CONTENT LOGIC --- */
-        const navToggle = document.getElementById('navToggle');
-        const navLinks = document.getElementById('navLinks');
-        navToggle.addEventListener('click', () => navLinks.classList.toggle('show'));
+            if (!email || !password) {
+                setAuthMessage('Please enter your email and password.', 'error');
+                return;
+            }
 
-        const subjectsData = [
-            { id: 'social-sciences-content', name: 'Social Sciences', path: 'Social-Sciences', grades: [8, 9] },
-            { id: 'geography-content', name: 'Geography', path: 'Geography', grades: [10, 11, 12] },
-            { id: 'life-sciences-content', name: 'Life Sciences', path: 'Life-Sciences', grades: [10, 11, 12] }
-        ];
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                setAuthMessage('Signed in successfully.', 'success');
+                authPassword.value = '';
+                authConfirmPassword.value = '';
+            } catch (error) {
+                setAuthMessage(error.message, 'error');
+            }
+        });
 
-        subjectsData.forEach(subject => {
-            const container = document.getElementById(subject.id);
-            let html = '';
-            subject.grades.forEach(grade => {
-                html += `<details><summary>Grade ${grade}</summary>`;
-                for (let t = 1; t <= 4; t++) {
-                    html += `<div style="padding-left:1rem; margin:0.5rem 0;"><strong>Term ${t}</strong>
-                        <ul style="list-style:none; padding: 0.5rem 0;">
-                            <li><a href="${subject.path}/Term-${t}/Grade-${grade}/Notes/notes.html">📝 Notes</a></li>
-                        </ul></div>`;
-                }
-                html += `</details>`;
-            });
-            container.innerHTML = html;
+        googleSignInBtn.addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                setAuthMessage('Signed in with Google successfully.', 'success');
+            } catch (error) {
+                setAuthMessage(error.message, 'error');
+            }
+        });
+
+        signOutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                setAuthMessage('You have signed out.', 'success');
+            } catch (error) {
+                setAuthMessage(error.message, 'error');
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authStateText.textContent = 'Signed in';
+                authUserName.textContent = user.displayName || '-';
+                authUserEmail.textContent = user.email || '-';
+                signOutBtn.style.display = 'inline-block';
+            } else {
+                authStateText.textContent = 'Not signed in';
+                authUserName.textContent = '-';
+                authUserEmail.textContent = '-';
+                signOutBtn.style.display = 'none';
+            }
         });
     </script>
 
