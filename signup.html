@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | May Learning Hub</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; }
+        .auth-card { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 420px; text-align: center; }
+        .auth-card h2 { color: #002b5e; margin-bottom: 1rem; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        
+        /* Subject Group Styling */
+        .subject-group { text-align: left; margin: 10px 0; padding: 10px; border: 1px solid #eee; border-radius: 8px; background: #fafafa; }
+        .subject-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #555; }
+        .checkbox-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; font-size: 0.9rem; cursor: pointer; }
+        .checkbox-item input { width: auto; margin: 0; cursor: pointer; }
+
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 10px; transition: 0.3s; }
+        .btn-primary { background: #004080; color: white; }
+        .btn-google { background: white; color: #555; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .divider { margin: 20px 0; color: #888; position: relative; }
+        .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #ddd; }
+        .divider::before { left: 0; } .divider::after { right: 0; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="auth-card">
+    <h2>Join May Learning Hub</h2>
+    <p>Create your profile to get started</p>
+    
+    <input type="text" id="username" placeholder="Full Name">
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="password" id="password" placeholder="Password (min. 6 characters)">
+    
+    <select id="role">
+        <option value="" disabled selected>I am a...</option>
+        <option value="learner">Learner</option>
+        <option value="teacher">Teacher</option>
+    </select>
+
+    <div id="learnerSection" class="hidden">
+        <select id="grade">
+            <option value="" disabled selected>Select Your Grade</option>
+            <option value="8">Grade 8</option>
+            <option value="9">Grade 9</option>
+            <option value="10">Grade 10</option>
+            <option value="11">Grade 11</option>
+            <option value="12">Grade 12</option>
+        </select>
+
+        <div id="learnerSubjects" class="subject-group hidden">
+            <label>Select Subjects:</label>
+            <div class="checkbox-item"><input type="checkbox" class="l-sub" value="Geography"> Geography</div>
+            <div class="checkbox-item"><input type="checkbox" class="l-sub" value="Life Sciences"> Life Sciences</div>
+        </div>
+    </div>
+
+    <div id="teacherSection" class="subject-group hidden">
+        <label>Subjects You Teach (Select all that apply):</label>
+        <div class="checkbox-item"><input type="checkbox" class="t-sub" value="Social Sciences"> Social Sciences</div>
+        <div class="checkbox-item"><input type="checkbox" class="t-sub" value="Geography"> Geography</div>
+        <div class="checkbox-item"><input type="checkbox" class="t-sub" value="Life Sciences"> Life Sciences</div>
+    </div>
+
+    <input type="text" id="school" placeholder="School Name">
+
+    <button id="emailSignup" class="btn btn-primary">Create Account</button>
+
+    <div class="divider">OR</div>
+
+    <button id="googleSignup" class="btn btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="18" alt="">
+        Sign up with Google
+    </button>
+    
+    <p style="margin-top:20px; font-size: 0.9rem;">Already have an account? <a href="signin.html" style="color:#004080;">Sign In</a></p>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyApyOAfcEB8nGc-B3IO4X8wIl-nVi3nKeo",
+        authDomain: "maylearninghub.firebaseapp.com",
+        projectId: "maylearninghub",
+        storageBucket: "maylearninghub.firebasestorage.app",
+        messagingSenderId: "237875455146",
+        appId: "1:237875455146:web:21310d33b56664d669dcd3"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    // DOM Elements
+    const roleSelect = document.getElementById('role');
+    const gradeSelect = document.getElementById('grade');
+    const learnerSection = document.getElementById('learnerSection');
+    const teacherSection = document.getElementById('teacherSection');
+    const learnerSubjects = document.getElementById('learnerSubjects');
+
+    // UI Logic for Role Visibility
+    roleSelect.onchange = () => {
+        if (roleSelect.value === 'learner') {
+            learnerSection.classList.remove('hidden');
+            teacherSection.classList.add('hidden');
+        } else {
+            teacherSection.classList.remove('hidden');
+            learnerSection.classList.add('hidden');
+        }
+    };
+
+    // UI Logic for Learner Grade (Show subjects for 10-12)
+    gradeSelect.onchange = () => {
+        const gradeVal = parseInt(gradeSelect.value);
+        if (gradeVal >= 10) {
+            learnerSubjects.classList.remove('hidden');
+        } else {
+            learnerSubjects.classList.add('hidden');
+        }
+    };
+
+    const handleRedirect = () => { window.location.href = 'index.html'; };
+
+    document.getElementById('emailSignup').onclick = async () => {
+        const name = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        const role = roleSelect.value;
+        const school = document.getElementById('school').value;
+        
+        // Validation
+        if (!name || !email || !pass || !role || !school) {
+            alert("Please fill in all basic information.");
+            return;
+        }
+
+        // Collect Subjects based on Role
+        let selectedSubjects = [];
+        if (role === 'teacher') {
+            selectedSubjects = Array.from(document.querySelectorAll('.t-sub:checked')).map(cb => cb.value);
+            if (selectedSubjects.length === 0) return alert("Please select at least one subject.");
+        } else if (role === 'learner' && parseInt(gradeSelect.value) >= 10) {
+            selectedSubjects = Array.from(document.querySelectorAll('.l-sub:checked')).map(cb => cb.value);
+            if (selectedSubjects.length === 0) return alert("Please select your subjects.");
+        }
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+            await updateProfile(userCredential.user, { displayName: name });
+
+            const userData = {
+                uid: userCredential.user.uid,
+                fullName: name,
+                email: email,
+                role: role,
+                school: school,
+                createdAt: new Date()
+            };
+
+            if (role === 'learner') {
+                userData.grade = gradeSelect.value;
+                if (parseInt(gradeSelect.value) >= 10) userData.subjects = selectedSubjects;
+            } else {
+                userData.subjects = selectedSubjects;
+            }
+
+            await setDoc(doc(db, "users", userCredential.user.uid), userData);
+            handleRedirect();
+        } catch (err) { 
+            alert("Signup Error: " + err.message); 
+        }
+    };
+
+    document.getElementById('googleSignup').onclick = async () => {
+        try {
+            await signInWithPopup(auth, provider);
+            handleRedirect();
+        } catch (err) { 
+            alert("Google Error: " + err.message); 
+        }
+    };
+</script>
+</body>
+</html>
