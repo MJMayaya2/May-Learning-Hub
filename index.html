@@ -9,7 +9,7 @@
 
   gtag('config', 'G-8GCWSKNDL7');
 </script>
-	
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="May Learning Hub provides CAPS-aligned notes, educational games, activities, and revision support for Social Sciences, Geography, and Life Sciences learners and teachers.">
@@ -288,7 +288,7 @@
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            padding: 1rem 1.2rem;
+            padding: 1.5rem 1.8rem;
             margin-bottom: 1.2rem;
             border-left: 4px solid #3385ff;
             opacity: 0;
@@ -296,39 +296,9 @@
         }
 
         .intro-panel p {
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .intro-panel p + p {
-            margin-top: 0.45rem;
-        }
-
-        .trust-points {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 0.75rem;
-            margin-top: 0.8rem;
-        }
-
-        .trust-card {
-            background: #f7fbff;
-            border: 1px solid #d9e9ff;
-            border-radius: 9px;
-            padding: 0.8rem 0.9rem;
-        }
-
-        .trust-card h3 {
-            color: #004080;
-            font-size: 0.95rem;
-            margin-bottom: 0.2rem;
-            line-height: 1.3;
-        }
-
-        .trust-card p {
-            font-size: 0.88rem;
-            color: #555;
-            line-height: 1.4;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #444;
         }
 
         .whats-new-grid {
@@ -617,32 +587,6 @@
         .icon-notes::before { content: "📝 "; }
         .icon-games::before { content: "🎮 "; }
         .icon-activities::before { content: "🛠️ "; }
-
-        .feature-strip {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .feature-box {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 1.1rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            border-left: 5px solid #3385ff;
-        }
-
-        .feature-box h3 {
-            color: #004080;
-            margin-bottom: 0.4rem;
-            font-size: 1rem;
-        }
-
-        .feature-box p {
-            color: #5d6c7c;
-            font-size: 0.95rem;
-        }
 
         .cta-panel {
             background: linear-gradient(135deg, #003a75, #004f9f);
@@ -942,7 +886,7 @@
             }
 
             .intro-panel {
-                padding: 0.9rem 1rem;
+                padding: 1.1rem 1.3rem;
             }
 
             .search-panel,
@@ -1024,29 +968,10 @@
     <div class="container">
 
         <section class="intro-panel" aria-labelledby="intro-title">
-            <h2 class="section-title" id="intro-title">Built for Real Classroom Learning</h2>
+            <h2 class="section-title" id="intro-title">Comprehensive Educational Framework</h2>
             <p>
-                May Learning Hub is designed to support both teachers and learners with structured subject content, engaging revision tools, and accessible classroom resources.
+                May Learning Hub provides a professional, CAPS-aligned educational experience specifically designed by educators to meet practical classroom needs. Our platform integrates high-quality curriculum notes with interactive revision games and guided classroom activities, offering a centralized, scalable resource hub that evolves alongside modern teaching requirements.
             </p>
-
-            <div class="trust-points">
-                <div class="trust-card">
-                    <h3>CAPS-Friendly Structure</h3>
-                    <p>Organised by subject, grade, and term for easier classroom use and revision.</p>
-                </div>
-                <div class="trust-card">
-                    <h3>Teacher-Created</h3>
-                    <p>Designed with practical school needs in mind, not just for looks.</p>
-                </div>
-                <div class="trust-card">
-                    <h3>Notes + Games + Activities</h3>
-                    <p>One place for core learning content and interactive support material.</p>
-                </div>
-                <div class="trust-card">
-                    <h3>Growing Learning Platform</h3>
-                    <p>Ready to expand with more topics, app support, and subject resources over time.</p>
-                </div>
-            </div>
         </section>
 
         <section class="whats-new-grid" aria-label="Latest updates">
@@ -1130,25 +1055,6 @@
 
             <div class="search-results" id="searchResults" aria-live="polite">
                 <ul id="searchResultsList"></ul>
-            </div>
-        </section>
-
-        <section class="feature-strip" aria-label="Site highlights">
-            <div class="feature-box">
-                <h3>📝 Notes Hub</h3>
-                <p>Clear learning material organised by term and grade.</p>
-            </div>
-            <div class="feature-box">
-                <h3>🎮 Interactive Games</h3>
-                <p>Learning made more memorable through play and revision challenges.</p>
-            </div>
-            <div class="feature-box">
-                <h3>🛠️ Classroom Activities</h3>
-                <p>Useful tasks for practice, teaching support, and guided learning.</p>
-            </div>
-            <div class="feature-box">
-                <h3>📚 Built to Grow</h3>
-                <p>Prepared for future expansion with more topics, app support, and subject resources.</p>
             </div>
         </section>
 
@@ -1363,31 +1269,22 @@
 
         let currentUser = null;
 
-        // Keep track of the user's login state
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
         });
 
-        // --- 2. GLOBAL CLICK INTERCEPTOR (THE GATEKEEPER) ---
         document.addEventListener('click', (e) => {
-            // Find if a link was clicked
             const link = e.target.closest('a');
-            
-            // If the link is for "Activities", check if user is logged in
             if (link && link.href.includes('/Activities/')) {
                 if (!currentUser) {
-                    e.preventDefault(); // Stop the user from going to the link
-                    
-                    // Save where they wanted to go
+                    e.preventDefault(); 
                     sessionStorage.setItem('redirectURL', link.href);
-                    
                     alert("Please sign in to access Activities!");
                     window.location.href = 'signin.html';
                 }
             }
         });
 
-        // --- 3. EXISTING SITE LOGIC ---
         const navToggle = document.getElementById('navToggle');
         const navLinks = document.getElementById('navLinks');
 
